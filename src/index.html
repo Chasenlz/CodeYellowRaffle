@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="UTF-8">
+      <title>Codeyellow Raffle Bot</title>
+      <link rel='stylesheet' href='https://use.fontawesome.com/releases/v5.8.1/css/all.css'>
+      <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css'>
+      <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Roboto'>
+      <link rel="stylesheet" href="https://cdn.linearicons.com/free/1.0.0/icon-font.min.css">
+      <link rel="stylesheet" href="css/style.css">
+      <script src="js/hammer.js" onload="window.Hammer = module.exports;"></script>
+      <script>window.$ = window.jQuery = require('./js/jquery.js');</script>
+      <script src="js/materialize.js"></script>
+   </head>
+   <body>
+      <div class="drag-top"></div>
+      <div class="window-options">
+         <div id="close" class="window-icon"><span class="lnr lnr-cross"></span>
+         </div>
+         <div id="minimize" class="window-icon">－</div>
+      </div>
+	  
+	          <div class="under-line"></div>
+	  
+      <div class="nav-me">
+         <div class="left-me">
+            <div id="defaultOpen" class="nav-item">Tasks</div>
+            <div id="profilesTab" class="nav-item">Profiles</div>
+         </div>
+         <img id="temppage" class="middle-me" src="https://i.imgur.com/l7JZQqs.png">  
+         <div class="right-me">
+            <div id="proxiesTab" class="nav-item">Proxies</div>
+            <div id="settingsTab" class="nav-item">Settings</div>
+         </div>
+      </div>
+	<div class="tasks">
+ 
+ <div class="temp">
+
+      <div id="temp" style="padding-top: 20px;" class="main tabcontent">
+	  
+         <div class="twonav">
+            <div class="two-left">
+               <div style="width: 100%;" id="singleenter" class="two-item">Single Entry</div>
+            </div>
+            <div class="two-right">
+               <div style="width: 100%;" id="massenter" class="two-item">Mass Entry</div>
+            </div>
+         </div>
+		 
+		<div class="splad">
+		<div style="background: #0e0e0e !important;" class="create-row">
+                  <div class="inputicon"><i class="fa fa-user" aria-hidden="true"></i>
+                  </div>
+                  <select class="createinput">
+                  <option value="Example Profile">Example Profile</option></select>
+        </div>
+		</div>
+		
+		<div class="splag">
+		<div style="background: #0e0e0e !important;" class="create-row">
+                  <div class="inputicon"><i class="fa fa-globe" aria-hidden="true"></i>
+                  </div>
+                  <input class="createinput" placeholder="Specific Proxy">
+        </div>
+		</div>
+		
+		<div class="auto-enter-container">
+		
+		<div class="raffle-card mid-cop"> 
+			<div class="rtainer">
+			<div class="raffle-circle">
+				<img src="https://codeyellow.io/img/zx-4000-4d-carbon.png" class="raffle-image">
+			</div>
+			</div>
+		
+			<div id="hexagon"><b>£0.00</b></div>
+			<div id="hexagon2"></div>
+			<div class="raffle-bottom">
+				<a href="https://codeyellow.io/raffle.php?release='.$row['release'].'"><div class="raffle-go-button">ENTER NOW</div></a>
+			<div class="raffle-title-t">Freezy</div>
+			<div class="raffle-title-s">Date of release 01.01.2019</div>
+		</div>   
+		</div>
+		
+		<div class="raffle-card easy-cop"> 
+			<div class="rtainer">
+			<div class="raffle-circle">
+				<img src="https://codeyellow.io/img/zx-4000-4d-carbon.png" class="raffle-image">
+			</div>
+			</div>
+		
+			<div id="hexagon"><b>£0.00</b></div>
+			<div id="hexagon2"></div>
+			<div class="raffle-bottom">
+				<a href="https://codeyellow.io/raffle.php?release='.$row['release'].'"><div class="raffle-go-button">ENTER NOW</div></a>
+			<div class="raffle-title-t">Freezy</div>
+			<div class="raffle-title-s">Date of release 01.01.2019</div>
+		</div>   
+		</div>
+		
+		<div class="raffle-card hard-cop"> 
+			<div class="rtainer">
+			<div class="raffle-circle">
+				<img src="https://codeyellow.io/img/zx-4000-4d-carbon.png" class="raffle-image">
+			</div>
+			</div>
+		
+			<div id="hexagon"><b>£0.00</b></div>
+			<div id="hexagon2"></div>
+			<div class="raffle-bottom">
+				<a href="https://codeyellow.io/raffle.php?release='.$row['release'].'"><div class="raffle-go-button">ENTER NOW</div></a>
+			<div class="raffle-title-t">Freezy</div>
+			<div class="raffle-title-s">Date of release 01.01.2019</div>
+		</div>   
+		</div>
+
+		
+		</div>
+		
+		
+      </div>
+
+ </div>
+  
+      <div id="Tasks" style="top: 150px;" class="main tabcontent">
+         <div class="twonav">
+            <div class="two-left">
+               <div id="creattask" class="two-item">Create task</div>
+               <div class="two-item">Start all</div>
+            </div>
+            <div class="two-right">
+               <div class="two-item">Stop all</div>
+               <div class="two-item">Delete all</div>
+            </div>
+         </div>
+         <table style="width: 100%;margin-bottom: 10px;">
+            <tbody id="tasks">
+               <tr style="background: #0e0e0e;">
+                  <th>ID</th>
+                  <th>SITE</th>
+                  <th>PROFILE</th>
+                  <th>STATUS</th>
+				  <th>PROXY</th>
+                  <th>ACTION</th>
+               </tr>
+            </tbody>
+         </table>
+      </div>
+
+	<div class="profiles">
+
+      <div id="Profiles" style="padding-top: 20px;" class="main tabcontent">
+         <div class="profiler-container">
+            <div class="leftbind">
+               <div style="width: 100%;margin: -2% -2% 1% -2%;" class="setterhat">
+                  <div class="settit">Profile</div>
+                  <div class="setinfo">Enter a name for the profile, to create a blank profile.</div>
+               </div>
+               <div style="width:80%;float:left;" class="create-row">
+                  <div class="inputicon"><i class="fa fa-user" aria-hidden="true"></i>
+                  </div>
+                  <input class="createinput" id="newProfileName" placeholder="Profile Name">
+               </div>
+               <div style="width:20%;float:right;" class="create-row">
+                  <button class="butoneir" id="newProfile"><i class="fas fa-save"></i>
+                  </button>
+               </div>
+            </div>
+            <div class="rightbind">
+               <div style="width: 104%;margin: -2% -2% 1% -2%;" class="setterhat">
+                  <div class="settit"><!-- Profile Modification --></div>
+                  <div class="setinfo"><!-- Options for the profile selected below. Save, load and delete. --></div>
+               </div>
+               <div style="width:68%;float:left;margin-left: 2%;" class="create-row">
+                  <div class="inputicon"><i class="fa fa-users" aria-hidden="true"></i>
+                  </div>
+                  <select class="createinput" id="profileList">
+                  </select>
+               </div>
+               <div style="width: 30%;float:right;" class="create-row">
+                  <button class="butoneir" id="saveProfile"><i class="far fa-save"></i>
+                  </button>
+                  <button class="butoneir" id="loadProfile"><i class="fa fa-upload" aria-hidden="true"></i>
+                  </button>
+                  <button class="butoneir" id="deleteProfile"><i class="fa fa-trash" aria-hidden="true"></i>
+                  </button>
+               </div>
+            </div>
+         </div>
+         <div class="delivery-container">
+            <!-- <div style="width: 104%;margin: -2% -2% 2% -2%;" class="setterhat">
+               <div class="settit">Shipping Information</div>
+               
+               <div class="setinfo">Your information to ship won raffles.</div>
+               
+               </div> -->
+            <div class="create-row">
+               <div class="inputicon"><i class="fa fa-user" aria-hidden="true"></i>
+               </div>
+               <input class="createinput" id="fullName" placeholder="Name">
+            </div>
+            <div style="width: 100%;float:left;" class="create-row">
+               <div class="inputicon"><i class="fa fa-phone" aria-hidden="true"></i>
+               </div>
+               <input class="createinput" id="phoneNumber" placeholder="Phone Number">
+            </div>
+            <div style="width: 49%;float:left;" class="create-row">
+               <div class="inputicon"><i class="fa fa-map-marker" aria-hidden="true"></i>
+               </div>
+               <input class="createinput" id="address" placeholder="Address">
+            </div>
+            <div style="width: 49%;float:right;" class="create-row">
+               <div class="inputicon"><i class="fas fa-map-marker-alt"></i>
+               </div>
+               <input class="createinput" id="aptSuite" placeholder="Apt Suite (optional)">
+            </div>
+            <div style="width: 49%;float:left;" class="create-row">
+               <div class="inputicon"><i class="fa fa-globe" aria-hidden="true"></i>
+               </div>
+               <select class="createinput" id="country">
+                  <option value="Country">Country</option>
+                  <option value="United Kingdom">United Kingdom</option>
+                  <option value="United States">United States</option>
+                  <option value="Canada">Canada</option>
+                  <option value="North Ireland">North Ireland</option>
+                  <option value="Germany">Germany</option>
+                  <option value="Switzerland">Switzerland</option>
+                  <option value="France">France</option>
+                  <option value="Italy">Spain</option>
+                  <option value="Italy">Italy</option>
+               </select>
+            </div>
+            <div style="width: 49%;float:right;" class="create-row">
+               <div class="inputicon"><i class="fa fa-building" aria-hidden="true"></i>
+               </div>
+               <input class="createinput" id="city" placeholder="City">
+            </div>
+            <div style="width: 49%;float:left;" class="create-row">
+               <div class="inputicon"><i class="fa fa-map" aria-hidden="true"></i>
+               </div>
+               <select class="createinput" id="stateProvince">
+                  <option value="default">State / Province</option>
+                  <option value="none">None</option>
+               </select>
+            </div>
+            <div style="width: 49%;float:right;" class="create-row">
+               <div class="inputicon"><i class="far fa-map"></i>
+               </div>
+               <input class="createinput" id="zipCode" placeholder="Zip code">
+            </div>
+         </div>
+         <div class="billing-container">
+            <!-- <div style="width: 104%;margin: -2% -2% 2% -2%;" class="setterhat">
+               <div class="settit">Billing Information</div>
+               
+               <div class="setinfo">Your information to bill won raffles.</div>
+               
+               </div> -->
+            <div style="width: 100%;float:left;" class="create-row">
+               <div class="inputicon"><i class="far fa-credit-card"></i>
+               </div>
+               <select class="createinput" id="cardType">
+                  <option value="default">Card Type</option>
+                  <option value="visa">Visa</option>
+                  <option value="master">Master Card</option>
+                  <option value="amex">American Express</option>
+               </select>
+            </div>
+            <!-- DUNNO YET IF WE NEED THESE
+               <div style="width: 100%;float:left;" class="create-row">
+               	<div class="inputicon"><i class="fa fa-envelope" aria-hidden="true"></i>
+               	</div>
+               	<input class="createinput" placeholder="Email Address">
+               </div>
+               <div style="width: 100%;float:left;" class="create-row">
+               	<div class="inputicon"><i class="fa fa-address-card" aria-hidden="true"></i>
+               	</div>
+               	<input class="createinput" placeholder="Card Holder Name">
+               </div> -->
+            <div style="width: 100%;float:left;" class="create-row">
+               <div class="inputicon"><i class="fa fa-credit-card" aria-hidden="true"></i>
+               </div>
+               <input class="createinput" id="cardNumber" placeholder="Card Number">
+            </div>
+            <div style="width: 32%;float:left;" class="create-row">
+               <div class="inputicon"><i class="fas fa-calendar-alt"></i>
+               </div>
+               <select class="createinput" id="expiryMonth">
+                  <option value="MM">MM</option>
+                  <option value="01">01</option>
+                  <option value="02">02</option>
+                  <option value="03">03</option>
+                  <option value="04">04</option>
+                  <option value="05">05</option>
+                  <option value="06">06</option>
+                  <option value="07">07</option>
+                  <option value="08">08</option>
+                  <option value="09">09</option>
+                  <option value="10">10</option>
+                  <option value="11">11</option>
+                  <option value="12">12</option>
+               </select>
+            </div>
+            <div style="width: 32%;" class="create-row">
+               <div class="inputicon"><i class="fa fa-calendar" aria-hidden="true"></i>
+               </div>
+               <select class="createinput" id="expiryYear">
+                  <option value="YY">YY</option>
+                  <option value="2018">2018</option>
+                  <option value="2019">2019</option>
+                  <option value="2020">2020</option>
+                  <option value="2021">2021</option>
+                  <option value="2022">2022</option>
+                  <option value="2023">2023</option>
+                  <option value="2024">2024</option>
+                  <option value="2025">2025</option>
+                  <option value="2026">2026</option>
+                  <option value="2027">2027</option>
+                  <option value="2028">2028</option>
+               </select>
+            </div>
+            <div style="width: 32%;float:right;" class="create-row">
+               <div class="inputicon"><i class="fa fa-key" aria-hidden="true"></i>
+               </div>
+               <input class="createinput" id="CVV" placeholder="CVV">
+            </div>
+         </div>
+      </div>
+
+	</div>
+
+	<div class="proxies">
+
+      <div id="Proxies" style="top: 150px;" class="main tabcontent">
+         <div class="twonav">
+            <div class="two-left">
+               <div id="addprox" class="two-item">Add proxy(s)</div>
+               <div class="two-item" id="checkAllProxies">Check all</div>
+            </div>
+            <div class="two-right">
+               <div class="two-item" id="removeFailed">Remove failed</div>
+               <div class="two-item" id="saveProxies">Save all</div>
+            </div>
+         </div>
+         <table style="width: 100%;margin-bottom: 10px;">
+            <tbody id="proxies">
+               <tr style="background: #0e0e0e;">
+                  <th>IP</th>
+                  <th>PORT</th>
+                  <th>RESULT</th>
+                  <th>ACTION</th>
+               </tr>
+               <tr>
+                  <td>localhost</td>
+                  <td>host</td>
+                  <td>124ms</td>
+                  <td>
+                     <button class="action-butt"><i class="fa fa-play" aria-hidden="true"></i>
+                     </button>
+                     <button class="action-butt"><i class="fa fa-trash" aria-hidden="true"></i>
+                     </button>
+                  </td>
+               </tr>
+            </tbody>
+         </table>
+      </div>
+
+
+  <div class="aprox">             
+             
+      <div id="Addprox" style="padding-top: 110px;" class="main tabcontent">
+         <!-- <div class="lefts">
+            <div style="padding: 20px;margin-bottom: 10px;" class="setterhat">
+            <div class="settit">Generate proxies</div>
+            <div class="setinfo">Generate proxies from all regions!</div>
+            </div>
+            <span class="helper"> Select the amount of proxies to generate.</span>
+            <br>
+            <div class="slidecontainer">
+            <input id="rangeInput" type="range" min="1" max="30" value="15" class="slider" oninput="amount.value=rangeInput.value">
+            </div>
+            <br>
+            <span class="announceme">15 proxies</span>
+            <br>
+            
+            <div style="height: 170px;" class="realsetter2">
+            <div style="padding: 10px;margin-bottom: 10px;" class="setterhat">
+            <div class="settit">UK</div>
+            <div class="setinfo">United Kingdom</div>
+            </div>
+            <div style="text-align: center;" class="setinfo">This will generate <b class="toutput">5</b> UK based proxy.</div>
+            <div class="setterbum">
+            <div class="price-it-gen">Generate UK</div>
+            </div>
+            </div>
+            <div style="height: 170px;" class="realsetter2">
+            <div style="padding: 10px;margin-bottom: 10px;" class="setterhat">
+            <div class="settit">US</div>
+            <div class="setinfo">United states</div>
+            </div>
+            <div style="text-align: center;" class="setinfo">This will generate <b class="toutput">5</b> US based proxy.</div>
+            <div class="setterbum">
+            <div class="price-it-gen">Generate US</div>
+            </div>
+            </div>
+            <div style="height: 170px;" class="realsetter2">
+            <div style="padding: 10px;margin-bottom: 10px;" class="setterhat">
+            <div class="settit">DE</div>
+            <div class="setinfo">German</div>
+            </div>
+            <div style="text-align: center;" class="setinfo">This will generate <b class="toutput">5</b> DE based proxy.</div>
+            <div class="setterbum">
+            <div class="price-it-gen">Generate DE</div>
+            </div>
+            </div>
+            <div style="height: 170px;" class="realsetter2">
+            <div style="padding: 10px;margin-bottom: 10px;" class="setterhat">
+            <div class="settit">ES</div>
+            <div class="setinfo">Spain</div>
+            </div>
+            <div style="text-align: center;" class="setinfo">This will generate <b class="toutput">5</b> ES based proxy.</div>
+            <div class="setterbum">
+            <div class="price-it-gen">Generate ES</div>
+            </div>
+            </div>
+            <div style="height: 170px;" class="realsetter2">
+            <div style="padding: 10px;margin-bottom: 10px;" class="setterhat">
+            <div class="settit">FR</div>
+            <div class="setinfo">France</div>
+            </div>
+            <div style="text-align: center;" class="setinfo">This will generate <b class="toutput">5</b> FR based proxy.</div>
+            <div class="setterbum">
+            <div class="price-it-gen">Generate FR</div>
+            </div>
+            </div>
+            <div style="height: 170px;" class="realsetter2">
+            <div style="padding: 10px;margin-bottom: 10px;" class="setterhat">
+            <div class="settit">RU</div>
+            <div class="setinfo">Russia</div>
+            </div>
+            <div style="text-align: center;" class="setinfo">This will generate <b class="toutput">5</b> RU based proxy.</div>
+            <div class="setterbum">
+            <div class="price-it-gen">Generate RU</div>
+            </div>
+            </div>
+            
+            </div> -->
+         <div style="width: 100%;height :500px" class="rights">
+            <div style="padding: 20px;margin-bottom: 10px;" class="setterhat">
+               <div class="settit">Add proxies</div>
+               <div class="setinfo">Input proxies you would like to use for raffles.</div>
+            </div>
+            <div class="addcon" style="margin-top: 0;">
+               <!--    					<div style="padding: 20px;margin-bottom: 0px;background:rgba(0,0,0,0.6);" class="setterhat">
+                  <div class="settit">Input proxies</div>
+                  <div class="setinfo">Input your proxies here!</div>
+                  </div> -->
+               <textarea class="barea" id="proxiesToAdd" placeholder="ip:port:user:pass"></textarea>
+               <div class="setterbummer">
+                  <div style="margin-top: 5px;width: 30%;" id="addProxies" class="price-it-up">Add Proxies</div>
+               </div>
+            </div>
+         </div>
+      </div>
+			 
+  </div> 
+
+
+</div>
+
+    <div class="settings">     
+
+<div class="low-c">
+Performance mode
+<br>
+<label style="margin-top: 10px;" class="switch">
+  <input id="sickomode" type="checkbox">
+  <span class="sliderf roundf"></span>
+</label>
+
+</div>
+
+      <div id="Settings" style="padding-top: 20px;" class="main tabcontent">
+         <div class="sethold">
+            <!--		<div class="realsetter">
+               <div class="setterhat">
+               	<div class="settit">Proxy generation</div>
+               	<div class="setinfo">The amount of proxy to generate.</div>
+               </div>
+               <div class="bingbangbong">This value determins the amount of proxies that will generate in the proxy tab.</div>
+               <div style="margin-top: 0px;padding-left: 3%;" class="c-c r">Proxy amount</div>
+               <input type="number" id="amount" class="shinput l" style="width: 94%;height: 30px;margin-left: 3%;" placeholder="5" oninput="rangeInput.value=amount.value">
+               <div class="slidecontainer">
+               	<input id="rangeInput" type="range" min="1" max="20" value="10" class="slider" oninput="amount.value=rangeInput.value">
+               </div>
+               <div class="setterbum">
+               	<div class="price-it-up">Set Value</div>
+               </div>
+               </div> -->
+            <div class="realsetter">
+               <div class="setterhat">
+                  <div class="settit">Retry delay</div>
+                  <div class="setinfo">This value determins the delay the bot will take before retrying inputs.</div>
+               </div>
+               <div class="bingbangbong">Editing this setting will set your default delay between input retry each.</div>
+               <div style="margin-top: 0px;padding-left: 3%;" class="c-c r">Retry Delay</div>
+               <input type="number" id="amountr" class="shinput l" style="width: 94%;height: 30px;margin-left: 3%;" placeholder="0ms" oninput="rangerInput.value=amountr.value">
+               <div class="slidecontainer">
+                  <input id="rangerInput" type="range" min="1" max="100" value="50" class="slider" oninput="amountr.value=rangerInput.value">
+               </div>
+               <div class="setterbum">
+                  <div class="price-it-up">Set Delay</div>
+               </div>
+            </div>
+            <div class="realsetter">
+               <div class="setterhat">
+                  <div class="settit">Discord webhook</div>
+                  <div class="setinfo">Having a discord webhook active will more then likely spam.</div>
+               </div>
+               <div class="bingbangbong">Setting this will cause you to get discord updates on each successful entry.</div>
+               <div style="margin-top: 0px;padding-left: 3%;" class="c-c r">Discord Webhook</div>
+               <input class="shinput l" style="width: 94%;height: 30px;margin-left: 3%;" placeholder="Discord Webhook" oninput="rangeInput.value=amount.value">
+               <div class="slidecontainer">
+               </div>
+               <div class="setterbum">
+                  <div class="price-it-up">Set Webhook</div>
+               </div>
+            </div>
+			
+			<div class="realsetter">
+               <div class="setterhat">
+               	<div class="settit">Captcha Solver</div>
+               	<div class="setinfo">Open the captcha solver here if it doesnt automatically.</div>
+               </div>
+               <div class="bingbangbong">Use the button here to open the captcha solver if it doesnt open automatically.</div>
+
+               <div class="setterbum">
+               	<div class="price-it-up">Open Captcha</div>
+               </div>
+               </div>
+            <!-- 				<div class="realsetter">
+               <div class="setterhat">
+               	<div class="settit">MEMBERSHIP INFO</div>
+               	<div class="setinfo">Info about your membership.</div>
+               </div>
+               <div class="bingbangbong">Your raffleaio membership will expire in <b>12</b> day(s).</div>
+               <div class="slidecontainer"></div>
+               <div style="bottom: 65px;" class="setterbum">
+               	<div class="price-it-up">Extend Membership</div>
+               </div>
+               <div class="setterbum">
+               	<div class="price-it-up">Cancel Membership</div>
+               </div>
+               </div> -->
+         </div>
+      </div>
+
+	</div>
+
+	<div class="ctask">  
+	
+      <div id="Addtask" style="overflow: hidden;padding-top: 100px;" class="main tabcontent">
+         <div class="caro">
+            <div class="releases-container caro">
+            </div>
+         </div>
+         <div style="margin-top: -165px;height:315px;" class="creater">
+            <!-- <div class="setterhat">
+               <div class="settit">Task Settings</div>
+               
+               <div class="setinfo">Configer your task settings</div>
+               
+               </div> -->
+            <div class="crat l">
+               <div class="create-row">
+                  <div class="inputicon"><i class="fa fa-shopping-bag" aria-hidden="true"></i>
+                  </div>
+                  <select class="createinput" id="taskSiteSelect">
+                     <option value="default">Sites</option>
+                     <option class="taskSiteOption" value="nakedcph" disabled>Naked</option>
+                     <option class="taskSiteOption" value="dsml" disabled>DSML</option>
+                     <option class="taskSiteOption" value="vooberlin" disabled>VooBerlin</option>
+                     <option class="taskSiteOption" value="footshop" disabled>FootShop</option>
+                  </select>
+               </div>
+               <div class="create-row">
+                  <div class="inputicon"><i class="fa fa-user" aria-hidden="true"></i>
+                  </div>
+                  <select class="createinput" id="taskProfile">
+                  </select>
+               </div>
+               <div class="create-row">
+                  <div class="inputicon"><i class="far fa-envelope"></i>
+                  </div>
+                  <select style="cursor: not-allowed;" class="createinput" disabled>
+                     <!-- temp disabled -->
+                     <option id="nonemail">Email Type</option>
+                  </select>
+               </div>
+            </div>
+            <div class="crat r">
+               <div class="create-row">
+                  <div class="inputicon"><i class="fas fa-sort-amount-up"></i>
+                  </div>
+                  <select class="createinput" id="taskSizeSelect">
+                     <option value="default">Sizes</option>
+                     <option class="taskSizeOption" value="7" disabled>7</option>
+                     <option class="taskSizeOption" value="7.5" disabled>7.5</option>
+                     <option class="taskSizeOption" value="8" disabled>8</option>
+                     <option class="taskSizeOption" value="8.5" disabled>8.5</option>
+                     <option class="taskSizeOption" value="9" disabled>9</option>
+                     <option class="taskSizeOption" value="9.5" disabled>9.5</option>
+                     <option class="taskSizeOption" value="10" disabled>10</option>
+                     <option class="taskSizeOption" value="10.5" disabled>10.5</option>
+                     <option class="taskSizeOption" value="11" disabled>11</option>
+                     <option class="taskSizeOption" value="11.5" disabled>11.5</option>
+                     <option class="taskSizeOption" value="12" disabled>12</option>
+                  </select>
+               </div>
+               <div class="create-row">
+                  <div class="inputicon"><i class="fa fa-globe" aria-hidden="true"></i>
+                  </div>
+                  <input class="createinput" id="taskSpecificProxy" placeholder="Specific Proxy">
+               </div>
+               <div class="create-row">
+                  <div class="inputicon"><i class="fas fa-sort-numeric-down"></i>
+                  </div>
+                  <input class="createinput" id="taskQuantity" placeholder="Quantity" type="number" min="1" max="20" value="1">
+               </div>
+            </div>
+            <div style="margin-top: -20px;" class="cratz">
+               <div style="margin-top: -8px;" class="create-row">
+                  <div class="inputicon"><i class="fa fa-envelope" aria-hidden="true"></i>
+                  </div>
+                  <input class="createinput" id="taskEmail" placeholder="Email Address">
+               </div>
+            </div>
+            <div class="setterbummer">
+               <div style="margin-top: -5px;width: 30%;" id="createTaskButton" class="price-it-up">Create Task(s)</div>
+            </div>
+         </div>
+      </div>
+ 
+	</div>
+	
+</div>
+
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js'></script>
+      <script src='https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js'></script>
+      <script src="js/index.js"></script>
+      <script src="js/tab.js"></script>
+      <script src="js/main.js"></script>
+   </body>
+</html>
