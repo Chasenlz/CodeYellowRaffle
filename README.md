@@ -1,5 +1,4 @@
 # CodeYellow Raffle
-CSGO / Steam Roulette Site created with PHP and Node JS, using the Material Design front-end framework.
 Open source raffle bot made to help increase the chance of winning limited sneaker raffles by automating entries. 
 
 
