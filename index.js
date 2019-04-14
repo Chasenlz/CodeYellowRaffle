@@ -29,7 +29,7 @@ const proxy = require('./proxy.js');
 const nakedcph = require('./websites/nakedcph.js');
 const vooberlin = require('./websites/vooberlin.js');
 
-var signUpURL = 'http://45.76.138.251/account.php?type=signup';
+var signUpURL = 'https://codeyellow.io/account.php?type=signup';
 
 global.websites = {
 	'vooberlin': {
