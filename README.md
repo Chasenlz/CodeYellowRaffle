@@ -1,10 +1,11 @@
 # CodeYellow Raffle
 Open source raffle bot made to help increase the chance of winning limited sneaker raffles by automating entries. 
 
-# File Structure
-
+# Structure
 ### /src
 Contains the frontend
+### /websites
+Contains all the websites supported for entries
 
 # Usage
 
