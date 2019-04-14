@@ -7,6 +7,12 @@ Contains the frontend
 ### /websites
 Contains all the websites supported for entries
 
+
+### /install.bat
+Opens a command prompt window which performs 'npm install'
+### /run.bat
+Opens a command prompt window which performs 'npm start'
+
 # Usage
 
 1. Clone every file 
