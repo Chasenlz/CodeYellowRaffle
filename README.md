@@ -8,6 +8,12 @@ Contains the frontend
 Contains all the websites supported for entries
 
 
+### /index.js
+Contains the core software code
+
+### /proxy.js
+Contains the function to test proxies
+
 ### /install.bat
 Opens a command prompt window which performs 'npm install'
 ### /run.bat
