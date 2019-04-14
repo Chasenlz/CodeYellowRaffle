@@ -16,7 +16,7 @@ Open source raffle bot made to help increase the chance of winning limited sneak
 
 4. Log in via the software
 
-[**Register Here**](http://104.131.65.32)
+[**Register Here**](https://codeyellow.io/)
 
 
 # Alternatively 
