@@ -1,7 +1,7 @@
 {
   "name": "CodeYellow_Raffle",
   "version": "0.0.1",
-  "description": "CodeYellow",
+  "description": "Open source raffle bot made to help increase the chance of winning limited sneaker raffles by automating entries",
   "main": "index.js",
   "scripts": {
     "start": "electron .",
