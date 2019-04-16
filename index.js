@@ -385,6 +385,31 @@ function openBot(onReady) {
 		if (process.platform != 'darwin') app.quit();
 	});
 
+	// Save retry delay
+	ipcMain.on('saveRetryDelay', function (e, retryDelay) {
+		global.settings.retryDelay = retryDelay;
+		saveSettings();
+		module.exports.mainBotWin.send('notify', {
+			length: 3000,
+			message: 'Retry delay saved!'
+		});
+	});
+	// Save webhook
+	ipcMain.on('saveWebhook', function (e, webHook) {
+		global.settings.discordWebhook = webHook;
+		saveSettings();
+		module.exports.mainBotWin.send('notify', {
+			length: 3000,
+			message: 'Webhook saved!'
+		});
+		exports.sendWebhook('test')
+	});
+	//Open captcha harvester
+	ipcMain.on('openHarvester', function (e) {
+		module.exports.capWin.show();
+	});
+
+
 	// Start Task
 	ipcMain.on('startTask', function (e, task, profile) {
 		//if (module.exports.taskStatuses[task.taskID] != 'active') {
@@ -507,6 +532,97 @@ function saveProfiles() {
 }
 
 
+// Sending webhook function
+exports.sendWebhook = function (website, email) {
+	var webhook = global.settings.discordWebhook;
+	if (/^(ftp|http|https):\/\/[^ "]+$/.test(webhook) == true) {
+		if(website == 'test')
+		{
+				try {
+					request({
+							url: webhook,
+							json: {
+								"embeds": [{
+									"description": "This webhook was sent to make sure the webhook is valid!",
+									"color": 978261,
+									"author": {
+										"name": 'Webhook test successful!!'
+									},
+									"footer": {
+										"icon_url": "https://i.imgur.com/l7JZQqs.png",
+										"text": "CodeYellow"
+									}
+								}]
+							},
+							method: 'POST'
+						},
+						function (error, response, body) {
+							if (error || response.statusCode != 204) {
+								module.exports.mainBotWin.send('notify', {
+									length: 2500,
+									message: 'Webhook test failed! This webhook may not be valid'
+								});
+							}
+							else
+							{
+								module.exports.mainBotWin.send('notify', {
+									length: 2500,
+									message: 'Webhook test successful!'
+								});
+							} 
+						});
+				} catch (e) {
+					return;
+				}
+		}
+		else
+		{
+			try {
+				request({
+						url: webhook,
+						json: {
+							"embeds": [{
+								"color": 978261,
+								"author": {
+									"name": 'Raffle entered!'
+								},
+								"fields": [{
+										"name": "Website",
+										"value": website
+									},
+									{
+										"name": "Email",
+										"value": email
+									}
+								],
+								"footer": {
+									"icon_url": "https://i.imgur.com/l7JZQqs.png",
+									"text": "CodeYellow"
+								}
+							}]
+						},
+						method: 'POST'
+					},
+					function (error, response, body) {
+						if (error || response.statusCode != 204) {
+							return;
+						}
+						else
+						{
+							// Success
+							return;
+						} 
+					});
+			} catch (e) {
+				return;
+			}
+		}
+	}
+	else
+	{
+		return;
+	}
+}
 
 
 
@@ -547,14 +663,14 @@ function createOrGetFiles() {
 		console.log("settings.json exists");
 		var fileContents = fs.readFileSync(appDataDir + "\\settings.json");
 		if (fileContents == '' || fileContents == null || fileContents == undefined) {
-			var parsed = JSON.parse('{"token": "","email": ""}', null, 4);
+			var parsed = JSON.parse('{"token": "","email": "", "retryDelay": "", "discordWebhook": ""}', null, 4);
 			makeFile('settings.json', JSON.stringify(parsed, null, 4))
 			global.settings = parsed;
 		} else {
 			global.settings = JSON.parse(fileContents);
 		}
 	} else {
-		var parsed = JSON.parse('{"token": "","email": ""}', null, 4);
+		var parsed = JSON.parse('{"token": "","email": "", "retryDelay": "", "discordWebhook": ""}', null, 4);
 		makeFile('settings.json', JSON.stringify(parsed, null, 4))
 		global.settings = parsed;
 	}
@@ -613,9 +729,4 @@ function makeFile(name, data) {
 			return console.log(err);
 		}
 	});
-}
-exports.getAuthHeader = function (key, mac) {
-	var salt = 'e53682768ac9f61d55959734a3d4c32b';
-	return 'temp';
-	//return (crypto.createHash('sha256').update(key).update(`${mac}${key}${salt}`).digest("hex"));
 }

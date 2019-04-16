@@ -36,6 +36,10 @@ if (updateRequired == true) {
 // Loads saved proxies
 loadProxies(proxies, false);
 
+$('#webhookUrl').val(require('electron').remote.getGlobal('settings').discordWebhook);
+settingsRetryDelay.value = require('electron').remote.getGlobal('settings').retryDelay;
+amountr.value = require('electron').remote.getGlobal('settings').retryDelay;
+
 // Loads all releases in the quick task area
 
 loadReleases();
@@ -49,7 +53,21 @@ ipcRenderer.on('notify', function (event, data) {
 	Materialize.toast(data.message, data.length, "rounded");
 });
 
+// Settings tab
+// Save retry delay
+$('#saveRetryDelay').click(function () {
+	ipcRenderer.send('saveRetryDelay', settingsRetryDelay.value)
+});
 
+// Save webhook
+$('#saveWebhook').click(function () {
+	ipcRenderer.send('saveWebhook', $('#webhookUrl').val())
+});
+
+// Opens captcha harvester
+$('#openHarvester').click(function () {
+	ipcRenderer.send('openHarvester')
+});
 
 
 
@@ -410,9 +428,6 @@ function loadProfile(profileName, notify) {
 		Materialize.toast("Profile '" + profileName + "' loaded!", 2000, "rounded");
 	}
 }
-
-
-
 
 
 

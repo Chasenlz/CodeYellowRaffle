@@ -44,7 +44,7 @@ exports.performTask = function (task, profile) {
 			var proxy2 = getRandomProxy();
 			task['proxy'] = proxy2;
 			console.log('Error, retrying (notify user)');
-			return setTimeout(() => exports.performTask(task, profile), 3000); // REPLACE 3000 WITH RETRY DELAY
+			return setTimeout(() => exports.performTask(task, profile), global.settings.retryDelay); // REPLACE 3000 WITH RETRY DELAY
 		}
 		if (response.statusCode == 200) {
 			mainBot.mainBotWin.send('taskUpdate', {
@@ -81,7 +81,7 @@ exports.performTask = function (task, profile) {
 			var proxy2 = getRandomProxy();
 			task['proxy'] = proxy2;
 			console.log('Error, retrying (notify user)');
-			return setTimeout(() => exports.performTask(task, profile), 3000); // REPLACE 3000 WITH RETRY DELAY
+			return setTimeout(() => exports.performTask(task, profile), global.settings.retryDelay); // REPLACE 3000 WITH RETRY DELAY
 		}
 	});
 }
@@ -92,7 +92,7 @@ exports.performTask = function (task, profile) {
 exports.submitRaffle = function (request, task, profile, raffleToken, pageID) {
 	if (mainBot.taskCaptchas[task['taskID']] == undefined || mainBot.taskCaptchas[task['taskID']] == '') {
 		// NEEDS CAPTCHA AGAIN
-		return setTimeout(() => exports.performTask(task, profile), 3000); // REPLACE 3000 WITH RETRY DELAY
+		return setTimeout(() => exports.performTask(task, profile), global.settings.retryDelay); // REPLACE 3000 WITH RETRY DELAY
 	}
 	request({
 		url: 'https://raffle.vooberlin.com/ajax.php',
@@ -120,7 +120,7 @@ exports.submitRaffle = function (request, task, profile, raffleToken, pageID) {
 					id: task.taskID,
 					message: 'CAPTCHA ERROR! RETRYING'
 				});
-				return setTimeout(() => exports.performTask(task, profile), 3000); // REPLACE 3000 WITH RETRY DELAY
+				return setTimeout(() => exports.performTask(task, profile), global.settings.retryDelay); // REPLACE 3000 WITH RETRY DELAY
 			}
 			else if(body.msg == 'You can register only once per raffle!')
 			{

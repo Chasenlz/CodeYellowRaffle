@@ -505,12 +505,12 @@ Performance mode
                </div>
                <div class="bingbangbong">Editing this setting will set your default delay between input retry each.</div>
                <div style="margin-top: 0px;padding-left: 3%;" class="c-c r">Retry Delay</div>
-               <input type="number" id="amountr" class="shinput l" style="width: 94%;height: 30px;margin-left: 3%;" placeholder="0ms" oninput="rangerInput.value=amountr.value">
+               <input type="number" id="amountr" class="shinput l" style="width: 94%;height: 30px;margin-left: 3%;" placeholder="500ms" oninput="settingsRetryDelay.value=amountr.value">
                <div class="slidecontainer">
-                  <input id="rangerInput" type="range" min="1" max="100" value="50" class="slider" oninput="amountr.value=rangerInput.value">
+                  <input id="settingsRetryDelay" type="range" min="500" max="5000" value="500" class="slider" oninput="amountr.value=settingsRetryDelay.value">
                </div>
                <div class="setterbum">
-                  <div class="price-it-up">Set Delay</div>
+                  <div class="price-it-up" id="saveRetryDelay">Set Delay</div>
                </div>
             </div>
             <div class="realsetter">
@@ -520,11 +520,11 @@ Performance mode
                </div>
                <div class="bingbangbong">Setting this will cause you to get discord updates on each successful entry.</div>
                <div style="margin-top: 0px;padding-left: 3%;" class="c-c r">Discord Webhook</div>
-               <input class="shinput l" style="width: 94%;height: 30px;margin-left: 3%;" placeholder="Discord Webhook" oninput="rangeInput.value=amount.value">
+               <input class="shinput l" id="webhookUrl" style="width: 94%;height: 30px;margin-left: 3%;" placeholder="Discord Webhook">
                <div class="slidecontainer">
                </div>
                <div class="setterbum">
-                  <div class="price-it-up">Set Webhook</div>
+                  <div class="price-it-up" id="saveWebhook">Set Webhook</div>
                </div>
             </div>
 			
@@ -536,7 +536,7 @@ Performance mode
                <div class="bingbangbong">Use the button here to open the captcha solver if it doesnt open automatically.</div>
 
                <div class="setterbum">
-               	<div class="price-it-up">Open Captcha</div>
+               	<div class="price-it-up" id="openHarvester">Open Harvester</div>
                </div>
                </div>
             <!-- 				<div class="realsetter">
