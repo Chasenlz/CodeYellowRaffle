@@ -17,51 +17,197 @@
 
 var mainBot = require('../index.js')
 var cheerio = require('cheerio');
-// REPLACE 3000 WITH RETRY DELAY// REPLACE 3000 WITH RETRY DELAY// REPLACE 3000 WITH RETRY DELAY// REPLACE 3000 WITH RETRY DELAY
-// REPLACE 3000 WITH RETRY DELAY// REPLACE 3000 WITH RETRY DELAY// REPLACE 3000 WITH RETRY DELAY// REPLACE 3000 WITH RETRY DELAY
-function getRandomProxy()
-{
-    return '';
+
+function getRandomProxy() {
+	return '';
 }
 
 exports.performTask = function (task, profile) {
-    //////////////////////////////////////////////////////console.log('trying');
 	var jar = require('request').jar()
 	var request = require('request').defaults({
 		jar: jar
 	});
 	request({
-		url: 'https://www.nakedcph.com/auth/view?op=register',
-		method: 'GET',
+		url: task['variant'],
 		headers: {
-			'authority': 'www.nakedcph.com',
-			'upgrade-insecure-requests': '1',
-			'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.121 Safari/537.36',
-			'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
-			'accept-language': 'en-GB,en-US;q=0.9,en;q=0.8'
-        },
-        followAllRedirects: true,
+			'Connection': 'keep-alive',
+			'Cache-Control': 'max-age=0',
+			'Upgrade-Insecure-Requests': '1',
+			'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36',
+			'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3',
+			'Accept-Language': 'en-GB,en-US;q=0.9,en;q=0.8'
+		},
 		proxy: task['proxy'],
 	}, function (error, response, body) {
-		if (error) {
-            var proxy2 = getRandomProxy();
-            task['proxy'] = proxy2;
-			//////////////////////////////////////////////////////console.log('\x1b[1;33m' + "[] - Error1");
-            return setTimeout(() => exports.performTask(task, profile), global.settings.retryDelay); 
-		}
-		if (response.statusCode == 200) {
-			$ = cheerio.load(body);
-			var csrfToken = $('input[name="_AntiCsrfToken"]').attr('value');
-			console.log('\x1b[1;33m' + "[] - Got Registration Page");
-			//createAccount(taskNum, proxy, request, csrfToken)
+		if (!error && response.statusCode == 200) {
+			mainBot.mainBotWin.send('taskUpdate', {
+				id: task.taskID,
+				message: 'GOT RAFFLE PAGE'
+			});
+			console.log('Got raffle page');
+			exports.getRaffleToken(request, task, profile);
 		} else {
 			var proxy2 = getRandomProxy();
-            task['proxy'] = proxy2;
-			//////////////////////////////////////////////////////console.log('\x1b[1;33m' + "[] - Error2 " + response.statusCode);
-            return setTimeout(() => exports.performTask(task, profile), global.settings.retryDelay); // REPLACE 3000 WITH RETRY DELAY
+			task['proxy'] = proxy2;
+			mainBot.mainBotWin.send('taskUpdate', {
+				id: task.taskID,
+				message: 'Error. Retrying in ' + global.settings.retryDelay / 1000 + 's'
+			});
+			return setTimeout(() => exports.performTask(task, profile), global.settings.retryDelay); // REPLACE 3000 WITH RETRY DELAY
+		}
+	});
+}
+
+
+exports.getRaffleToken = function (request, task, profile) {
+	mainBot.mainBotWin.send('taskUpdate', {
+		id: task.taskID,
+		message: 'Obtaining raffle token'
+	});
+	request({
+		url: task['nakedcph']['raffleToken'],
+		method: 'POST',
+		headers: {
+			'Accept': 'application/json',
+			'Referer': task['variant'],
+			'Origin': 'https://nakedcph.typeform.com',
+			'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36',
+			'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+		}
+	}, function callback(error, response, body) {
+		if (!error && response.statusCode == 200) {
+			var parsed = JSON.parse(body);
+			var raffleToken = parsed['token'];
+			var landedAt = parsed['landed_at'];
+			if (!raffleToken || !landedAt) {			
+				mainBot.mainBotWin.send('taskUpdate', {
+					id: task.taskID,
+					message: 'Error obtaining token. Retrying in ' + global.settings.retryDelay / 1000 + 's'
+				});
+				return setTimeout(() => exports.getRaffleToken(request, task, profile), global.settings.retryDelay); 
+			}
+			mainBot.mainBotWin.send('taskUpdate', {
+				id: task.taskID,
+				message: 'Got raffle token'
+			});
+			console.log('Raffle Token: ' + raffleToken);
+			console.log('Landed at: ' + landedAt);
+			mainBot.mainBotWin.send('taskUpdate', {
+				id: task.taskID,
+				message: 'Got raffle token'
+			});
+			mainBot.mainBotWin.send('taskUpdate', {
+				id: task.taskID,
+				message: 'Submitting entry in ' + task['nakedcph']['submit_delay'] / 1000 + 's to decrease automation detection'
+			});
+			return setTimeout(() => exports.submitRaffle(request, task, profile, raffleToken, landedAt), task['nakedcph']['submit_delay']);
+		}
+		else
+		{
+			var proxy2 = getRandomProxy();
+			task['proxy'] = proxy2;
+			mainBot.mainBotWin.send('taskUpdate', {
+				id: task.taskID,
+				message: 'Error. Retrying in ' + global.settings.retryDelay / 1000 + 's'
+			});
+			return setTimeout(() => exports.getRaffleToken(request, task, profile), global.settings.retryDelay); 
+		}
+	});
+}
+
+
+exports.submitRaffle = function (request, task, profile, raffleToken, landedAt) {
+	var form = JSON.parse(`{"": "${profile['fullName'].split(" ")[0]}","${task['nakedcph']['lastName']}": "${profile['fullName'].split(" ")[0]}","${task['nakedcph']['email']}": "${task['taskEmail']}","${task['nakedcph']['country']}": "${countryFormatter(profile['country'])}","form[token]": "${raffleToken}","form[landed_at]": "${landedAt}","form[language]": "en"}`);
+	request({
+		url: task['nakedcph']['submitRaffle'],
+		method: 'POST',
+		headers: {
+			'Accept': 'application/json',
+			'Referer': task['variant'],
+			'Origin': 'https://nakedcph.typeform.com',
+			'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36',
+			'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+		},
+		formData: form
+	}, function callback(error, response, body) {
+		if (!error && response.statusCode == 200) {
+			try {
+			parsed = JSON.parse(body);
+			} catch (e) {}
+			var message = parsed['message'];
+			if(message == 'success')
+			{
+				mainBot.mainBotWin.send('taskUpdate', {
+					id: task.taskID,
+					message: 'Entry submitted!'
+				});
+				return;
+			}
+		}
+		else
+		{
+			console.log(body);
+			try {
+				parsed = JSON.parse(body);
+			} catch (e) {}
+			var error = parsed['error_code'];
+			if(!error)
+			{	
+				mainBot.mainBotWin.send('taskUpdate', {
+					id: task.taskID,
+					message: 'Unknown error. Please contact the developers'
+				});
+				return setTimeout(() => exports.submitRaffle(request, task, profile, raffleToken, landedAt), task['nakedcph']['submit_delay']);
+			}
+			if(error == 'invalid-token')
+			{
+				mainBot.mainBotWin.send('taskUpdate', {
+					id: task.taskID,
+					message: 'Raffle not found'
+				});
+				console.log('Raffle not found');
+				return;
+			}
 		}
 	});
 }
 
 
 
+
+
+
+// Needed for country localizations being different per site
+function countryFormatter(profileCountry)
+{
+	switch(profileCountry)
+	{
+		case 'United Kingdom':
+			return 'United Kingdom';
+			break;
+		case 'United States':
+			return 'United States of America';
+			break;
+		case 'Canada':
+			return 'Canada';
+			break;
+		case 'North Ireland':
+			return 'Ireland';
+			break;
+		case 'Germany':
+			return 'Germany';
+			break;
+		case 'Switzerland':
+			return 'Switzerland';
+			break;
+		case 'France':
+			return 'France';
+			break;
+		case 'Spain':
+			return 'Spain';
+			break;
+		case 'Italy':
+			return 'Italy';
+			break;
+	}
+}

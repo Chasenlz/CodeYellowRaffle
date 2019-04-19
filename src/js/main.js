@@ -82,12 +82,12 @@ $('#openHarvester').click(function () {
 
 // Update tasks
 ipcRenderer.on('taskUpdate', function (event, data) {
-	$(`#taskResult${data.id}`).html(data.message)
+	$(`#taskResult${data.id}`).html(data.message.toUpperCase())
 });
 
 $("body").on("click", ".startTask", function () {
 	var task = tasks[$(this).attr('id') - 1];
-	ipcRenderer.send('startTask', task);
+	ipcRenderer.send('startTask', task, profiles[task['taskProfile']]);
 });
 
 
@@ -238,16 +238,46 @@ $("#createTaskButton").click(function () {
 							{
 								proxyUsed = '<td><i class="fas fa-bolt isprox"></i></td>'
 							}
-								
-							tasks.push({
-								taskID: taskID,
-								proxy: proxy,
-								taskSiteSelect: taskSiteSelect,
-								taskSizeSelect: taskSizeSelect,
-								taskProfile: taskProfile,
-								taskEmail: taskEmail,
-								variant: selectedQuickTaskRelease['sites_supported'][taskSiteSelect]
-							});
+							if(taskSiteSelect == 'nakedcph')
+							{	
+								tasks.push({
+									taskID: taskID,
+									proxy: proxy,
+									taskSiteSelect: taskSiteSelect,
+									taskSizeSelect: taskSizeSelect,
+									taskProfile: taskProfile,
+									taskEmail: taskEmail,
+									variant: selectedQuickTaskRelease['sites_supported'][taskSiteSelect],
+									nakedcph: selectedQuickTaskRelease['nakedcph']
+								});
+							}
+							else if(taskSiteSelect == 'footshop')
+							{
+								tasks.push({
+									taskID: taskID,
+									proxy: proxy,
+									taskSiteSelect: taskSiteSelect,
+									taskSizeSelect: taskSizeSelect,
+									taskProfile: taskProfile,
+									taskEmail: taskEmail,
+									variant: selectedQuickTaskRelease['sites_supported'][taskSiteSelect],
+									footshop: selectedQuickTaskRelease['footshop']
+								});
+							}
+							else
+							{
+								tasks.push({
+									taskID: taskID,
+									proxy: proxy,
+									taskSiteSelect: taskSiteSelect,
+									taskSizeSelect: taskSizeSelect,
+									taskProfile: taskProfile,
+									taskEmail: taskEmail,
+									variant: selectedQuickTaskRelease['sites_supported'][taskSiteSelect],
+									fields: ''
+								});
+							}
+							
 							$("tbody#tasks").append(
 								`<tr>
 								<td>${taskID}</td>
@@ -454,7 +484,7 @@ function loadReleases() {
 							<div class="settit">${release['name']}</div>
 							<div class="setinfo">${release['date']}</div>
 						</div>
-						<img class="retimg" src="${release['image']}">
+						<img class="retimg" src="${release['image']}" style="margin-top:-17px;">
 						<div class="setterbum">
 							<div class="price-it-up selectQuick" id="${i}">SELECT</div>
 						</div>
@@ -476,16 +506,16 @@ $(".releases-container").on('click', '.selectQuick', function () {
 		$('.taskSiteOption[value="' + sitesAvailable[i] + '"').prop('disabled', false);
 	}
 
-	var sizesAvailable = release['sizes_supported'];
-	for (var i = 0; i < sizesAvailable.length; i++) {
-		$('.taskSizeOption[value="' + sizesAvailable[i] + '"').prop('disabled', false);
-	}
-
 	$(this).html('SELECTED')
 	selectedQuickTaskRelease = release;
 });
 
-
+$('#taskSiteSelect').on('change', function() {
+	var sizesAvailable = selectedQuickTaskRelease['sizes_supported_' + this.value];
+	for (var i = 0; i < sizesAvailable.length; i++) {
+		$('.taskSizeOption[value="' + sizesAvailable[i] + '"').prop('disabled', false);
+	}
+});
 
 
 

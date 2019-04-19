@@ -49,7 +49,7 @@ exports.performTask = function (task, profile) {
 		if (response.statusCode == 200) {
 			mainBot.mainBotWin.send('taskUpdate', {
 				id: task.taskID,
-				message: 'GOT RAFFLE PAGE'
+				message: 'Got raffle page'
 			});
 			console.log('Got raffle page');
 			$ = cheerio.load(body);
@@ -58,7 +58,7 @@ exports.performTask = function (task, profile) {
 			if (raffleToken == undefined || pageID == undefined) {
 				mainBot.mainBotWin.send('taskUpdate', {
 					id: task.taskID,
-					message: 'RAFFLE NOT FOUND'
+					message: 'Raffle not found'
 				});
 				console.log('Raffle not found');
 				return;
@@ -69,7 +69,7 @@ exports.performTask = function (task, profile) {
 			mainBot.requestCaptcha('vooberlin', task, false);
 			const capHandler = () => {
 				if (mainBot.taskCaptchas[task['taskID']] == undefined || mainBot.taskCaptchas[task['taskID']] == '') {
-					setTimeout(() => capHandler(), 50);
+					setTimeout(() => capHandler(), 100);
 				} else {
 					exports.submitRaffle(request, task, profile, raffleToken, pageID);
 					return;
@@ -118,7 +118,7 @@ exports.submitRaffle = function (request, task, profile, raffleToken, pageID) {
 				mainBot.taskCaptchas[task['taskID']] = '';
 				mainBot.mainBotWin.send('taskUpdate', {
 					id: task.taskID,
-					message: 'CAPTCHA ERROR! RETRYING'
+					message: 'Captcha error! Retrying'
 				});
 				return setTimeout(() => exports.performTask(task, profile), global.settings.retryDelay); // REPLACE 3000 WITH RETRY DELAY
 			}
@@ -126,7 +126,7 @@ exports.submitRaffle = function (request, task, profile, raffleToken, pageID) {
 			{
 				mainBot.mainBotWin.send('taskUpdate', {
 					id: task.taskID,
-					message: 'ALREADY ENTERED!'
+					message: 'Already entered!'
 				});
 				return;
 			}
@@ -136,7 +136,7 @@ exports.submitRaffle = function (request, task, profile, raffleToken, pageID) {
 			mainBot.taskCaptchas[task['taskID']]
 			mainBot.mainBotWin.send('taskUpdate', {
 				id: task.taskID,
-				message: 'ENTRY SUBMITTED!'
+				message: 'Entry submitted!'
 			});
 			return;
 		}

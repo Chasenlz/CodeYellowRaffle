@@ -28,6 +28,7 @@ const proxy = require('./proxy.js');
 // WEBSITES SUPPORTED
 const nakedcph = require('./websites/nakedcph.js');
 const vooberlin = require('./websites/vooberlin.js');
+const footshop = require('./websites/footshop.js');
 
 var signUpURL = 'https://codeyellow.io/account.php?type=signup';
 
@@ -426,9 +427,10 @@ function openBot(onReady) {
 			console.log('VooBerlin task started');
 			vooberlin.performTask(task, profile)
 		}
-		//supreme.init(task, profiles[task.taskProfile], false)
-		//	module.exports.taskStatuses[task.taskID] = 'active';
-		// 
+		else if (task['taskSiteSelect'] == 'footshop') {
+			console.log('Footshop task started');
+			footshop.performTask(task, profile)
+		}
 	});
 
 	// Delete Task
