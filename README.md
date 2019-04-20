@@ -1,4 +1,4 @@
-# CodeYellow Raffle
+# CodeYellowRaffle
 Open source raffle bot made to help increase the chance of winning limited sneaker raffles by automating entries. 
 
 # Folder Structure

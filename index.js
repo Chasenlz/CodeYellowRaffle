@@ -21,7 +21,7 @@ const open = require("open");
 const electron = require('electron');
 const fs = require('fs');
 const request = require('request');
-const appDataDir = require('os').homedir() + "\\AppData\\Local\\CodeYellow_Raffle";
+const appDataDir = require('os').homedir() + "\\AppData\\Local\\CodeYellowRaffle";
 const proxy = require('./proxy.js');
 
 // WEBSITES SUPPORTED
