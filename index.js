@@ -18,7 +18,6 @@
 var currentVersion = '0.0.1';
 // LATER REMOVE EMAIL FROM if (fileExists('profiles.json')) {
 const open = require("open");
-//const crypto = require('crypto');
 const electron = require('electron');
 const fs = require('fs');
 const request = require('request');
@@ -238,7 +237,7 @@ function initCapWin() {
 		module.exports.capWin = new BrowserWindow({
 			height: 450,
 			width: 690,
-			resizable: true,
+			resizable: false,
 			frame: false,
 			show: false
 		});
@@ -355,7 +354,7 @@ function openBot(onReady) {
 			module.exports.mainBotWin = new BrowserWindow({
 				width: 1100,
 				height: 685,
-				resizable: true,
+				resizable: false,
 				frame: false
 			});
 			//win.setMenu(null);
@@ -368,7 +367,7 @@ function openBot(onReady) {
 		module.exports.mainBotWin = new BrowserWindow({
 			width: 1100,
 			height: 685,
-			resizable: true,
+			resizable: false,
 			frame: false
 		});
 		//win.setMenu(null);
