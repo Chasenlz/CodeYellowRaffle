@@ -14,7 +14,7 @@
    </head>
    <body>
       <div class="drag-top"></div>
-      <div class="window-options">
+      <div class="window-options noselect">
          <div id="close" class="window-icon"><span class="lnr lnr-cross"></span>
          </div>
          <div id="minimize" class="window-icon">－</div>
@@ -22,7 +22,7 @@
 	  
 	          <div class="under-line"></div>
 	  
-      <div class="nav-me">
+      <div class="nav-me noselect">
          <div class="left-me">
             <div id="defaultOpen" class="nav-item">Tasks</div>
             <div id="profilesTab" class="nav-item">Profiles</div>
@@ -196,10 +196,15 @@
                <div class="setinfo">Your information to ship won raffles.</div>
                
                </div> -->
-            <div class="create-row">
-               <div class="inputicon"><i class="fa fa-user" aria-hidden="true"></i>
+            <div style="width: 49%;float:left;" class="create-row">
+               <div class="inputicon"><i class="fas fa-user"></i>
                </div>
-               <input class="createinput" id="fullName" placeholder="Name">
+               <input class="createinput" id="fName" placeholder="First name">
+            </div>
+            <div style="width: 49%;float:right;" class="create-row">
+               <div class="inputicon"><i class="far fa-user"></i>
+               </div>
+               <input class="createinput" id="lName" placeholder="Last name">
             </div>
             <div style="width: 100%;float:left;" class="create-row">
                <div class="inputicon"><i class="fa fa-phone" aria-hidden="true"></i>
@@ -352,7 +357,8 @@
                   <th>RESULT</th>
                   <th>ACTION</th>
                </tr>
-               <tr>
+			   
+     <!--          <tr>
                   <td>localhost</td>
                   <td>host</td>
                   <td>124ms</td>
@@ -362,7 +368,8 @@
                      <button class="action-butt"><i class="fa fa-trash" aria-hidden="true"></i>
                      </button>
                   </td>
-               </tr>
+               </tr> -->
+			   
             </tbody>
          </table>
       </div>
@@ -447,7 +454,7 @@
             </div>
             
             </div> -->
-         <div style="width: 100%;height :500px" class="rights">
+         <div style="width: 100%;height :380px" class="rights">
             <div style="padding: 20px;margin-bottom: 10px;" class="setterhat">
                <div class="settit">Add proxies</div>
                <div class="setinfo">Input proxies you would like to use for raffles.</div>
@@ -459,7 +466,7 @@
                   </div> -->
                <textarea class="barea" id="proxiesToAdd" placeholder="ip:port:user:pass"></textarea>
                <div class="setterbummer">
-                  <div style="margin-top: 5px;width: 30%;" id="addProxies" class="price-it-up">Add Proxies</div>
+                  <div style="margin-top: 10px;width: 30%;" id="addProxies" class="price-it-up">Add Proxies</div>
                </div>
             </div>
          </div>
