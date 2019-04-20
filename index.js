@@ -208,7 +208,7 @@ function openActivation(onReady) {
 				global.settings.email = emailAddress;
 				saveSettings();
 				openBot();
-				win.close();
+				win.hide();
 			} else {
 				console.log(body);
 				win.send('notify', {
