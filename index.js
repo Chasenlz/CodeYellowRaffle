@@ -50,14 +50,6 @@ global.captchaQueue = [];
 
 
 
-function captchaComplete(token) {
-	// send ipc from HTML to bot saying complete then perform this
-	global.captchaQueue.shift();
-	//tasks[taskid]['g-recaptcha-token'] = ''
-	//module.exports.taskStatuses[task.taskID] = 'active'
-	//module.exports.taskCaptchaTokens[task.taskID] = token
-}
-
 // Captcha stuff
 
 module.exports.capWin;
@@ -71,9 +63,43 @@ module.exports.capStatus = 'hidden';
 
 module.exports.captchaBank = [];
 
-initCapWin();
+// Port stuff for captcha harvester
+var globalPort = 3336;
 
+// This callback checks if the pre defined port is taken
+var isPortTaken = function (port, fn) {
+	var net = require('net')
+	var tester = net.createServer()
+		.once('error', function (err) {
+			if (err.code != 'EADDRINUSE') return fn(err)
+			fn(null, true)
+		})
+		.once('listening', function () {
+			tester.once('close', function () {
+					fn(null, false)
+				})
+				.close()
+		})
+		.listen(port)
+}
 
+// This function sets the port and initalises the captcha window
+function initCapPortThenWin()
+{
+	isPortTaken(globalPort, function (err, taken) {
+		if(!taken && !err)
+		{
+			initCapWin();
+		}
+		else
+		{
+			globalPort = globalPort += 1;
+			initCapPortThenWin()
+		}
+	})
+}
+
+initCapPortThenWin();
 
 module.exports.taskCaptchas = [];
 
@@ -91,35 +117,29 @@ function loadBot() {
 	if (global.settings.token == "" || global.settings.token == null) {
 		openActivation(false);
 	} else {
-		require('getmac').getMac(function (err, macAddress) {
-			if (err) {
-				return;
-			}
-			request({
-				url: 'http://45.76.138.251/api/verifyToken.php',
-				method: 'post',
-				formData: {
-					'email': global.settings.email,
-					'token': global.settings.token,
-					'mac_address': macAddress
-				},
-			}, function (err, response, body) {
-				try {
-					var parsed = JSON.parse(body);
-					// IF CREDENTIALS ARE VALID
-					if (parsed.valid == true) {
-						console.log("Saved credentials are valid. Opening Bot.")
-						openBot(false);
-					}
-					// IF CREDENTIALS ARE NOT VALID
-					else {
-						console.log("Saved credentials are not valid. Opening activation.")
-						openActivation(false);
-					}
-				} catch (error) {
-					console.log('Error verifying token');
+		request({
+			url: 'httpS://codeyellow.io/api/verifyToken.php',
+			method: 'post',
+			formData: {
+				'email': global.settings.email,
+				'token': global.settings.token
+			},
+		}, function (err, response, body) {
+			try {
+				var parsed = JSON.parse(body);
+				// IF CREDENTIALS ARE VALID
+				if (parsed.valid == true) {
+					console.log("Saved credentials are valid. Opening Bot.")
+					openBot(false);
 				}
-			});
+				// IF CREDENTIALS ARE NOT VALID
+				else {
+					console.log("Saved credentials are not valid. Opening activation.")
+					openActivation(false);
+				}
+			} catch (error) {
+				console.log('Error verifying token');
+			}
 		});
 	}
 }
@@ -168,39 +188,29 @@ function openActivation(onReady) {
 	ipcMain.on('activateKey', function (e, emailAddress, password) {
 		console.log(emailAddress);
 		console.log(password);
-		require('getmac').getMac(function (err, macAddress) {
-			if (err) {
+		request({
+			url: 'https://codeyellow.io/api/login.php',
+			method: 'post',
+			formData: {
+				'email': emailAddress,
+				'password': password
+			},
+		}, function (err, response, body) {
+			var parsed = JSON.parse(body);
+			if (parsed.valid == true) {
+				console.log("Token to save: " + parsed.token);
+				global.settings.token = parsed.token;
+				global.settings.email = emailAddress;
+				saveSettings();
+				openBot();
+				win.close();
+			} else {
+				console.log(body);
 				win.send('notify', {
-					message: 'Error activating key. Please try again',
+					message: parsed.message,
 					length: 2500
 				});
-				return;
 			}
-			request({
-				url: 'http://45.76.138.251/api/login.php',
-				method: 'post',
-				formData: {
-					'email': emailAddress,
-					'password': password,
-					'mac_address': macAddress
-				},
-			}, function (err, response, body) {
-				var parsed = JSON.parse(body);
-				if (parsed.valid == true) {
-					console.log("Token to save: " + parsed.token);
-					global.settings.token = parsed.token;
-					global.settings.email = emailAddress;
-					saveSettings();
-					openBot();
-					win.close();
-				} else {
-					console.log(body);
-					win.send('notify', {
-						message: parsed.message,
-						length: 2500
-					});
-				}
-			});
 		});
 	});
 
@@ -209,10 +219,6 @@ function openActivation(onReady) {
 		open(signUpURL);
 	});
 
-	// Utilities at the bottom
-	ipcMain.on('minimizeM', function (e) {
-		win.minimize();
-	});
 	ipcMain.on('closeM', function (e) {
 		app.quit();
 	});
@@ -225,8 +231,7 @@ function initCapWin() {
 	var {
 		app,
 		BrowserWindow,
-		ipcMain,
-		session
+		ipcMain
 	} = require('electron');
 	process.env.NODE_ENV = 'production';
 	app.on('ready', function () {
@@ -237,34 +242,33 @@ function initCapWin() {
 			frame: false,
 			show: false
 		});
+
+		// Close captcha win
 		module.exports.capWin.on('close', function (event) {
 			event.preventDefault();
+			module.exports.capWin.hide();
+		});
+		// Minimize captcha win
+		ipcMain.on("minimize", (event) => {
 			module.exports.capWin.hide();
 		});
 		ipcMain.on("updateCaptchaQueue", (event, token, task) => {
 			/// TOMORROW CREATE VARIABLES FOR THINGS LIKE currCapQueue FOR global.captchaQueue[0]
 			global.captchaQueue.shift();
 			console.log('New captcha token received. Task ID:  ' + task['taskID'] + '. Captcha token: ' + token)
-			
+
 			module.exports.taskCaptchas[task['taskID']] = token;
 			/// NEED TO STOP SO IT DOESNT SHOW THE LAST CAPTCHA AGAIN AND AGAIN
-			if(global.captchaQueue.length >= 1)
-			{
+			if (global.captchaQueue.length >= 1) {
 				console.log('Website: ' + global.captchaQueue[0]['website']);
 				console.log(global.captchaQueue[0]['task']);
 				module.exports.requestCaptcha(global.captchaQueue[0]['website'], global.captchaQueue[0]['task'], true, false)
-			}
-			else
-			{
+			} else {
 				module.exports.capWin.hide();
 			}
 		});
-		ipcMain.on('add captcha token', function (event, data) {
-			//console.log(token);
-			module.exports.captchaBank.push(data);
-			console.log(module.exports.captchaBank);
-			//console.log(module.exports.captchaBank);
-		});
+
+		// Can add later
 		ipcMain.on('login', function (event) {
 			var win = new BrowserWindow({
 				backgroundColor: '#283442',
@@ -286,7 +290,7 @@ function initCapWin() {
 
 		});
 
-		expressApp.set('port', parseInt(3334));
+		expressApp.set('port', parseInt(globalPort));
 		expressApp.use(bodyParser.json());
 		expressApp.use(bodyParser.urlencoded({
 			extended: true
@@ -306,7 +310,7 @@ function initCapWin() {
 
 
 		module.exports.capWin.webContents.session.setProxy({
-			proxyRules: 'http://127.0.0.1:3334'
+			proxyRules: 'http://127.0.0.1:' + globalPort
 		}, function (r) {
 			module.exports.capWin.loadURL('http://www.raffle.vooberlin.com/'); // Domain
 		});
@@ -314,29 +318,24 @@ function initCapWin() {
 
 }
 
-module.exports.requestCaptcha = function(site, task, refresh, addToQueue) {
+module.exports.requestCaptcha = function (site, task, refresh, addToQueue) {
 	console.log('New captcha requested for ' + global.websites[site]['url'] + ' Task ID:' + task.taskID);
 	module.exports.capWin.show();
-	if(addToQueue != false)
-	{
+	if (addToQueue != false) {
 		global.captchaQueue.push({
 			website: site,
 			task: task
 		});
 	}
-	if(global.captchaQueue.length == 1 || refresh == true)
-	{
+	if (global.captchaQueue.length == 1 || refresh == true) {
 		console.log('Refreshing sitekey is true');
 		module.exports.capWin.webContents.session.setProxy({
-			proxyRules: 'http://127.0.0.1:3334'
+			proxyRules: 'http://127.0.0.1:' + globalPort
 		}, function (r) {
 			module.exports.capWin.loadURL('http://www.' + global.websites[site]['url']); // Domain
-			module.exports.capWin.send('captcha requested', {
-				website: site
-			});
 		});
 	}
-	
+
 }
 
 
@@ -422,12 +421,10 @@ function openBot(onReady) {
 			console.log('Nakedcph task started');
 			nakedcph.performTask(task, profile)
 			//module.exports.requestCaptcha('nakedcph', task, false);
-		}
-		else if (task['taskSiteSelect'] == 'vooberlin') {
+		} else if (task['taskSiteSelect'] == 'vooberlin') {
 			console.log('VooBerlin task started');
 			vooberlin.performTask(task, profile)
-		}
-		else if (task['taskSiteSelect'] == 'footshop') {
+		} else if (task['taskSiteSelect'] == 'footshop') {
 			console.log('Footshop task started');
 			footshop.performTask(task, profile)
 		}
@@ -440,30 +437,8 @@ function openBot(onReady) {
 
 
 
-	ipcMain.on('addTask', function (e, quantity) {
-		require('getmac').getMac(function (err, macAddress) {
-			if (err) {
-				return;
-			}
-			request({
-				url: 'https://codeyellow.io/api/addedTask.php',
-				method: 'post',
-				headers: {
-					'x-auth-key': exports.getAuthHeader(global.settings.key, macAddress)
-				},
-				formData: {
-					'key': global.settings.key,
-					'mac_address': macAddress,
-					'amount': quantity
-				},
-			}, function (err, response, body) {
-				return;
-			});
-		});
-	});
-
-
 	ipcMain.on('saveProxies', function (e, proxies) {
+		global.proxies = proxies.split('\n');
 		fs.writeFile(appDataDir + "\\proxies.txt", proxies, function (err) {
 			if (err) {
 				return;
@@ -535,47 +510,104 @@ function saveProfiles() {
 
 
 // Sending webhook function
-exports.sendWebhook = function (website, email) {
+exports.sendWebhook = function (website, email, tdsecure) {
 	var webhook = global.settings.discordWebhook;
-	if (/^(ftp|http|https):\/\/[^ "]+$/.test(webhook) == true) {
-		if(website == 'test')
-		{
-				try {
-					request({
-							url: webhook,
-							json: {
-								"embeds": [{
-									"description": "This webhook was sent to make sure the webhook is valid!",
-									"color": 978261,
-									"author": {
-										"name": 'Webhook test successful!!'
-									},
-									"footer": {
-										"icon_url": "https://i.imgur.com/l7JZQqs.png",
-										"text": "CodeYellow"
-									}
-								}]
-							},
-							method: 'POST'
-						},
-						function (error, response, body) {
-							if (error || response.statusCode != 204) {
-								module.exports.mainBotWin.send('notify', {
-									length: 2500,
-									message: 'Webhook test failed! This webhook may not be valid'
-								});
-							}
-							else
-							{
-								module.exports.mainBotWin.send('notify', {
-									length: 2500,
-									message: 'Webhook test successful!'
-								});
-							} 
-						});
-				} catch (e) {
-					return;
+	if(website != 'test')
+	{
+		request({
+			url: 'https://codeyellow.io/api/entry.php',
+			method: 'post',
+			formData: {
+				'email': email,
+				'website': website,
+				'token': global.settings.token,
+				'additional': tdsecure
+			},
+		}, function (err, response, body) {
+				var parsed = JSON.parse(body);
+				if (parsed.valid == true) {
+					console.log("Entry saved")
 				}
+		});
+	}
+	if (/^(ftp|http|https):\/\/[^ "]+$/.test(webhook) == true) {
+		if (website == 'test') {
+			try {
+				request({
+						url: webhook,
+						json: {
+							"embeds": [{
+								"description": "This webhook was sent to make sure the webhook is valid!",
+								"color": 978261,
+								"author": {
+									"name": 'Webhook test successful!'
+								},
+								"footer": {
+									"icon_url": "https://i.imgur.com/l7JZQqs.png",
+									"text": "CodeYellow"
+								}
+							}]
+						},
+						method: 'POST'
+					},
+					function (error, response, body) {
+						if (error || response.statusCode != 204) {
+							module.exports.mainBotWin.send('notify', {
+								length: 2500,
+								message: 'Webhook test failed! This webhook may not be valid'
+							});
+						} else {
+							module.exports.mainBotWin.send('notify', {
+								length: 2500,
+								message: 'Webhook test successful!'
+							});
+						}
+					});
+			} catch (e) {
+				return;
+			}
+		} else if (tdsecure) {
+			try {
+				request({
+						url: webhook,
+						json: {
+							"embeds": [{
+								"color": 978261,
+								"author": {
+									"name": 'Entry submitted!'
+								},
+								"fields": [{
+										"name": "Website",
+										"value": website
+									},
+									{
+										"name": "Email",
+										"value": email
+									},
+									{
+										"name": "3D Secure link:",
+										"value": tdsecure
+									}
+								],
+								"footer": {
+									"icon_url": "https://i.imgur.com/l7JZQqs.png",
+									"text": "CodeYellow"
+								}
+							}]
+						},
+						method: 'POST'
+					},
+					function (error, response, body) {
+						if (error || response.statusCode != 204) {
+							return;
+						} else {
+							// Success
+							return;
+						}
+					});
+			} catch (e) {
+				return;
+			}
 		}
 		else
 		{
@@ -586,7 +618,7 @@ exports.sendWebhook = function (website, email) {
 							"embeds": [{
 								"color": 978261,
 								"author": {
-									"name": 'Raffle entered!'
+									"name": 'Entry submitted!'
 								},
 								"fields": [{
 										"name": "Website",
@@ -608,20 +640,16 @@ exports.sendWebhook = function (website, email) {
 					function (error, response, body) {
 						if (error || response.statusCode != 204) {
 							return;
-						}
-						else
-						{
+						} else {
 							// Success
 							return;
-						} 
+						}
 					});
 			} catch (e) {
 				return;
 			}
 		}
-	}
-	else
-	{
+	} else {
 		return;
 	}
 }
@@ -648,7 +676,7 @@ function initialfolderExistsOrMkDir() {
 function createOrGetFiles() {
 	request.get({
 			json: true,
-			url: 'http://45.76.138.251/api/version.php'
+			url: 'https://codeyellow.io/api/version.php'
 		},
 		function (error, response, body) {
 			if (error) {
@@ -681,14 +709,14 @@ function createOrGetFiles() {
 		console.log("profiles.json exists");
 		var fileContents = fs.readFileSync(appDataDir + "\\profiles.json");
 		if (fileContents == '' || fileContents == null || fileContents == undefined) {
-			var parsed = JSON.parse('{"Example Profile":{"email":"example@gmail.com","fullName":"John Doe","address":"21 Cresent Road","aptSuite":"","zipCode":"UB3 1RJ","city":"London","country":"State/Province","country":"United Kingdom","stateProvince":"none","phoneNumber": "07700900087","email":"johndoe@gmail.com","cardType":"visa","cardNumber":"4242424242424242","expiryMonth":"06","expiryYear":"2023","CVV":"361"}}', null, 4);
+			var parsed = JSON.parse('{"Example Profile":{"email":"example@gmail.com","firstName":"John", "lastName": "Doe", "address":"21 Cresent Road","aptSuite":"","zipCode":"UB3 1RJ","city":"London","country":"State/Province","country":"United Kingdom","stateProvince":"none","phoneNumber": "07700900087","email":"johndoe@gmail.com","cardType":"visa","cardNumber":"4242424242424242","expiryMonth":"06","expiryYear":"2023","CVV":"361"}}', null, 4);
 			makeFile('profiles.json', JSON.stringify(parsed, null, 4))
 			global.profiles = parsed;
 		} else {
 			global.profiles = JSON.parse(fileContents);
 		}
 	} else {
-		var parsed = JSON.parse('{"Example Profile":{"email":"example@gmail.com","fullName":"John Doe","address":"21 Cresent Road","aptSuite":"","zipCode":"UB3 1RJ","city":"London","country":"State/Province","country":"United Kingdom","stateProvince":"none","phoneNumber": "07700900087","email":"johndoe@gmail.com","cardType":"visa","cardNumber":"4242424242424242","expiryMonth":"06","expiryYear":"2023","CVV":"361"}}', null, 4);
+		var parsed = JSON.parse('{"Example Profile":{"email":"example@gmail.com","firstName":"John", "lastName": "Doe", "address":"21 Cresent Road","aptSuite":"","zipCode":"UB3 1RJ","city":"London","country":"State/Province","country":"United Kingdom","stateProvince":"none","phoneNumber": "07700900087","email":"johndoe@gmail.com","cardType":"visa","cardNumber":"4242424242424242","expiryMonth":"06","expiryYear":"2023","CVV":"361"}}', null, 4);
 		makeFile('profiles.json', JSON.stringify(parsed, null, 4))
 		global.profiles = parsed;
 	}
@@ -709,7 +737,7 @@ function getUpcomingReleases() {
 				'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36'
 			},
 			json: true,
-			url: 'http://45.76.138.251/api/releases.php'
+			url: 'https://codeyellow.io/api/releases.php'
 		},
 		function (error, response, body) {
 			global.releases = body;

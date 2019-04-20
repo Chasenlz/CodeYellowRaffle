@@ -18,8 +18,30 @@
 var mainBot = require('../index.js')
 var cheerio = require('cheerio');
 
+function formatProxy(proxy) {
+	if (proxy == '') {
+		return '';
+	}
+	var sProxy = proxy.split(':');
+	var proxyHost = sProxy[0] + ":" + sProxy[1];
+	if (sProxy.length == 2) {
+		sProxy = "http://" + proxyHost;
+		return (sProxy);
+	} else {
+		var proxyAuth = sProxy[2] + ":" + sProxy[3];
+		sProxy = "http://" + proxyAuth.trimLeft().trimRight().toString() + "@" + proxyHost;
+		return (sProxy);
+	}
+}
+
 function getRandomProxy() {
-	return '';
+	var proxies = global.proxies;
+	if (proxies[0] != '') {
+		var proxy = proxies[Math.floor(Math.random() * proxies.length)];
+		return proxy;
+	} else {
+		return '';
+	}
 }
 
 exports.performTask = function (task, profile) {
@@ -40,34 +62,31 @@ exports.performTask = function (task, profile) {
 			'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36',
 			'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3',
 			'accept-language': 'en-GB,en-US;q=0.9,en;q=0.8'
-		}
+		},
+		proxy: formatProxy(task['proxy']),
 	}, function callback(error, response, body) {
 		if (!error && response.statusCode == 200) {
 			var parsed = JSON.parse(body);
 			var sizes = parsed['sizeSets']['Unisex']['sizes'];
-			for(var i = 0; i < sizes.length; i++)
-			{
-				if(sizes[i]['us'] == task['taskSizeSelect'])
-				{
+			for (var i = 0; i < sizes.length; i++) {
+				if (sizes[i]['us'] == task['taskSizeSelect']) {
 					var sizeID = sizes[i]['id'];
 					console.log('Got Size ID : ' + sizeID);
 					mainBot.mainBotWin.send('taskUpdate', {
 						id: task.taskID,
 						message: 'GOT SIZE ID'
-					});			
+					});
 					exports.getRaffle(request, task, profile, sizeID);
 				}
 			}
-		}
-		else
-		{
+		} else {
 			var proxy2 = getRandomProxy();
 			task['proxy'] = proxy2;
 			mainBot.mainBotWin.send('taskUpdate', {
 				id: task.taskID,
 				message: 'Error. Retrying in ' + global.settings.retryDelay / 1000 + 's'
 			});
-			return setTimeout(() => exports.performTask(task, profile), global.settings.retryDelay); 
+			return setTimeout(() => exports.performTask(task, profile), global.settings.retryDelay);
 		}
 	});
 
@@ -76,11 +95,11 @@ exports.performTask = function (task, profile) {
 
 
 exports.getRaffle = function (request, task, profile, sizeID) {
-	var raffleURL = 'https://releases.footshop.com/register/'+task['variant']+'/Unisex/'+ sizeID;
+	var raffleURL = 'https://releases.footshop.com/register/' + task['variant'] + '/Unisex/' + sizeID;
 	mainBot.mainBotWin.send('taskUpdate', {
 		id: task.taskID,
 		message: 'Obtaining raffle page'
-	});		
+	});
 	request({
 		url: raffleURL,
 		headers: {
@@ -90,14 +109,15 @@ exports.getRaffle = function (request, task, profile, sizeID) {
 			'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.121 Safari/537.36',
 			'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
 			'accept-language': 'en-GB,en-US;q=0.9,en;q=0.8'
-		}
+		},
+		proxy: formatProxy(task['proxy']),
 	}, function callback(error, response, body) {
 		if (!error && response.statusCode == 200) {
 			console.log('Got raffle page');
 			mainBot.mainBotWin.send('taskUpdate', {
 				id: task.taskID,
 				message: 'Got raffle page'
-			});		
+			});
 			request({
 				url: 'https://releases.footshop.com/api/registrations/check-duplicity/' + task['variant'],
 				method: 'POST',
@@ -116,10 +136,10 @@ exports.getRaffle = function (request, task, profile, sizeID) {
 					phone: profile['phoneNumber'],
 					id: null
 				},
-				json: true
+				json: true,
+				proxy: formatProxy(task['proxy']),
 			}, function (error, response, body) {
 				if (!error && response.statusCode == 200) {
-					
 					console.log(body);
 					if (body.email == true) {
 						console.log('Email used before');
@@ -127,8 +147,7 @@ exports.getRaffle = function (request, task, profile, sizeID) {
 							id: task.taskID,
 							message: 'Email previously entered'
 						});
-					}
-					else if (body.phone == true) {
+					} else if (body.phone == true) {
 						console.log('Phone number used before');
 						return mainBot.mainBotWin.send('taskUpdate', {
 							id: task.taskID,
@@ -137,35 +156,35 @@ exports.getRaffle = function (request, task, profile, sizeID) {
 					} else {
 						exports.submitRaffle(request, task, profile, sizeID)
 					}
-				}
-				else
-				{
+				} else {
 					var proxy2 = getRandomProxy();
 					task['proxy'] = proxy2;
 					mainBot.mainBotWin.send('taskUpdate', {
 						id: task.taskID,
 						message: 'Error. Retrying in ' + global.settings.retryDelay / 1000 + 's'
 					});
-					return setTimeout(() => exports.getRaffle(request, task, profile, sizeID), global.settings.retryDelay); 
+					return setTimeout(() => exports.getRaffle(request, task, profile, sizeID), global.settings.retryDelay);
 				}
 			});
-		}
-		else
-		{
+		} else {
 			var proxy2 = getRandomProxy();
 			task['proxy'] = proxy2;
 			mainBot.mainBotWin.send('taskUpdate', {
 				id: task.taskID,
 				message: 'Error. Retrying in ' + global.settings.retryDelay / 1000 + 's'
 			});
-			return setTimeout(() => exports.getRaffle(request, task, profile, sizeID), global.settings.retryDelay); 
+			return setTimeout(() => exports.getRaffle(request, task, profile, sizeID), global.settings.retryDelay);
 		}
 	});
 }
 
 
 exports.submitRaffle = function (request, task, profile, sizeID) {
-
+	console.log('Submitting entry');
+	mainBot.mainBotWin.send('taskUpdate', {
+		id: task.taskID,
+		message: 'Submitting entry'
+	});
 	request({
 		url: 'https://api2.checkout.com/v2/tokens/card',
 		method: 'POST',
@@ -184,55 +203,81 @@ exports.submitRaffle = function (request, task, profile, sizeID) {
 			cvv: profile['CVV'],
 			requestSource: 'JS'
 		},
-		json: true
+		json: true,
+		proxy: formatProxy(task['proxy']),
 	}, function (error, response, body) {
 		if (!error && response.statusCode == 200) {
 			var cardToken = body['id'];
 			console.log(cardToken + ' Card token received');
-                            var options = {
-                                url: 'https://releases.footshop.com/api/registrations/create/' + task['variant'],
-                                method: 'POST',
-                                headers: {
-                                    'origin': 'https://releases.footshop.com',
-                                    'accept-language': 'en-GB,en-US;q=0.9,en;q=0.8',
-                                    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.121 Safari/537.36',
-                                    'content-type': 'application/json;charset=UTF-8',
-                                    'accept': 'application/json, text/plain, */*',
-                                    'cache-control': 'no-cache',
-                                    'authority': 'releases.footshop.com',
-                                    'referer': 'https://releases.footshop.com/register/'+task['variant']+'/Unisex/'+ sizeID
-                                },
-                                body: {
-                                    "id": null,
-                                    "sizerunId": sizeID,
-                                    "account": "New Customer",
-                                    "email": task['taskEmail'],
-                                    "phone": profile['phoneNumber'],
-                                    "gender": "Mr",
-                                    "firstName": profile['fullName'].split(" ")[0],
-                                    "lastName": profile['fullName'].split(" ")[1],
-                                    "birthday": `${getRandomInt(1982, 2000)}-0${getRandomInt(1, 9)}-0${getRandomInt(1, 9)}`, 
-                                    "deliveryAddress": {
-                                        "country": countryFormatter(profile['country']),
-                                        "state": "",
-                                        "county": "",
-                                        "city": profile['city'],
-                                        "street": profile['address'],
-                                        "houseNumber": profile['address'],
-                                        "additional": profile['aptSuite'],
-                                        "postalCode": profile['zipCode']
-                                    },
-                                    "consents": ["privacy-policy-101"],
-                                    "cardToken": cardToken,
-                                    "cardLast4": profile['cardNumber'].substr(profile['cardNumber'].length - 4)
-                                },
-                                json: true
-                            };
-                            request(options, function callback(error, response, body) {
-                                console.log(body);
-                                // open this page to complete payment body['secure3DRedirectUrl']
-                            });
-                        
+			request({
+				url: 'https://releases.footshop.com/api/registrations/create/' + task['variant'],
+				method: 'POST',
+				headers: {
+					'origin': 'https://releases.footshop.com',
+					'accept-language': 'en-GB,en-US;q=0.9,en;q=0.8',
+					'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.121 Safari/537.36',
+					'content-type': 'application/json;charset=UTF-8',
+					'accept': 'application/json, text/plain, */*',
+					'cache-control': 'no-cache',
+					'authority': 'releases.footshop.com',
+					'referer': 'https://releases.footshop.com/register/' + task['variant'] + '/Unisex/' + sizeID
+				},
+				body: {
+					"id": null,
+					"sizerunId": sizeID,
+					"account": "New Customer",
+					"email": task['taskEmail'],
+					"phone": profile['phoneNumber'],
+					"gender": "Mr",
+					"firstName": profile['firstName'],
+					"lastName": profile['lastName'],
+					"birthday": `${getRandomInt(1982, 2000)}-0${getRandomInt(1, 9)}-0${getRandomInt(1, 9)}`,
+					"deliveryAddress": {
+						"country": countryFormatter(profile['country']),
+						"state": "",
+						"county": "",
+						"city": profile['city'],
+						"street": profile['address'],
+						"houseNumber": profile['address'],
+						"additional": profile['aptSuite'],
+						"postalCode": profile['zipCode']
+					},
+					"consents": ["privacy-policy-101"],
+					"cardToken": cardToken,
+					"cardLast4": profile['cardNumber'].substr(profile['cardNumber'].length - 4)
+				},
+				json: true,
+				proxy: formatProxy(task['proxy']),
+			}, function callback(error, response, body) {
+				if (!error && response.statusCode == 200) {
+					console.log(body);
+					if (!body['secure3DRedirectUrl']) {
+						mainBot.mainBotWin.send('taskUpdate', {
+							id: task.taskID,
+							message: 'Unknown Error. Retrying in ' + global.settings.retryDelay / 1000 + 's'
+						});
+						return setTimeout(() => exports.submitRaffle(request, task, profile, sizeID), global.settings.retryDelay);
+					} else {
+						var open = require("open");
+						mainBot.sendWebhook(task['taskSiteSelect'], task['taskEmail'], body['secure3DRedirectUrl']);
+						mainBot.mainBotWin.send('taskUpdate', {
+							id: task.taskID,
+							message: 'Open ' + body['secure3DRedirectUrl']
+						});
+						open(body['secure3DRedirectUrl']);
+						console.log(body);
+					}
+				} else {
+					var proxy2 = getRandomProxy();
+					task['proxy'] = proxy2;
+					mainBot.mainBotWin.send('taskUpdate', {
+						id: task.taskID,
+						message: 'Error. Retrying in ' + global.settings.retryDelay / 1000 + 's'
+					});
+					return setTimeout(() => exports.submitRaffle(request, task, profile, sizeID), global.settings.retryDelay);
+				}
+			});
+
 		}
 	});
 }
@@ -241,10 +286,8 @@ exports.submitRaffle = function (request, task, profile, sizeID) {
 
 
 // Needed for country localizations being different per site
-function countryFormatter(profileCountry)
-{
-	switch(profileCountry)
-	{
+function countryFormatter(profileCountry) {
+	switch (profileCountry) {
 		case 'United Kingdom':
 			return 'GB';
 			break;

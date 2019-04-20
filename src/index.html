@@ -17,7 +17,7 @@
       <div class="window-options noselect">
          <div id="close" class="window-icon"><span class="lnr lnr-cross"></span>
          </div>
-         <div id="minimize" class="window-icon">－</div>
+         <div id="minimize" onclick="remote.getCurrentWindow().minimize();" class="window-icon">－</div>
       </div>
 	  
 	          <div class="under-line"></div>
@@ -128,11 +128,11 @@
          <div class="twonav">
             <div class="two-left">
                <div id="creattask" class="two-item">Create task</div>
-               <div class="two-item">Start all</div>
+               <div class="two-item" id="startAllTasks">Start all</div>
             </div>
             <div class="two-right">
-               <div class="two-item">Stop all</div>
-               <div class="two-item">Delete all</div>
+               <div class="two-item" style="opacity: 0.3;">Stop all</div>
+               <div class="two-item" id="deleteAllTasks">Delete all</div>
             </div>
          </div>
          <table style="width: 100%;margin-bottom: 10px;">
@@ -199,12 +199,12 @@
             <div style="width: 49%;float:left;" class="create-row">
                <div class="inputicon"><i class="fas fa-user"></i>
                </div>
-               <input class="createinput" id="fName" placeholder="First name">
+               <input class="createinput" id="firstName" placeholder="First name">
             </div>
             <div style="width: 49%;float:right;" class="create-row">
                <div class="inputicon"><i class="far fa-user"></i>
                </div>
-               <input class="createinput" id="lName" placeholder="Last name">
+               <input class="createinput" id="lastName" placeholder="Last name">
             </div>
             <div style="width: 100%;float:left;" class="create-row">
                <div class="inputicon"><i class="fa fa-phone" aria-hidden="true"></i>

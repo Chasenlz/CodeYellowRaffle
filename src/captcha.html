@@ -139,9 +139,9 @@
 
       <div class="drag-top"></div>
       <div class="window-options">
-         <div style="padding-top: 5px;" id="close" class="window-icon"><span class="lnr lnr-cross"></span>
+         <div style="padding-top: 5px;" id="close" onclick="minimize()" class="window-icon"><span class="lnr lnr-cross"></span>
          </div>
-         <div id="minimize" class="window-icon">－</div>
+         <div id="minimize" class="window-icon" onclick="minimize()">－</div>
       </div>
 
 	<div class="cap-window">
@@ -181,7 +181,7 @@
 		if (remote.getGlobal('captchaQueue').length >= 1) {
 			currInQueue = remote.getGlobal('captchaQueue')[0];
 		}
-
+		// When the google captcha script loads
 		function onCapLoad() {
 			if (currInQueue != null) {
 				grecaptcha.render('capFrame', {
@@ -194,24 +194,21 @@
 			}
 		}
 
+		// The callback for when a captcha is complete
 		function capComplete() {
 			console.log('Completed Captcha');
 			ipcRenderer.send('updateCaptchaQueue', grecaptcha.getResponse(), currInQueue['task']);
 			if(remote.getGlobal('captchaQueue').length <= 1)
 			{
-				
 				document.getElementById("capFrame").style.display = "none";
 				document.getElementById('capSiteName').innerHTML = 'Awaiting Captcha';
 				document.getElementById('capTaskID').innerHTML = 'Awaiting Captcha';
 			}
 		}
 
+		function minimize() {
+            ipcRenderer.send('minimize');
+        }
 
-		ipcRenderer.on('captcha requested', function (event, data) {
-			console.log('requested for  ' + data);
-			//captchasInQueue += 1;
-			//load();
-			//$('#captchaFrame').html(`<div class="g-recaptcha" data-sitekey="6LeWwRkUAAAAAOBsau7KpuC9AV-6J8mhw4AjC3Xz" data-callback="sub"></div>`);
-		});
 	</script>
 </body>

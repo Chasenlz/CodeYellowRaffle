@@ -22,7 +22,7 @@ exports.testProxy = function(proxy, callback) {
 				'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36'
 			},
 			proxy: proxy,
-			url: 'https://www.supremenewyork.com/',
+			url: 'https://www.google.com/',
 			time: true
 		},
 		function (error, response, body) {

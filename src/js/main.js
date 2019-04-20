@@ -90,7 +90,46 @@ $("body").on("click", ".startTask", function () {
 	ipcRenderer.send('startTask', task, profiles[task['taskProfile']]);
 });
 
+$("#startAllTasks").click(function () {
+	$.each($(".startTask"), function () {
+		var task = tasks[$(this).attr('id') - 1];
+		ipcRenderer.send('startTask', task, profiles[task['taskProfile']]);
+	});
+});
 
+$("body").on("click", ".deleteTask", function () {
+	if($('#taskResult' + $(this).attr('id')).html() == 'IDLE' || $('#taskResult' + $(this).attr('id')).html() == 'ENTRY SUBMITTED!')
+	{
+		var task = tasks[$(this).attr('id') - 1];
+		tasks[$(this).attr('id') - 1] = {};
+		$(this).parent().parent().remove();
+	}
+	else
+	{
+		Materialize.toast("You cannot delete a task in progress", 2000, "rounded");
+	}
+});
+
+$("#deleteAllTasks").click(function () {
+	var inprog = false;
+	$.each($(".deleteTask"), function () {
+		if($('#taskResult' + $(this).attr('id')).html() == 'IDLE' || $('#taskResult' + $(this).attr('id')).html() == 'ENTRY SUBMITTED!')
+		{
+			var task = tasks[$(this).attr('id') - 1];
+			tasks[$(this).attr('id') - 1] = {};
+			$(this).parent().parent().remove();
+		}
+		else
+		{
+			inprog = true;
+		}
+	});
+	if(inprog == true)
+	{
+		Materialize.toast("You cannot delete some tasks in progress", 2000, "rounded");
+	}
+	
+});
 
 
 
@@ -371,7 +410,8 @@ $("#newProfile").click(function () {
 				text: profileName
 			}));
 			profiles[profileName] = {
-				"fullName": "",
+				"firstName": "",
+				"lastName": "",
 				"address": "",
 				"aptSuite": "",
 				"zipCode": "",
@@ -401,7 +441,8 @@ $("#saveProfile").click(function () {
 	var profileName = $('#profileList option:selected').attr('value');
 	if (profileName != 'Example Profile') {
 		profiles[profileName] = {
-			"fullName": $('#fullName').val(),
+			"firstName": $('#firstName').val(),
+			"lastName": $('#lastName').val(),
 			"address": $('#address').val(),
 			"aptSuite": $('#aptSuite').val(),
 			"zipCode": $('#zipCode').val(),
