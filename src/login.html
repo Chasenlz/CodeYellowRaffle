@@ -22,8 +22,8 @@
 
 	<div class="drag-top"></div>
 	<div class="window-options">
-	<div id="close" class="window-icon"><span class="lnr lnr-cross"></span></div>
-	<div id="minimize" class="window-icon">－</div>
+	<div id="closeM" class="window-icon" onclick="remote.getCurrentWindow().close()"><span class="lnr lnr-cross"></span></div>
+	<div id="minimize" class="window-icon" onclick="remote.getCurrentWindow().minimize();">－</div>
 	</div>
 
 		<div class="shift-c">
@@ -86,6 +86,9 @@
 			ipcRenderer.on('notify', function (event, data) {
             	Materialize.toast(data.message, data.length, "rounded");
             });
+			$("#closeM").click(function () {
+				ipcRenderer.send('closeA');
+			});
 			$('#emailAddress').keypress(function (e) {
 			 var key = e.which;
 			 if(key == 13)  // the enter key code

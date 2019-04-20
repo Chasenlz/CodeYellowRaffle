@@ -19,9 +19,10 @@ var currentVersion = '0.0.1';
 // LATER REMOVE EMAIL FROM if (fileExists('profiles.json')) {
 const open = require("open");
 const electron = require('electron');
+const squirrelWin32 = require('./squirrel');
 const fs = require('fs');
 const request = require('request');
-const appDataDir = require('os').homedir() + "\\AppData\\Local\\CodeYellowRaffle";
+const appDataDir = require('os').homedir() + "\\AppData\\Local\\CodeYellow_Raffle";
 const proxy = require('./proxy.js');
 
 // WEBSITES SUPPORTED
@@ -117,7 +118,7 @@ function loadBot() {
 		openActivation(false);
 	} else {
 		request({
-			url: 'httpS://codeyellow.io/api/verifyToken.php',
+			url: 'https://codeyellow.io/api/verifyToken.php',
 			method: 'post',
 			formData: {
 				'email': global.settings.email,
@@ -180,10 +181,15 @@ function openActivation(onReady) {
 		});
 		win.setMenu(null);
 		win.loadURL(`file://${__dirname}/src/login.html`);
+		app.on('window-all-closed', () => {
+			if (process.platform != 'darwin') app.quit();
+		});
 		//win.webContents.openDevTools()
 	}
 	// WHEN A MESSAGE IS RECEIVED FROM THE APPLICATION
-
+	win.on('close', function (event) {
+		if (process.platform != 'darwin') app.quit();
+	});
 	ipcMain.on('activateKey', function (e, emailAddress, password) {
 		console.log(emailAddress);
 		console.log(password);
@@ -216,10 +222,6 @@ function openActivation(onReady) {
 	// Opens sign up page
 	ipcMain.on('signUp', function (e) {
 		open(signUpURL);
-	});
-
-	ipcMain.on('closeM', function (e) {
-		app.quit();
 	});
 }
 
@@ -377,7 +379,7 @@ function openBot(onReady) {
 		});
 	}
 	// FOR DEBUGGING 
-	module.exports.mainBotWin.webContents.openDevTools()
+	//module.exports.mainBotWin.webContents.openDevTools()
 	// WHEN A MESSAGE IS RECEIVED FROM THE APPLICATION
 
 	module.exports.mainBotWin.on('close', function (event) {
