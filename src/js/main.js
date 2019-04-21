@@ -303,6 +303,19 @@ $("#createTaskButton").click(function () {
 									footshop: selectedQuickTaskRelease['footshop']
 								});
 							}
+							else if(taskSiteSelect == 'ymeuniverse')
+							{
+								tasks.push({
+									taskID: taskID,
+									proxy: proxy,
+									taskSiteSelect: taskSiteSelect,
+									taskSizeSelect: taskSizeSelect,
+									taskProfile: taskProfile,
+									taskEmail: taskEmail,
+									variant: selectedQuickTaskRelease['sites_supported'][taskSiteSelect],
+									ymeuniverse: selectedQuickTaskRelease['ymeuniverse']
+								});
+							}
 							else
 							{
 								tasks.push({
@@ -552,6 +565,8 @@ $(".releases-container").on('click', '.selectQuick', function () {
 });
 
 $('#taskSiteSelect').on('change', function() {
+	$('#taskSizeSelect').val('default')
+	$('.taskSizeOption').prop('disabled', true);
 	var sizesAvailable = selectedQuickTaskRelease['sizes_supported_' + this.value];
 	for (var i = 0; i < sizesAvailable.length; i++) {
 		$('.taskSizeOption[value="' + sizesAvailable[i] + '"').prop('disabled', false);

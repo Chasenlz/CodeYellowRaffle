@@ -26,9 +26,10 @@ const appDataDir = require('os').homedir() + "\\AppData\\Local\\CodeYellow_Raffl
 const proxy = require('./proxy.js');
 
 // WEBSITES SUPPORTED
+const footshop = require('./websites/footshop.js');
 const nakedcph = require('./websites/nakedcph.js');
 const vooberlin = require('./websites/vooberlin.js');
-const footshop = require('./websites/footshop.js');
+const ymeuniverse = require('./websites/ymeuniverse.js');
 
 var signUpURL = 'https://codeyellow.io/account.php?type=signup';
 
@@ -428,7 +429,10 @@ function openBot(onReady) {
 		} else if (task['taskSiteSelect'] == 'footshop') {
 			console.log('Footshop task started');
 			footshop.performTask(task, profile)
-		}
+		} else if (task['taskSiteSelect'] == 'ymeuniverse') {
+			console.log('YMEuniverse task started');
+			ymeuniverse.performTask(task, profile)
+		} 
 	});
 
 	// Delete Task
