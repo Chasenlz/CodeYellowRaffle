@@ -6,11 +6,15 @@ Open source raffle bot made to help increase the chance of winning limited sneak
 Contains the frontend
 ### /websites
 Contains all the websites supported for entries
+### /builds/installer
+Contains the installer exe's for each update
 
 
 # File Structure
 ### /index.js
 Contains the core software code
+### /src/js/main.js
+Contains most of the JavaScript linking the bot frontend with the backend
 ### /proxy.js
 Contains the function to test proxies
 ### /install.bat
