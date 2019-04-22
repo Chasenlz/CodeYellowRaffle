@@ -27,8 +27,8 @@
             <div id="defaultOpen" class="nav-item">Tasks</div>
             <div id="profilesTab" class="nav-item">Profiles</div>
          </div>
-  <!--   <img id="temppage" class="middle-me" src="https://i.imgur.com/l7JZQqs.png">  -->
-		 <img class="middle-me" src="https://i.imgur.com/l7JZQqs.png">
+    <!--         <img id="autoenter" class="middle-me" src="https://i.imgur.com/l7JZQqs.png"> -->
+		         <img class="middle-me" src="https://i.imgur.com/l7JZQqs.png"> 
          <div class="right-me">
             <div id="proxiesTab" class="nav-item">Proxies</div>
             <div id="settingsTab" class="nav-item">Settings</div>
@@ -36,91 +36,151 @@
       </div>
 	<div class="tasks">
  
- <div class="temp">
+ <div class="autoenter">
 
-      <div id="temp" style="padding-top: 20px;" class="main tabcontent">
+
+      <div id="autoenterx" style="padding-top: 100px;text-align: center;" class="main tabcontent">
 	  
          <div class="twonav">
             <div class="two-left">
-               <div style="width: 100%;" id="singleenter" class="two-item">Single Entry</div>
+               <div style="width: 100%;" class="two-item singleenter twoactive">One-click Entry</div>
             </div>
             <div class="two-right">
-               <div style="width: 100%;" id="massenter" class="two-item">Mass Entry</div>
+               <div style="width: 100%;" class="two-item massenter">Mass Entry</div>
             </div>
          </div>
 		 
-		<div class="splad">
-		<div style="background: #0e0e0e !important;" class="create-row">
-                  <div class="inputicon"><i class="fa fa-user" aria-hidden="true"></i>
-                  </div>
-                  <select class="createinput">
-                  <option value="Example Profile">Example Profile</option></select>
+	<!--	 <div class="altnav">
+			<div class="altnavi">Setup</div>
+			<div class="altnavi">Enter all</div>
+			<div class="altnavi">Setup</div>
+			<div class="altnavi">Enter all</div>
+         </div> -->
+		 
+		 <div class="altnav">
+		 
+		    <div style="float: left;" class="nav-row">
+               <div class="nav-icon"><i class="fa fa-shopping-bag" aria-hidden="true"></i>
+               </div>
+               <select class="nav-input" style="background: rgba(14, 14, 14, 0) !important;color: #000 !important;">
+                     <option value="default">Sites</option>
+                     <option class="taskSiteOption" value="nakedcph">Naked</option>
+                     <option class="taskSiteOption" value="ymeuniverse">YMEuniverse</option>
+                     <option class="taskSiteOption" value="vooberlin">VooBerlin</option>
+                     <option class="taskSiteOption" value="footshop">FootShop</option>
+               </select>
+            </div>
+			
+			<div style="float: left;" class="nav-row">
+               <div class="nav-icon"><i class="fa fa-user" aria-hidden="true"></i>
+               </div>
+               <select class="nav-input" style="background: rgba(14, 14, 14, 0) !important;color: #000 !important;">
+                  <option value="Example Profile">Example Profile</option>
+               </select>
+            </div>
+				
+		    <div style="float: left;" class="nav-row">
+               <div class="nav-icon"><i class="fas fa-tshirt"></i>
+               </div>
+               <select class="nav-input" style="background: rgba(14, 14, 14, 0) !important;color: #000 !important;">
+                     <option value="default">Item</option>
+               </select>
+            </div>
+				
+		    <div style="float: left;" class="nav-row">
+               <div class="nav-icon"><i class="fas fa-sort-amount-up" aria-hidden="true"></i>
+               </div>
+               <select class="nav-input" style="background: rgba(14, 14, 14, 0) !important;color: #000 !important;">
+                     <option value="default">Size</option>
+                     <option class="taskSizeOption" value="selectOnWin">Selected on Win</option>
+                     <option class="taskSizeOption" value="4">4</option>
+                     <option class="taskSizeOption" value="4.5">4.5</option>
+                     <option class="taskSizeOption" value="5">5</option>
+                     <option class="taskSizeOption" value="5.5">5.5</option>
+                     <option class="taskSizeOption" value="6">6</option>
+                     <option class="taskSizeOption" value="6.5">6.5</option>
+                     <option class="taskSizeOption" value="7">7</option>
+                     <option class="taskSizeOption" value="7.5">7.5</option>
+                     <option class="taskSizeOption" value="8">8</option>
+                     <option class="taskSizeOption" value="8.5">8.5</option>
+                     <option class="taskSizeOption" value="9">9</option>
+                     <option class="taskSizeOption" value="9.5">9.5</option>
+                     <option class="taskSizeOption" value="10">10</option>
+                     <option class="taskSizeOption" value="10.5">10.5</option>
+                     <option class="taskSizeOption" value="11">11</option>
+                     <option class="taskSizeOption" value="11.5">11.5</option>
+                     <option class="taskSizeOption" value="12">12</option>
+               </select>
+            </div>
+			
+		 	<div style="float: right;" class="nav-row">
+               <div class="nav-icon"><i class="fa fa-globe" aria-hidden="true"></i>
+               </div>
+               <input class="nav-input" style="background: rgba(14, 14, 14, 0) !important;color: #000 !important;" placeholder="Task Proxy">
+            </div>
+
+         </div>
+		 
+		 <div class="oneclick-container">
+		 
+		<div class="raffle-enter-container">
+		
+                     <div class="raffle-im" ><img class="raffle-item" src="https://codeyellow.io/img/adidas-yeezy-700-analog.png"></div>
+                     <div class="raff-t">Naked raffle</div>
+                     <div class="feature">
+                        <div class="fcon"><i class="fas fa-clock"></i></div>
+                        27th April
+                     </div>
+                     <a target="_blank">
+                        <div class="feature enter-r">
+                           Enter Raffle
+                        </div>
+                     </a>
         </div>
-		</div>
-		
-		<div class="splag">
-		<div style="background: #0e0e0e !important;" class="create-row">
-                  <div class="inputicon"><i class="fa fa-globe" aria-hidden="true"></i>
-                  </div>
-                  <input class="createinput" placeholder="Specific Proxy">
-        </div>
-		</div>
-		
-		<div class="auto-enter-container">
-		
-		<div class="raffle-card mid-cop"> 
-			<div class="rtainer">
-			<div class="raffle-circle">
-				<img src="https://codeyellow.io/img/zx-4000-4d-carbon.png" class="raffle-image">
-			</div>
-			</div>
-		
-			<div id="hexagon"><b>£0.00</b></div>
-			<div id="hexagon2"></div>
-			<div class="raffle-bottom">
-				<a href="https://codeyellow.io/raffle.php?release='.$row['release'].'"><div class="raffle-go-button">ENTER NOW</div></a>
-			<div class="raffle-title-t">Freezy</div>
-			<div class="raffle-title-s">Date of release 01.01.2019</div>
-		</div>   
-		</div>
-		
-		<div class="raffle-card easy-cop"> 
-			<div class="rtainer">
-			<div class="raffle-circle">
-				<img src="https://codeyellow.io/img/zx-4000-4d-carbon.png" class="raffle-image">
-			</div>
-			</div>
-		
-			<div id="hexagon"><b>£0.00</b></div>
-			<div id="hexagon2"></div>
-			<div class="raffle-bottom">
-				<a href="https://codeyellow.io/raffle.php?release='.$row['release'].'"><div class="raffle-go-button">ENTER NOW</div></a>
-			<div class="raffle-title-t">Freezy</div>
-			<div class="raffle-title-s">Date of release 01.01.2019</div>
-		</div>   
-		</div>
-		
-		<div class="raffle-card hard-cop"> 
-			<div class="rtainer">
-			<div class="raffle-circle">
-				<img src="https://codeyellow.io/img/zx-4000-4d-carbon.png" class="raffle-image">
-			</div>
-			</div>
-		
-			<div id="hexagon"><b>£0.00</b></div>
-			<div id="hexagon2"></div>
-			<div class="raffle-bottom">
-				<a href="https://codeyellow.io/raffle.php?release='.$row['release'].'"><div class="raffle-go-button">ENTER NOW</div></a>
-			<div class="raffle-title-t">Freezy</div>
-			<div class="raffle-title-s">Date of release 01.01.2019</div>
-		</div>   
+	</div>
+	
 		</div>
 
-		
+      <div id="massenter" style="padding-top: 130px;text-align: center;display:none;" class="main tabcontent">
+	  
+         <div class="twonav">
+            <div class="two-left">
+               <div style="width: 100%;" class="two-item singleenter">One-click Entry</div>
+            </div>
+            <div class="two-right">
+               <div style="width: 100%;" class="two-item massenter twoactive">Mass Entry</div>
+            </div>
+         </div>
+		 
+		 
+		 <div class="altnav">
+		 
+		 <div style="width: 50%;" class="two-left">
+               <div class="altnavi">Create Task</div>
+			   <div class="altnavi">Email Configure</div>
+            </div>
+            <div style="width: 50%;" class="two-right">
+               <div class="altnavi">Start All</div>
+			   <div class="altnavi">Delete All</div>
+            </div>
+
+         </div>
+
+			<table style="width: 100%;margin-bottom: 10px;">
+				<tbody id="tasks">
+					<tr style="background: #0e0e0e;">
+					<th>ID</th>
+					<th>SITE</th>
+					<th>PROFILE</th>
+					<th>STATUS</th>
+					<th>PROXY</th>
+					<th>ACTION</th>
+					</tr>
+				</tbody>
+			</table>
+	
 		</div>
-		
-		
-      </div>
+
 
  </div>
   
@@ -377,7 +437,7 @@
 
   <div class="aprox">             
              
-      <div id="Addprox" style="padding-top: 110px;" class="main tabcontent">
+      <div id="Addprox" style="padding: 90px 0px 0px 0px;" class="main tabcontent">
          <!-- <div class="lefts">
             <div style="padding: 20px;margin-bottom: 10px;" class="setterhat">
             <div class="settit">Generate proxies</div>
@@ -454,7 +514,46 @@
             </div>
             
             </div> -->
-         <div style="width: 100%;height :380px" class="rights">
+      
+	  
+	  
+	  <div style="overflow-y: auto;display: none;" class="lefts">
+		
+		<!-- <div class="proxy-gen-h">Proxy generation</div>
+		<div class="proxy-gen-i">Select your favourite proxy brand to generate safe proxies!</div> -->
+		
+		<div style="width: 96%; margin-left: 2%;margin-top: 20px;" class="setterhat">
+            <div class="settit">Add proxies</div>
+            <div class="setinfo">Input proxies you would like to use for raffles.</div>
+        </div>
+		
+		<div class="proxy-brand-con noselect">
+		<div class="proxy-brand-button prox-sel"><img class="proxy-brand-image" src="https://i.imgur.com/dyrbf9Y.png"></div>
+		<div class="proxy-brand-button"><img class="proxy-brand-image" src="https://icedoutproxies.com/wp-content/uploads/2017/08/NEW2DLOGO0001-4-e1501724055905-1.png"></div>
+		<div class="proxy-brand-button"><img class="proxy-brand-image" src="https://cdn.shopify.com/s/files/1/0035/9127/4585/files/proxies-header_720x.png?v=1539972425"></div>
+		<div class="proxy-brand-button"><img class="proxy-brand-image" src="https://i.imgur.com/dyrbf9Y.png"></div>
+		<div class="proxy-brand-button"><img class="proxy-brand-image" src="https://i.imgur.com/dyrbf9Y.png"></div>
+		<div class="proxy-brand-button"><img class="proxy-brand-image" src="https://i.imgur.com/dyrbf9Y.png"></div>
+		<div class="proxy-brand-button"><img class="proxy-brand-image" src="https://i.imgur.com/dyrbf9Y.png"></div>
+		<div class="proxy-brand-button"><img class="proxy-brand-image" src="https://i.imgur.com/dyrbf9Y.png"></div>
+		</div>
+		
+		
+		<div style="margin-top: 20px;" class="proxy-gen-i">Generate <b id="pamountshow">15</b> Proxies</div>
+		<div class="slidecontainer">
+            <input id="pamount" type="range" min="0" max="30" value="15" class="slider">
+        </div>
+		
+
+		
+		<div class="setterbummer">
+            <div style="margin-top: 10px;width: 30%;" class="price-it-up">Generate Proxies</div>
+        </div>
+
+      </div>
+	  
+	  <div style="width: 100%;padding: 2%;background: transparent;" class="rights">
+		 <div class="right-prox">
             <div style="padding: 20px;margin-bottom: 10px;" class="setterhat">
                <div class="settit">Add proxies</div>
                <div class="setinfo">Input proxies you would like to use for raffles.</div>
@@ -471,7 +570,7 @@
             </div>
          </div>
       </div>
-			 
+	</div>	 
   </div> 
 
 

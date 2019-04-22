@@ -874,16 +874,16 @@ select {
 
 .lefts {
   width: 50%;
-  height: 590px;
-  background: #121213;
+  height: 100%;
+  background: #17171a;
   float: left;
 }
 
 .rights {
   width: 50%;
-  height: 590px;
-  background: #121213;
+  height: 100%;
   float: right;
+  background: #1b1b1f;
 }
 
 .realsetter2 {
@@ -964,12 +964,13 @@ select {
   background: #ffba00;
   width: 12.5%;
   border-radius: 25px;
+  
   transition: .5s;
   z-index: 1;
 }
 
 
-.temp {
+.autoenter {
   position: absolute;
   top: 0px;
   left:400%;
@@ -1534,4 +1535,319 @@ rgba(255, 255, 255, 0.1);
   -moz-user-select: none;
   -ms-user-select: none;
    user-select: none;
+}
+
+
+.altnav {
+  position: absolute;
+  top: 60px;
+  background: #0e0e0e;
+  lefT: 0;
+  right: 0;
+  height: 60px;
+  width: 100%;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  z-index: -2;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+   user-select: none;
+}
+
+.altnavi {
+    height: 35px;
+    background: #ffa500;
+	width: 35%;
+    margin-left: 5%;
+    margin-right: 5%;
+	border-radius: 25px;
+	line-height: 35px;
+	text-align: center;
+	color: #000;
+	display: inline-block;
+	margin-top: 12.5px;
+	cursor: pointer;
+	font-size: 15px;
+}
+
+.altnavi:hover {
+	opacity: 0.8;
+}
+
+
+.oneclick-container {
+	width: 100%;
+	position: absolute;
+	top: 120px;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	overflow: auto;
+	background: red;
+	padding-bottom: 140px;
+}
+
+.raffle-enter-container {
+    width: 250px;
+    height: 340px;
+    background: #151519;
+    display: inline-block;
+    position: relative;
+    overflow: hidden;
+    margin-left: 1.5%;
+    margin-right: 1.5%;
+    margin-top: 50px;
+	zoom: 90%;
+	box-shadow: 0px 0px 30px rgba(0,0,0,0);
+}
+
+.feature {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    width: 90%;
+    margin-left: 5%;
+    height: 50px;
+    background: rgba(0,0,0,0.2);
+    text-align: left;
+    line-height: 50px;
+    color: #fff;
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.fcon {
+    float: left;
+    width: 50px;
+    height: 50px;
+    background: rgba(0,0,0,0.2);
+    text-align: center;
+    line-height: 50px;
+    color: #ffa500;
+    font-size: 20px;
+    margin-right: 10px;
+}
+
+.raff-t {
+    position: relative;
+    width: 100%;
+    height: 60px;
+    background: rgba(0,0,0,0.2);
+    text-align: center;
+    line-height: 60px;
+    color: #ffba00;
+    font-weight: bold;
+    font-size: 25px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.enter-r {
+    background: #ffba00;
+    line-height: 50px;
+    color: #333;
+    font-size: 16px;
+    text-align: center;
+    cursor: pointer;
+    position: relative;
+	-webkit-user-drag: none;
+    -khtml-user-drag: none;
+    -moz-user-drag: none;
+    -o-user-drag: none;
+    user-drag: none;
+}
+
+.raffle-im {
+    width: 250px;
+    height: 150px;
+    background: #0d0d0f;
+	position: relative;
+	text-align: center;
+}
+
+.raffle-item {
+	position: absolute;
+	width:200px;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%) scaleX(-1);
+	-webkit-user-drag: none;
+    -khtml-user-drag: none;
+    -moz-user-drag: none;
+    -o-user-drag: none;
+    user-drag: none;
+}
+
+.nav-row {
+    width: 19%;
+    display: inline-block;
+    height: 40px;
+    background: #ffa500;
+    margin-top: 5px;
+	margin-left: 0.5%;
+	margin-right: 0.5%;
+	border-radius: 25px;
+	overflow: hidden;
+	margin-top: 10px;
+}
+
+.nav-icon {
+    width: 40px;
+    height: 40px;
+    text-align: center;
+    line-height: 40px;
+    font-size: 23px;
+    float: left;
+    color: #1b1b1f;
+    background: rgba(0,0,0,0.25);
+	padding-left: 3px;
+}
+
+.nav-input {
+    height: 40px;
+    border: none;
+    font-size: 15px;
+    background: #ffa500;
+    padding-left: 10px;
+    width: calc(100% - 40px);
+    color: #000 !important;
+    opacity: 0.8;
+    position: relative;
+    z-index: 9999;
+}
+
+.nav-input select {
+  color: #000 !important;
+  background: #ffa500 !important;
+  opacity: 1 !important;
+  z-index: 9999 !important;
+}
+
+.nav-input option {
+  color: #000 !important;
+  background: #ffa500 !important;
+  opacity: 1 !important;
+  z-index: 9999 !important;
+}
+
+.nav-input::placeholder {
+  color: #333;
+}
+
+.twoactive {
+	font-weight: bold;
+	opacity: 1;
+}
+
+.twoactive:hover {
+	font-weight: bold;
+	opacity: 1;
+}
+
+.right-prox {
+	height: 380px;
+	width: 100%;
+	background: #121213;
+	margin-top: 20px;
+}
+
+.proxy-brand-con {
+	width: 96%;
+	padding: 2%;
+	margin-left: 2%;
+	text-align: center;
+	background: rgba(0,0,0,0.2);
+}
+
+.proxy-brand-button {
+	width: 100px;
+	height: 100px;
+	margin:10px;
+	background: #0d0d0d;
+	border: 2px solid rgba(0,0,0,0);
+	text-align: center;
+	line-height: 100px;
+	display: inline-block;
+	position: relative;
+	padding: 0px;
+	cursor:pointer;
+		-webkit-user-drag: none;
+    -khtml-user-drag: none;
+    -moz-user-drag: none;
+    -o-user-drag: none;
+    user-drag: none;
+}
+
+.proxy-brand-button:hover {
+	opacity: 0.8;
+}
+
+.prox-sel {
+	border: 2px solid #ffa500;
+}
+
+.prox-sel .proxy-brand-image {
+	filter: grayscale(0%) !Important;
+	opacity: 1;
+}
+
+.prox-sel:hover {
+	opacity: 1;
+}
+
+.proxy-brand-image {
+	width:80px;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	position: absolute;
+	filter: grayscale(100%);
+	-webkit-user-drag: none;
+	-khtml-user-drag: none;
+	-moz-user-drag: none;
+	-o-user-drag: none;
+	user-drag: none;
+	opacity: 0.8;
+}
+
+.proxy-gen-h {
+	width: 100%;
+	padding: 2%;
+	text-align: center;
+	height: 40px;
+	line-height: 40px;
+	color: #ffa500;
+	text-align: center;
+	font-size: 25px;
+}
+.proxy-gen-i {
+	width: 100%;
+	padding: 2%;
+	text-align: center;
+	height: 20px;
+	line-height: 20px;
+	color: #aaa;
+	text-align: center;
+	font-size: 13px;
+	margin-top: -10px;
+}
+
+
+
+
+
+.noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome and Opera */
 }

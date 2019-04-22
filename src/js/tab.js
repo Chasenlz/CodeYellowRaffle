@@ -76,17 +76,15 @@ $("#addprox").click(function(){
 }  
 });
 
-$("#temppage").click(function(){
+$("#autoenter").click(function(){
   tabx = 6;
   if (tabx = 6) {
     $(".under-line").get(0).style.setProperty("left", "83.5%");
     $(".tasks").get(0).style.setProperty("left", "-400%");
     $(".tasks").get(0).style.setProperty("top", "90px"); 
 	$(".under-line").get(0).style.setProperty("height", "0px");
-	$("#singleenter").get(0).style.setProperty("font-weight", "bold");
 }  
 });
-
 
 
 $('#sickomode').change(function(){
@@ -100,3 +98,23 @@ $('#sickomode').change(function(){
  });
 
 
+$(".massenter").click(function() {
+  $("#massenter").css("display", "block");
+  $("#autoenterx").css("display", "none");
+});
+
+$(".singleenter").click(function() {
+  $("#massenter").css("display", "none");
+  $("#autoenterx").css("display", "block");
+});
+
+
+
+
+var slider = document.getElementById("pamount");
+var output = document.getElementById("pamountshow");
+output.innerHTML = slider.value;
+
+slider.oninput = function() {
+  output.innerHTML = this.value;
+}
