@@ -1587,7 +1587,6 @@ rgba(255, 255, 255, 0.1);
 	right: 0;
 	bottom: 0;
 	overflow: auto;
-	background: red;
 	padding-bottom: 140px;
 }
 
@@ -1685,7 +1684,7 @@ rgba(255, 255, 255, 0.1);
 }
 
 .nav-row {
-    width: 19%;
+    width: 24%;
     display: inline-block;
     height: 40px;
     background: #ffa500;
