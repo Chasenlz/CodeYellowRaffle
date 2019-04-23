@@ -28,7 +28,7 @@
             <div id="profilesTab" class="nav-item">Profiles</div>
          </div>
     <!--         <img id="autoenter" class="middle-me" src="https://i.imgur.com/l7JZQqs.png"> -->
-		         <img class="middle-me" src="https://i.imgur.com/l7JZQqs.png"> 
+		         <img id="autoenter" class="middle-me" src="https://i.imgur.com/l7JZQqs.png"> 
          <div class="right-me">
             <div id="proxiesTab" class="nav-item">Proxies</div>
             <div id="settingsTab" class="nav-item">Settings</div>
@@ -141,7 +141,7 @@
 	
 		</div>
 
-      <div id="massenter" style="padding-top: 130px;text-align: center;display:none;" class="main tabcontent">
+  <!--    <div id="massenter" style="padding-top: 130px;text-align: center;display:none;" class="main tabcontent">
 	  
          <div class="twonav">
             <div class="two-left">
@@ -178,6 +178,93 @@
 					</tr>
 				</tbody>
 			</table>
+	
+		</div> -->
+		
+		<div id="massenter" style="padding: 0px;text-align: center;display:none;" class="main tabcontent">
+	  
+
+		 	  
+	  <div style="overflow-y: auto;" class="lefts">
+		
+		<!-- <div class="proxy-gen-h">Proxy generation</div>
+		<div class="proxy-gen-i">Select your favourite proxy brand to generate safe proxies!</div> -->
+		
+		<div style="width: 100%; margin-left: 0%;background: rgba(0,0,0,0.5);" class="setterhat">
+            <div class="settit">Generate Emails</div>
+            <div class="setinfo">Jig your current email address or setup a catch here!</div>
+        </div>
+		
+		<div style="padding: 2% 2% 6% 2%;margin-top: 2%;" class="email-gen-hold-con">
+		
+		<div style="margin-bottom: 10px;margin-top: -10px;" class="proxy-gen-i">Enter an email address that you want to jig!</div>
+		
+			<div style="width: 96%;float:left;margin-left: 2%;margin-top:2%;" class="create-row">
+               <div class="inputicon"><i class="fa fa-envelope" aria-hidden="true"></i>
+               </div>
+               <input class="createinput" id="eMails" placeholder="Email to jig">
+            </div>
+		
+		
+		<div style="margin-top: 40px;" class="proxy-gen-i">Generate <b id="pamountshow">15</b> emails</div>
+		<div style="margin-top: 45px;" class="slidecontainer">
+            <input id="pamount" type="range" min="0" max="100" value="50" class="slider">
+        </div>		
+		<div class="setterbummer">
+            <div style="margin-top: 10px;width: 30%;margin-bottom: 2%;" class="price-it-up">Generate Emails</div>
+        </div>
+		</div>
+		
+		
+		<div style="padding: 2% 2% 6% 2%;margin-top: 2%;" class="email-gen-hold-con">
+		
+		<div style="margin-bottom: 10px;margin-top: -10px;" class="proxy-gen-i">Select your favourite proxy brand to generate safe proxies!</div>
+		
+			<div style="width: 96%;float:left;margin-left: 2%;margin-top:2%;" class="create-row">
+               <div class="inputicon"><i class="fa fa-globe" aria-hidden="true"></i>
+               </div>
+               <input class="createinput" id="eMails" placeholder="Catchall">
+            </div>
+		
+		
+		<div style="margin-top: 40px;" class="proxy-gen-i">Generate <b id="pamountshow2">15</b> emails</div>
+		<div style="margin-top: 45px;" class="slidecontainer">
+            <input id="pamount2" type="range" min="0" max="100" value="50" class="slider">
+        </div>		
+		<div class="setterbummer">
+            <div style="margin-top: 10px;width: 30%;margin-bottom: 2%;" class="price-it-up">Generate Emails</div>
+        </div>
+		</div>
+		
+		
+      </div>
+	  
+	  <div class="rights">
+		<div style="width: 100%; margin-left: 0%;background: rgba(0,0,0,0.5);" class="setterhat">
+            <div class="settit">Input Emails</div>
+            <div class="setinfo">input emails here or use our generation to jig your emails!</div>
+        </div>
+            <div class="addcon" style="margin-top: 2%;">
+               <!--    					<div style="padding: 20px;margin-bottom: 0px;background:rgba(0,0,0,0.6);" class="setterhat">
+                  <div class="settit">Input proxies</div>
+                  <div class="setinfo">Input your proxies here!</div>
+                  </div> -->
+               <textarea class="barea" id="emailsToAdd" placeholder="email@email.com
+email@email.com
+email@email.com
+email@email.com
+email@email.com
+email@email.com
+email@email.com
+email@email.com
+email@email.com"></textarea>
+               <div class="setterbummer">
+                  <div style="margin-top: 10px;width: 30%;" id="addProxies" class="price-it-up">Input emails</div>
+               </div>
+            </div>
+      </div>
+	
+		 
 	
 		</div>
 
@@ -224,7 +311,7 @@
                   <input class="createinput" id="newProfileName" placeholder="Profile Name">
                </div>
                <div style="width:20%;float:right;" class="create-row">
-                  <button class="butoneir" id="newProfile"><i class="fas fa-save"></i>
+                  <button class="butoneir" data-toggle="tooltip" data-placement="top" title="New profile" id="newProfile"><i class="fas fa-save"></i>
                   </button>
                </div>
             </div>
@@ -240,11 +327,11 @@
                   </select>
                </div>
                <div style="width: 30%;float:right;" class="create-row">
-                  <button class="butoneir" id="saveProfile"><i class="far fa-save"></i>
+                  <button class="butoneir" data-toggle="tooltip" data-placement="top" title="Save Profile" id="saveProfile"><i class="far fa-save"></i>
                   </button>
-                  <button class="butoneir" id="loadProfile"><i class="fa fa-upload" aria-hidden="true"></i>
+                  <button class="butoneir" data-toggle="tooltip" data-placement="top" title="Load Profile" id="loadProfile"><i class="fa fa-upload" aria-hidden="true"></i>
                   </button>
-                  <button class="butoneir" id="deleteProfile"><i class="fa fa-trash" aria-hidden="true"></i>
+                  <button class="butoneir" data-toggle="tooltip" data-placement="top" title="Delete Profile" id="deleteProfile"><i class="fa fa-trash" aria-hidden="true"></i>
                   </button>
                </div>
             </div>
@@ -570,6 +657,7 @@
             </div>
          </div>
       </div>
+	
 	</div>	 
   </div> 
 

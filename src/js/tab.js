@@ -15,6 +15,9 @@
 // Get the element with id="defaultOpen" and click on it
 document.getElementById("defaultOpen").click(); */
 
+$(document).ready(function(){
+    $('[data-toggle="tooltip"]').tooltip();   
+});
 
 var tabx = 1;
 
@@ -113,6 +116,14 @@ $(".singleenter").click(function() {
 
 var slider = document.getElementById("pamount");
 var output = document.getElementById("pamountshow");
+output.innerHTML = slider.value;
+
+slider.oninput = function() {
+  output.innerHTML = this.value;
+}
+
+var slider = document.getElementById("pamount2");
+var output = document.getElementById("pamountshow2");
 output.innerHTML = slider.value;
 
 slider.oninput = function() {
