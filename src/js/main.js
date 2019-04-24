@@ -532,6 +532,7 @@ function loadReleases() {
 		var release = releases[i];
 		var sitesSupported = release['sites_supported'];
 		var sitesSupportedKeys = Object.keys(sitesSupported);
+		var filterID = release['filterID'];
 		$(".releases-container").append(
 			`<div style="height: 230px;" class="realsetter">
 						<div class="setterhat">
@@ -544,11 +545,14 @@ function loadReleases() {
 						</div>
 					</div>`
 		);
+		$('#oneClickFilter').append($('<option>', {
+			value: filterID,
+			text: release['name']
+		}));
 		for (var x = 0; x < sitesSupportedKeys.length; x++) {
 			var siteName = sitesSupportedKeys[x];
 			var variant = sitesSupported[siteName];
-			if(variant != 'closed')
-			{
+			if (variant != 'closed') {
 				oneClickTasks.push({
 					taskSiteSelect: siteName,
 					variant: variant,
@@ -556,33 +560,80 @@ function loadReleases() {
 					ymeuniverse: release['ymeuniverse'],
 					footshop: release['footshop']
 				});
-				$(".oneclick-container").append(
-					`<div class="raffle-enter-container">
-				
-						<div class="raffle-im"><img class="raffle-item" src="${release['image']}"></div>
+				var sizesHTML = '';
+				var sizes = release['sizes_supported_' + siteName];
+				for(var z = 0; z < sizes.length; z++)
+				{
+					if(sizes[z] == 'selectOnWin')
+					{
+						sizesHTML = sizesHTML + '<option class="taskSizeOption" value="'+sizes[z]+'">Selected on Win</option>\n';
+					}
+					else
+					{
+						sizesHTML = sizesHTML + '<option class="taskSizeOption" value="'+sizes[z]+'">'+sizes[z]+'</option>\n';
+					}
+				}
+				$(".oneclick-container").append(`
+					<div style="height: 400px;" class="raffle-enter-container" data-filter="${filterID}">
+			
+						<div class="raffle-im" ><img class="raffle-item" src="${release['image']}"></div>
 						<div class="raff-t">${siteName.toUpperCase()}</div>
 						<div class="feature">
 						<div class="fcon"><i class="fas fa-clock"></i></div>
-						${release['date']}
+							${release['date']}
 						</div>
-						<a target="_blank">
-						<div class="feature enter-r enterRaffle" id="${taskID}">
-							Enter Raffle
+						
+						<div class="feature">
+							<div style="width: 100%;float:left;" class="create-row">
+							<div class="inputicon"><i class="fas fa-sort-amount-down" aria-hidden="true"></i>
 						</div>
-						</a>
-					</div>`
-				);
+						<select class="createinput" id="oneClicktaskSize${taskID}">
+							<option class="taskSizeOption" value="default">Size</option>
+							${sizesHTML}
+						</select>
+					</div>
+				</div>
+				<a target="_blank">
+				<div class="feature enter-r enterRaffle" id="${taskID}">
+					Enter Raffle
+				</div>
+				</a>`);
 				taskID += 1;
 			}
 		}
 	}
 }
 
+$('#oneClickFilter').on('change', function () {
+	var selectedVal = $('#oneClickFilter').val();
+	if(selectedVal != 'default')
+	{
+		$.each($(".raffle-enter-container"), function () {
+			var filter = $(this).data('filter')
+			if(filter == selectedVal)
+			{
+				$(this).css('display', 'inline-block')
+			}
+			else
+			{
+				$(this).css('display', 'none')
+			}
+		});
+	}
+	else
+	{
+		$.each($(".raffle-enter-container"), function () {
+			$(this).css('display', 'inline-block')
+		});
+	}
+});
+
 $(".raffle-enter-container").on('click', '.enterRaffle', function () {
 	var taskID = $(this).attr('id');
-	var oneClicktask = oneClickTasks[$(this).attr('id')];
+	var oneClicktask = oneClickTasks[taskID];
 	var taskSiteSelect = oneClicktask['taskSiteSelect'];
 	var taskSizeSelect = $('#oneClicktaskSizeSelect').val();
+	var taskSizeSelect = $('#oneClicktaskSize' + taskID).val();
 	var taskProfile = $('#oneClicktaskProfile').val();
 	var taskSpecificProxy = $('#oneClicktaskSpecificProxy').val();
 	var taskEmail = $('#oneClicktaskEmail').val();
@@ -590,7 +641,7 @@ $(".raffle-enter-container").on('click', '.enterRaffle', function () {
 		if (taskSiteSelect != 'default') {
 			if (taskSizeSelect != 'default') {
 				if (validateEmail(taskEmail) != false) {
-					proxy = '';
+					proxy = taskSpecificProxy;
 					if (taskSiteSelect == 'nakedcph') {
 						ipcRenderer.send('startTask', {
 							taskID: taskID,
@@ -625,31 +676,6 @@ $(".raffle-enter-container").on('click', '.enterRaffle', function () {
 							ymeuniverse: oneClicktask['ymeuniverse']
 						}, profiles[taskProfile]);
 					}
-					/*
-					$("tbody#tasks").append(
-						`<tr>
-									<td>${taskID}</td>
-									<td>${taskSiteSelect.toUpperCase()}</td>
-									<td>${taskProfile.toUpperCase()}</td>
-									<td id="taskResult${taskID}">IDLE</td>
-									<td>
-										<button class="action-butt startTask" id="${taskID}"><i class="fa fa-play" aria-hidden="true"></i>
-										</button>
-										<button class="action-butt deleteTask" id="${taskID}"><i class="fa fa-trash" aria-hidden="true"></i>
-										</button>
-									</td>
-								</tr>`);
-					$('#defaultOpen').click()
-					$('#defaultOpen').attr('class', 'nav-item active')
-					selectedQuickTaskRelease = undefined;
-					$('.selectQuick').html('SELECT')
-					$('#taskQuantity').val('1')
-					$('#taskSiteSelect').val('default')
-					$('#taskSizeSelect').val('default')
-					$('.taskSiteOption').prop('disabled', true);
-					$('.taskSizeOption').prop('disabled', true);
-					$('#taskSpecificProxy').val('')
-					$('#taskEmail').val('') */
 				} else {
 					Materialize.toast("Please input a valid Email", 2000, "rounded");
 				}
@@ -662,20 +688,6 @@ $(".raffle-enter-container").on('click', '.enterRaffle', function () {
 	} else {
 		Materialize.toast("You cannot enter a raffle with the example profile.", 2000, "rounded");
 	}
-	/*$('.selectQuick').html('SELECT')
-	$('#taskSiteSelect').val('default')
-	$('#taskSizeSelect').val('default')
-	$('.taskSiteOption').prop('disabled', true);
-	$('.taskSizeOption').prop('disabled', true);
-	var id = $(this).attr('id');
-	var release = releases[id];
-	var sitesAvailable = Object.keys(releases[id]['sites_supported']);
-	for (var i = 0; i < sitesAvailable.length; i++) {
-		$('.taskSiteOption[value="' + sitesAvailable[i] + '"').prop('disabled', false);
-	}
-
-	$(this).html('SELECTED')
-	selectedQuickTaskRelease = release;*/
 });
 
 $(".releases-container").on('click', '.selectQuick', function () {
