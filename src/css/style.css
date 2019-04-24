@@ -1845,7 +1845,24 @@ rgba(255, 255, 255, 0.1);
 	background: rgba(0,0,0,0.2);
 }
 
+.update-dot {
+    position: fixed;
+    top: 20px;
+    lefT: calc(50% + 35px);
+    width: 20px;
+    heighT: 20px;
+    background: #ffba00;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 20px;
+	color: #000;
+	z-index: 9999;
+	font-size: 13px;
+}
 
+.update-dot:hover {
+	opacity: 0.8;
+}
 
 .noselect {
   -webkit-touch-callout: none; /* iOS Safari */
@@ -1855,4 +1872,21 @@ rgba(255, 255, 255, 0.1);
         -ms-user-select: none; /* Internet Explorer/Edge */
             user-select: none; /* Non-prefixed version, currently
                                   supported by Chrome and Opera */
+}
+
+.updateav {
+		animation: float 6s ease-in-out infinite;
+}
+
+
+@keyframes float {
+	0% {
+		transform: scale(0.9);
+	}
+	50% {
+		transform: scale(1.1);
+	}
+	100% {
+		transform: scale(0.9);
+	}
 }
