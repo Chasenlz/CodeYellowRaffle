@@ -23,6 +23,7 @@ const {
 var settings = require('electron').remote.getGlobal('settings');
 var profiles = require('electron').remote.getGlobal('profiles');
 var tasks = [];
+var oneClickTasks = [];
 var proxies = require('electron').remote.getGlobal('proxies');
 var releases = require('electron').remote.getGlobal('releases');
 var updateRequired = require('electron').remote.getGlobal('updateRequired');
@@ -43,6 +44,7 @@ amountr.value = require('electron').remote.getGlobal('settings').retryDelay;
 // Loads all releases in the quick task area
 
 loadReleases();
+
 
 
 
@@ -82,7 +84,8 @@ $('#openHarvester').click(function () {
 
 // Update tasks
 ipcRenderer.on('taskUpdate', function (event, data) {
-	$(`#taskResult${data.id}`).html(data.message.toUpperCase())
+	//$(`#taskResult${data.id}`).html(data.message.toUpperCase())
+	$(`.enterRaffle#${data.id}`).html(data.message)
 });
 
 $("body").on("click", ".startTask", function () {
@@ -98,14 +101,11 @@ $("#startAllTasks").click(function () {
 });
 
 $("body").on("click", ".deleteTask", function () {
-	if($('#taskResult' + $(this).attr('id')).html() == 'IDLE' || $('#taskResult' + $(this).attr('id')).html() == 'ENTRY SUBMITTED!')
-	{
+	if ($('#taskResult' + $(this).attr('id')).html() == 'IDLE' || $('#taskResult' + $(this).attr('id')).html() == 'ENTRY SUBMITTED!') {
 		var task = tasks[$(this).attr('id') - 1];
 		tasks[$(this).attr('id') - 1] = {};
 		$(this).parent().parent().remove();
-	}
-	else
-	{
+	} else {
 		Materialize.toast("You cannot delete a task in progress", 2000, "rounded");
 	}
 });
@@ -113,22 +113,18 @@ $("body").on("click", ".deleteTask", function () {
 $("#deleteAllTasks").click(function () {
 	var inprog = false;
 	$.each($(".deleteTask"), function () {
-		if($('#taskResult' + $(this).attr('id')).html() == 'IDLE' || $('#taskResult' + $(this).attr('id')).html() == 'ENTRY SUBMITTED!')
-		{
+		if ($('#taskResult' + $(this).attr('id')).html() == 'IDLE' || $('#taskResult' + $(this).attr('id')).html() == 'ENTRY SUBMITTED!') {
 			var task = tasks[$(this).attr('id') - 1];
 			tasks[$(this).attr('id') - 1] = {};
 			$(this).parent().parent().remove();
-		}
-		else
-		{
+		} else {
 			inprog = true;
 		}
 	});
-	if(inprog == true)
-	{
+	if (inprog == true) {
 		Materialize.toast("You cannot delete some tasks in progress", 2000, "rounded");
 	}
-	
+
 });
 
 
@@ -273,12 +269,10 @@ $("#createTaskButton").click(function () {
 							} else {
 								proxy = taskSpecificProxy;
 							}
-							if(proxy != '')
-							{
+							if (proxy != '') {
 								proxyUsed = '<td><i class="fas fa-bolt isprox"></i></td>'
 							}
-							if(taskSiteSelect == 'nakedcph')
-							{	
+							if (taskSiteSelect == 'nakedcph') {
 								tasks.push({
 									taskID: taskID,
 									proxy: proxy,
@@ -289,9 +283,7 @@ $("#createTaskButton").click(function () {
 									variant: selectedQuickTaskRelease['sites_supported'][taskSiteSelect],
 									nakedcph: selectedQuickTaskRelease['nakedcph']
 								});
-							}
-							else if(taskSiteSelect == 'footshop')
-							{
+							} else if (taskSiteSelect == 'footshop') {
 								tasks.push({
 									taskID: taskID,
 									proxy: proxy,
@@ -302,9 +294,7 @@ $("#createTaskButton").click(function () {
 									variant: selectedQuickTaskRelease['sites_supported'][taskSiteSelect],
 									footshop: selectedQuickTaskRelease['footshop']
 								});
-							}
-							else if(taskSiteSelect == 'ymeuniverse')
-							{
+							} else if (taskSiteSelect == 'ymeuniverse') {
 								tasks.push({
 									taskID: taskID,
 									proxy: proxy,
@@ -315,9 +305,7 @@ $("#createTaskButton").click(function () {
 									variant: selectedQuickTaskRelease['sites_supported'][taskSiteSelect],
 									ymeuniverse: selectedQuickTaskRelease['ymeuniverse']
 								});
-							}
-							else
-							{
+							} else {
 								tasks.push({
 									taskID: taskID,
 									proxy: proxy,
@@ -329,7 +317,7 @@ $("#createTaskButton").click(function () {
 									fields: ''
 								});
 							}
-							
+
 							$("tbody#tasks").append(
 								`<tr>
 								<td>${taskID}</td>
@@ -408,6 +396,10 @@ for (var i = 0; i < profileKeys.length; i++) {
 		value: keyName,
 		text: keyName
 	}));
+	$('#oneClicktaskProfile').append($('<option>', {
+		value: keyName,
+		text: keyName
+	}));
 }
 
 $("#newProfile").click(function () {
@@ -419,6 +411,10 @@ $("#newProfile").click(function () {
 				text: profileName
 			}));
 			$('#taskProfile').append($('<option>', {
+				value: profileName,
+				text: profileName
+			}));
+			$('#oneClicktaskProfile').append($('<option>', {
 				value: profileName,
 				text: profileName
 			}));
@@ -488,6 +484,7 @@ $("#deleteProfile").click(function () {
 		$('#profileList').val('Example Profile');
 		$('#profileList option[value="' + profileName + '"]').remove()
 		$('#taskProfile option[value="' + profileName + '"]').remove()
+		$('#oneClicktaskProfile option[value="' + profileName + '"]').remove()
 	} else {
 		Materialize.toast("You can't modify the Example Profile!", 2000, "rounded");
 	}
@@ -530,8 +527,11 @@ function loadProfile(profileName, notify) {
 // Releases section on create task
 
 function loadReleases() {
+	var taskID = 0;
 	for (var i = 0; i < releases.length; i++) {
 		var release = releases[i];
+		var sitesSupported = release['sites_supported'];
+		var sitesSupportedKeys = Object.keys(sitesSupported);
 		$(".releases-container").append(
 			`<div style="height: 230px;" class="realsetter">
 						<div class="setterhat">
@@ -544,8 +544,139 @@ function loadReleases() {
 						</div>
 					</div>`
 		);
+		for (var x = 0; x < sitesSupportedKeys.length; x++) {
+			var siteName = sitesSupportedKeys[x];
+			var variant = sitesSupported[siteName];
+			if(variant != 'closed')
+			{
+				oneClickTasks.push({
+					taskSiteSelect: siteName,
+					variant: variant,
+					nakedcph: release['nakedcph'],
+					ymeuniverse: release['ymeuniverse'],
+					footshop: release['footshop']
+				});
+				$(".oneclick-container").append(
+					`<div class="raffle-enter-container">
+				
+						<div class="raffle-im"><img class="raffle-item" src="${release['image']}"></div>
+						<div class="raff-t">${siteName.toUpperCase()}</div>
+						<div class="feature">
+						<div class="fcon"><i class="fas fa-clock"></i></div>
+						${release['date']}
+						</div>
+						<a target="_blank">
+						<div class="feature enter-r enterRaffle" id="${taskID}">
+							Enter Raffle
+						</div>
+						</a>
+					</div>`
+				);
+				taskID += 1;
+			}
+		}
 	}
 }
+
+$(".raffle-enter-container").on('click', '.enterRaffle', function () {
+	var taskID = $(this).attr('id');
+	var oneClicktask = oneClickTasks[$(this).attr('id')];
+	var taskSiteSelect = oneClicktask['taskSiteSelect'];
+	var taskSizeSelect = $('#oneClicktaskSizeSelect').val();
+	var taskProfile = $('#oneClicktaskProfile').val();
+	var taskSpecificProxy = $('#oneClicktaskSpecificProxy').val();
+	var taskEmail = $('#oneClicktaskEmail').val();
+	if (taskProfile != 'Example Profile') {
+		if (taskSiteSelect != 'default') {
+			if (taskSizeSelect != 'default') {
+				if (validateEmail(taskEmail) != false) {
+					proxy = '';
+					if (taskSiteSelect == 'nakedcph') {
+						ipcRenderer.send('startTask', {
+							taskID: taskID,
+							proxy: proxy,
+							taskSiteSelect: taskSiteSelect,
+							taskSizeSelect: taskSizeSelect,
+							taskProfile: taskProfile,
+							taskEmail: taskEmail,
+							variant: oneClicktask['variant'],
+							nakedcph: oneClicktask['nakedcph']
+						}, profiles[taskProfile]);
+					} else if (taskSiteSelect == 'footshop') {
+						ipcRenderer.send('startTask', {
+							taskID: taskID,
+							proxy: proxy,
+							taskSiteSelect: taskSiteSelect,
+							taskSizeSelect: taskSizeSelect,
+							taskProfile: taskProfile,
+							taskEmail: taskEmail,
+							variant: oneClicktask['variant'],
+							footshop: oneClicktask['footshop']
+						}, profiles[taskProfile]);
+					} else if (taskSiteSelect == 'ymeuniverse') {
+						ipcRenderer.send('startTask', {
+							taskID: taskID,
+							proxy: proxy,
+							taskSiteSelect: taskSiteSelect,
+							taskSizeSelect: taskSizeSelect,
+							taskProfile: taskProfile,
+							taskEmail: taskEmail,
+							variant: oneClicktask['variant'],
+							ymeuniverse: oneClicktask['ymeuniverse']
+						}, profiles[taskProfile]);
+					}
+					/*
+					$("tbody#tasks").append(
+						`<tr>
+									<td>${taskID}</td>
+									<td>${taskSiteSelect.toUpperCase()}</td>
+									<td>${taskProfile.toUpperCase()}</td>
+									<td id="taskResult${taskID}">IDLE</td>
+									<td>
+										<button class="action-butt startTask" id="${taskID}"><i class="fa fa-play" aria-hidden="true"></i>
+										</button>
+										<button class="action-butt deleteTask" id="${taskID}"><i class="fa fa-trash" aria-hidden="true"></i>
+										</button>
+									</td>
+								</tr>`);
+					$('#defaultOpen').click()
+					$('#defaultOpen').attr('class', 'nav-item active')
+					selectedQuickTaskRelease = undefined;
+					$('.selectQuick').html('SELECT')
+					$('#taskQuantity').val('1')
+					$('#taskSiteSelect').val('default')
+					$('#taskSizeSelect').val('default')
+					$('.taskSiteOption').prop('disabled', true);
+					$('.taskSizeOption').prop('disabled', true);
+					$('#taskSpecificProxy').val('')
+					$('#taskEmail').val('') */
+				} else {
+					Materialize.toast("Please input a valid Email", 2000, "rounded");
+				}
+			} else {
+				Materialize.toast("Please select a Size", 2000, "rounded");
+			}
+		} else {
+			Materialize.toast("Please select a Site", 2000, "rounded");
+		}
+	} else {
+		Materialize.toast("You cannot enter a raffle with the example profile.", 2000, "rounded");
+	}
+	/*$('.selectQuick').html('SELECT')
+	$('#taskSiteSelect').val('default')
+	$('#taskSizeSelect').val('default')
+	$('.taskSiteOption').prop('disabled', true);
+	$('.taskSizeOption').prop('disabled', true);
+	var id = $(this).attr('id');
+	var release = releases[id];
+	var sitesAvailable = Object.keys(releases[id]['sites_supported']);
+	for (var i = 0; i < sitesAvailable.length; i++) {
+		$('.taskSiteOption[value="' + sitesAvailable[i] + '"').prop('disabled', false);
+	}
+
+	$(this).html('SELECTED')
+	selectedQuickTaskRelease = release;*/
+});
 
 $(".releases-container").on('click', '.selectQuick', function () {
 	$('.selectQuick').html('SELECT')
@@ -564,7 +695,7 @@ $(".releases-container").on('click', '.selectQuick', function () {
 	selectedQuickTaskRelease = release;
 });
 
-$('#taskSiteSelect').on('change', function() {
+$('#taskSiteSelect').on('change', function () {
 	$('#taskSizeSelect').val('default')
 	$('.taskSizeOption').prop('disabled', true);
 	var sizesAvailable = selectedQuickTaskRelease['sizes_supported_' + this.value];

@@ -380,7 +380,7 @@ function openBot(onReady) {
 		});
 	}
 	// FOR DEBUGGING 
-	//module.exports.mainBotWin.webContents.openDevTools()
+	module.exports.mainBotWin.webContents.openDevTools()
 	// WHEN A MESSAGE IS RECEIVED FROM THE APPLICATION
 
 	module.exports.mainBotWin.on('close', function (event) {
@@ -417,7 +417,7 @@ function openBot(onReady) {
 		//if (module.exports.taskStatuses[task.taskID] != 'active') {
 		module.exports.mainBotWin.send('taskUpdate', {
 			id: task.taskID,
-			message: 'STARTING'
+			message: 'Starting'
 		});
 		if (task['taskSiteSelect'] == 'nakedcph') {
 			console.log('Nakedcph task started');

@@ -125,7 +125,7 @@ exports.getRaffleToken = function (request, task, profile) {
 			});
 			mainBot.mainBotWin.send('taskUpdate', {
 				id: task.taskID,
-				message: 'Submitting entry in ' + task['ymeuniverse']['submit_delay'] / 1000 + 's to decrease automation detection'
+				message: 'Submitting entry in ' + task['ymeuniverse']['submit_delay'] / 1000 + 's'
 			});
 			return setTimeout(() => exports.submitRaffle(request, task, profile, raffleToken, landedAt), task['ymeuniverse']['submit_delay']);
 		} else {

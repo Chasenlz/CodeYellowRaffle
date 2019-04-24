@@ -16,25 +16,27 @@
 */
 
 var mainBot = require('../index.js')
-var cheerio = require('cheerio');
 
-function formatProxy(proxy)
-{
-	if(proxy == '')
-	{
+function formatProxy(proxy) {
+	if (proxy == '') {
 		return '';
 	}
-	var sProxy = proxy.split(':');
-	var proxyHost = sProxy[0] + ":" + sProxy[1];
-	if (sProxy.length == 2) {
-		sProxy = "http://" + proxyHost;
-		return (sProxy);
-	} else {
-		var proxyAuth = sProxy[2] + ":" + sProxy[3];
-		sProxy = "http://" + proxyAuth.trimLeft().trimRight().toString() + "@" + proxyHost;
-		return (sProxy);
+	try {
+		var sProxy = proxy.split(':');
+		var proxyHost = sProxy[0] + ":" + sProxy[1];
+		if (sProxy.length == 2) {
+			sProxy = "http://" + proxyHost;
+			return (sProxy);
+		} else {
+			var proxyAuth = sProxy[2] + ":" + sProxy[3];
+			sProxy = "http://" + proxyAuth.trimLeft().trimRight().toString() + "@" + proxyHost;
+			return (sProxy);
+		}
+	} catch (e) {
+		return '';
 	}
 }
+
 function getRandomProxy() {
 	var proxies = global.proxies;
 	if (proxies[0] != '') {
@@ -104,12 +106,12 @@ exports.getRaffleToken = function (request, task, profile) {
 			var parsed = JSON.parse(body);
 			var raffleToken = parsed['token'];
 			var landedAt = parsed['landed_at'];
-			if (!raffleToken || !landedAt) {			
+			if (!raffleToken || !landedAt) {
 				mainBot.mainBotWin.send('taskUpdate', {
 					id: task.taskID,
 					message: 'Error obtaining token. Retrying in ' + global.settings.retryDelay / 1000 + 's'
 				});
-				return setTimeout(() => exports.getRaffleToken(request, task, profile), global.settings.retryDelay); 
+				return setTimeout(() => exports.getRaffleToken(request, task, profile), global.settings.retryDelay);
 			}
 			mainBot.mainBotWin.send('taskUpdate', {
 				id: task.taskID,
@@ -126,16 +128,14 @@ exports.getRaffleToken = function (request, task, profile) {
 				message: 'Submitting entry in ' + task['nakedcph']['submit_delay'] / 1000 + 's to decrease automation detection'
 			});
 			return setTimeout(() => exports.submitRaffle(request, task, profile, raffleToken, landedAt), task['nakedcph']['submit_delay']);
-		}
-		else
-		{
+		} else {
 			var proxy2 = getRandomProxy();
 			task['proxy'] = proxy2;
 			mainBot.mainBotWin.send('taskUpdate', {
 				id: task.taskID,
 				message: 'Error. Retrying in ' + global.settings.retryDelay / 1000 + 's'
 			});
-			return setTimeout(() => exports.getRaffleToken(request, task, profile), global.settings.retryDelay); 
+			return setTimeout(() => exports.getRaffleToken(request, task, profile), global.settings.retryDelay);
 		}
 	});
 }
@@ -158,36 +158,31 @@ exports.submitRaffle = function (request, task, profile, raffleToken, landedAt) 
 	}, function callback(error, response, body) {
 		if (!error && response.statusCode == 200) {
 			try {
-			parsed = JSON.parse(body);
+				parsed = JSON.parse(body);
 			} catch (e) {}
 			var message = parsed['message'];
-			if(message == 'success')
-			{
+			if (message == 'success') {
 				mainBot.mainBotWin.send('taskUpdate', {
 					id: task.taskID,
 					message: 'Entry submitted!'
 				});
-				mainBot.sendWebhook(task['taskSiteSelect'], task['taskEmail'], ''); 
+				mainBot.sendWebhook(task['taskSiteSelect'], task['taskEmail'], '');
 				return;
 			}
-		}
-		else
-		{
+		} else {
 			console.log(body);
 			try {
 				parsed = JSON.parse(body);
 			} catch (e) {}
 			var error = parsed['error_code'];
-			if(!error)
-			{	
+			if (!error) {
 				mainBot.mainBotWin.send('taskUpdate', {
 					id: task.taskID,
 					message: 'Unknown error. Please contact the developers'
 				});
 				return setTimeout(() => exports.submitRaffle(request, task, profile, raffleToken, landedAt), task['nakedcph']['submit_delay']);
 			}
-			if(error == 'invalid-token')
-			{
+			if (error == 'invalid-token') {
 				mainBot.mainBotWin.send('taskUpdate', {
 					id: task.taskID,
 					message: 'Raffle not found'
@@ -205,10 +200,8 @@ exports.submitRaffle = function (request, task, profile, raffleToken, landedAt) 
 
 
 // Needed for country localizations being different per site
-function countryFormatter(profileCountry)
-{
-	switch(profileCountry)
-	{
+function countryFormatter(profileCountry) {
+	switch (profileCountry) {
 		case 'United Kingdom':
 			return 'United Kingdom';
 			break;
