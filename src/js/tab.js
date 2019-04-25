@@ -64,8 +64,8 @@ $("#settingsTab").click(function(){
 $("#creattask").click(function(){
   tabx = 5;
   if (tabx = 5) {
-    $(".tasks").get(0).style.setProperty("left", "0");
-    $(".tasks").get(0).style.setProperty("top", "-100%"); 
+    $(".tasks").get(0).style.setProperty("left", "100%");
+    $(".tasks").get(0).style.setProperty("top", "0px"); 
 	$(".under-line").get(0).style.setProperty("height", "0px");
 }  
 });
@@ -89,6 +89,24 @@ $("#autoenter").click(function(){
 }  
 });
 
+$("#eeconfig").click(function(){
+  tabx = 7;
+  if (tabx = 7) {
+    $(".tasks").get(0).style.setProperty("left", "0%");
+    $(".tasks").get(0).style.setProperty("top", "-100%"); 
+	$(".under-line").get(0).style.setProperty("height", "0px");
+}  
+});
+
+$("#addMails").click(function(){
+  tabx = 1;
+  if (tabx = 1) {   
+    $(".under-line").get(0).style.setProperty("left", "4%");
+    $(".tasks").get(0).style.setProperty("left", "0");
+    $(".tasks").get(0).style.setProperty("top", "90px");
+	$(".under-line").get(0).style.setProperty("height", "6px");
+ }
+});
 
 $('#sickomode').change(function(){
     if ($(this).is(':checked')) {
