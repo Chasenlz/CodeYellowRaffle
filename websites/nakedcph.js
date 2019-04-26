@@ -48,6 +48,15 @@ function getRandomProxy() {
 }
 
 exports.performTask = function (task, profile) {
+	if(checkEmail(task))
+	{
+		mainBot.mainBotWin.send('taskUpdate', {
+			id: task.taskID,
+			type: task.type,
+			message: 'Email previously entered'
+		});
+		return;
+	}
 	var jar = require('request').jar()
 	var request = require('request').defaults({
 		jar: jar
@@ -67,6 +76,7 @@ exports.performTask = function (task, profile) {
 		if (!error && response.statusCode == 200) {
 			mainBot.mainBotWin.send('taskUpdate', {
 				id: task.taskID,
+				type: task.type,
 				message: 'GOT RAFFLE PAGE'
 			});
 			console.log('Got raffle page');
@@ -77,6 +87,7 @@ exports.performTask = function (task, profile) {
 			console.log('New proxy: ' + formatProxy(task['proxy']));
 			mainBot.mainBotWin.send('taskUpdate', {
 				id: task.taskID,
+				type: task.type,
 				message: 'Error. Retrying in ' + global.settings.retryDelay / 1000 + 's'
 			});
 			return setTimeout(() => exports.performTask(task, profile), global.settings.retryDelay); // REPLACE 3000 WITH RETRY DELAY
@@ -86,8 +97,18 @@ exports.performTask = function (task, profile) {
 
 
 exports.getRaffleToken = function (request, task, profile) {
+	if(checkEmail(task))
+	{
+		mainBot.mainBotWin.send('taskUpdate', {
+			id: task.taskID,
+			type: task.type,
+			message: 'Email previously entered'
+		});
+		return;
+	}
 	mainBot.mainBotWin.send('taskUpdate', {
 		id: task.taskID,
+		type: task.type,
 		message: 'Obtaining raffle token'
 	});
 	request({
@@ -109,22 +130,26 @@ exports.getRaffleToken = function (request, task, profile) {
 			if (!raffleToken || !landedAt) {
 				mainBot.mainBotWin.send('taskUpdate', {
 					id: task.taskID,
+					type: task.type,
 					message: 'Error obtaining token. Retrying in ' + global.settings.retryDelay / 1000 + 's'
 				});
 				return setTimeout(() => exports.getRaffleToken(request, task, profile), global.settings.retryDelay);
 			}
 			mainBot.mainBotWin.send('taskUpdate', {
 				id: task.taskID,
+				type: task.type,
 				message: 'Got raffle token'
 			});
 			console.log('Raffle Token: ' + raffleToken);
 			console.log('Landed at: ' + landedAt);
 			mainBot.mainBotWin.send('taskUpdate', {
 				id: task.taskID,
+				type: task.type,
 				message: 'Got raffle token'
 			});
 			mainBot.mainBotWin.send('taskUpdate', {
 				id: task.taskID,
+				type: task.type,
 				message: 'Submitting entry in ' + task['nakedcph']['submit_delay'] / 1000 + 's to decrease automation detection'
 			});
 			return setTimeout(() => exports.submitRaffle(request, task, profile, raffleToken, landedAt), task['nakedcph']['submit_delay']);
@@ -133,6 +158,7 @@ exports.getRaffleToken = function (request, task, profile) {
 			task['proxy'] = proxy2;
 			mainBot.mainBotWin.send('taskUpdate', {
 				id: task.taskID,
+				type: task.type,
 				message: 'Error. Retrying in ' + global.settings.retryDelay / 1000 + 's'
 			});
 			return setTimeout(() => exports.getRaffleToken(request, task, profile), global.settings.retryDelay);
@@ -142,6 +168,15 @@ exports.getRaffleToken = function (request, task, profile) {
 
 
 exports.submitRaffle = function (request, task, profile, raffleToken, landedAt) {
+	if(checkEmail(task))
+	{
+		mainBot.mainBotWin.send('taskUpdate', {
+			id: task.taskID,
+			type: task.type,
+			message: 'Email previously entered'
+		});
+		return;
+	}
 	var form = JSON.parse(`{"${task['nakedcph']['firstName']}": "${profile['firstName']}","${task['nakedcph']['lastName']}": "${profile['lastName']}","${task['nakedcph']['email']}": "${task['taskEmail']}","${task['nakedcph']['country']}": "${countryFormatter(profile['country'])}","form[token]": "${raffleToken}","form[landed_at]": "${landedAt}","form[language]": "en"}`);
 	request({
 		url: task['nakedcph']['submitRaffle'],
@@ -164,8 +199,10 @@ exports.submitRaffle = function (request, task, profile, raffleToken, landedAt) 
 			if (message == 'success') {
 				mainBot.mainBotWin.send('taskUpdate', {
 					id: task.taskID,
+					type: task.type,
 					message: 'Entry submitted!'
 				});
+				registerEmail(task);
 				mainBot.sendWebhook(task['taskSiteSelect'], task['taskEmail'], '');
 				return;
 			}
@@ -178,6 +215,7 @@ exports.submitRaffle = function (request, task, profile, raffleToken, landedAt) 
 			if (!error) {
 				mainBot.mainBotWin.send('taskUpdate', {
 					id: task.taskID,
+					type: task.type,
 					message: 'Unknown error. Please contact the developers'
 				});
 				return setTimeout(() => exports.submitRaffle(request, task, profile, raffleToken, landedAt), task['nakedcph']['submit_delay']);
@@ -185,6 +223,7 @@ exports.submitRaffle = function (request, task, profile, raffleToken, landedAt) 
 			if (error == 'invalid-token') {
 				mainBot.mainBotWin.send('taskUpdate', {
 					id: task.taskID,
+					type: task.type,
 					message: 'Raffle not found'
 				});
 				console.log('Raffle not found');
@@ -197,6 +236,31 @@ exports.submitRaffle = function (request, task, profile, raffleToken, landedAt) 
 
 
 
+// Checks if this email was already entered into a raffle
+function checkEmail(task)
+{
+	if(task['taskTypeOfEmail'] == 'saved')
+	{
+		if(global.emails[task['taskEmail']][task['taskSiteSelect'] + '_' + task['filterID']] == true && task['type'] == 'mass')
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+}
+// Saves email in emails.json to show email was entered 
+function registerEmail(task)
+{
+	if(task['taskTypeOfEmail'] == 'saved')
+	{
+		var variantName = task['taskSiteSelect'] + '_' + task['filterID'];
+		global.emails[task['taskEmail']][variantName] = true;
+		mainBot.saveEmails(global.emails);
+	}
+}
 
 
 // Needed for country localizations being different per site
@@ -228,6 +292,12 @@ function countryFormatter(profileCountry) {
 			break;
 		case 'Italy':
 			return 'Italy';
+			break;
+		case 'Netherlands':
+			return 'Netherlands';
+			break;
+		case 'Czech Republic':
+			return 'Czech Republic';
 			break;
 	}
 }

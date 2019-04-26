@@ -46,6 +46,15 @@ function getRandomProxy() {
 }
 
 exports.performTask = function (task, profile) {
+	if(checkEmail(task))
+	{
+		mainBot.mainBotWin.send('taskUpdate', {
+			id: task.taskID,
+			type: task.type,
+			message: 'Email previously entered'
+		});
+		return;
+	}
 	var jar = require('request').jar()
 	var request = require('request').defaults({
 		jar: jar
@@ -68,6 +77,7 @@ exports.performTask = function (task, profile) {
 			task['proxy'] = proxy2;			
 			mainBot.mainBotWin.send('taskUpdate', {
 				id: task.taskID,
+				type: task.type,
 				message: 'Error. Retrying in ' + global.settings.retryDelay / 1000 + 's'
 			});
 			return setTimeout(() => exports.performTask(task, profile), global.settings.retryDelay); // REPLACE 3000 WITH RETRY DELAY
@@ -75,6 +85,7 @@ exports.performTask = function (task, profile) {
 		if (response.statusCode == 200) {
 			mainBot.mainBotWin.send('taskUpdate', {
 				id: task.taskID,
+				type: task.type,
 				message: 'Got raffle page'
 			});
 			console.log('Got raffle page');
@@ -84,6 +95,7 @@ exports.performTask = function (task, profile) {
 			if (raffleToken == undefined || pageID == undefined) {
 				mainBot.mainBotWin.send('taskUpdate', {
 					id: task.taskID,
+					type: task.type,
 					message: 'Raffle not found'
 				});
 				console.log('Raffle not found');
@@ -108,6 +120,7 @@ exports.performTask = function (task, profile) {
 			task['proxy'] = proxy2;			
 			mainBot.mainBotWin.send('taskUpdate', {
 				id: task.taskID,
+				type: task.type,
 				message: 'Error. Retrying in ' + global.settings.retryDelay / 1000 + 's'
 			});
 			return setTimeout(() => exports.performTask(task, profile), global.settings.retryDelay); // REPLACE 3000 WITH RETRY DELAY
@@ -119,6 +132,15 @@ exports.performTask = function (task, profile) {
 
 
 exports.submitRaffle = function (request, task, profile, raffleToken, pageID) {
+	if(checkEmail(task))
+	{
+		mainBot.mainBotWin.send('taskUpdate', {
+			id: task.taskID,
+			type: task.type,
+			message: 'Email previously entered'
+		});
+		return;
+	}
 	if (mainBot.taskCaptchas[task['taskID']] == undefined || mainBot.taskCaptchas[task['taskID']] == '') {
 		// NEEDS CAPTCHA AGAIN
 		return setTimeout(() => exports.performTask(task, profile), global.settings.retryDelay); // REPLACE 3000 WITH RETRY DELAY
@@ -148,6 +170,7 @@ exports.submitRaffle = function (request, task, profile, raffleToken, pageID) {
 				mainBot.taskCaptchas[task['taskID']] = '';
 				mainBot.mainBotWin.send('taskUpdate', {
 					id: task.taskID,
+					type: task.type,
 					message: 'Captcha error! Retrying'
 				});
 				return setTimeout(() => exports.performTask(task, profile), global.settings.retryDelay); // REPLACE 3000 WITH RETRY DELAY
@@ -156,6 +179,7 @@ exports.submitRaffle = function (request, task, profile, raffleToken, pageID) {
 			{
 				mainBot.mainBotWin.send('taskUpdate', {
 					id: task.taskID,
+					type: task.type,
 					message: 'Already entered!'
 				});
 				return;
@@ -166,14 +190,41 @@ exports.submitRaffle = function (request, task, profile, raffleToken, pageID) {
 			mainBot.taskCaptchas[task['taskID']]
 			mainBot.mainBotWin.send('taskUpdate', {
 				id: task.taskID,
+				type: task.type,
 				message: 'Entry submitted!'
 			});
+			registerEmail(task);
 			mainBot.sendWebhook(task['taskSiteSelect'], task['taskEmail'], ''); 
 			return;
 		}
 	});
 }
 
+// Checks if this email was already entered into a raffle
+function checkEmail(task)
+{
+	if(task['taskTypeOfEmail'] == 'saved')
+	{
+		if(global.emails[task['taskEmail']][task['taskSiteSelect'] + '_' + task['filterID']] == true && task['type'] == 'mass')
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+}
+// Saves email in emails.json to show email was entered 
+function registerEmail(task)
+{
+	if(task['taskTypeOfEmail'] == 'saved')
+	{
+		var variantName = task['taskSiteSelect'] + '_' + task['filterID'];
+		global.emails[task['taskEmail']][variantName] = true;
+		mainBot.saveEmails(global.emails);
+	}
+}
 
 
 // Needed for country localizations being different per site
@@ -207,6 +258,12 @@ function countryFormatter(profileCountry)
 			break;
 		case 'Italy':
 			return 'Italy';
+			break;
+		case 'Netherlands':
+			return 'Netherlands';
+			break;
+		case 'Czech Republic':
+			return 'Czech Republic';
 			break;
 	}
 }

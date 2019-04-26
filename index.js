@@ -417,6 +417,7 @@ function openBot(onReady) {
 		//if (module.exports.taskStatuses[task.taskID] != 'active') {
 		module.exports.mainBotWin.send('taskUpdate', {
 			id: task.taskID,
+			type: task.type,
 			message: 'Starting'
 		});
 		if (task['taskSiteSelect'] == 'nakedcph') {
@@ -451,6 +452,19 @@ function openBot(onReady) {
 			module.exports.mainBotWin.send('notify', {
 				length: 3000,
 				message: 'Proxies saved'
+			});
+		});
+	});
+
+	ipcMain.on('saveEmails', function (e, emails) {
+		global.emails = emails;
+		fs.writeFile(appDataDir + "\\emails.json", JSON.stringify(emails, null, 4), function (err) {
+			if (err) {
+				return;
+			}
+			module.exports.mainBotWin.send('notify', {
+				length: 3000,
+				message: 'Emails saved'
 			});
 		});
 	});
@@ -513,7 +527,15 @@ function saveProfiles() {
 	});
 }
 
-
+exports.saveEmails = function (emails) {
+	global.emails = emails;
+	fs.writeFile(appDataDir + "\\emails.json", JSON.stringify(emails, null, 4), function (err) {
+		if (err) {
+			return;
+		}
+		console.log('Emails saved')
+	});
+}
 // Sending webhook function
 exports.sendWebhook = function (website, email, tdsecure) {
 	var webhook = global.settings.discordWebhook;
@@ -691,7 +713,7 @@ function createOrGetFiles() {
 			if (currentVersion != body.version) {
 				console.log('Update required. Latest version: ' + body.version);
 				global.updateRequired = true;
-				global.downloadURL = body.download;
+				global.downloadURL = body.downloadURL;
 			}
 		});
 	if (fileExists('settings.json')) {
@@ -724,6 +746,23 @@ function createOrGetFiles() {
 		var parsed = JSON.parse('{"Example Profile":{"email":"example@gmail.com","firstName":"John", "lastName": "Doe", "address":"21 Cresent Road","aptSuite":"","zipCode":"UB3 1RJ","city":"London","country":"State/Province","country":"United Kingdom","stateProvince":"none","phoneNumber": "07700900087","email":"johndoe@gmail.com","cardType":"visa","cardNumber":"4242424242424242","expiryMonth":"06","expiryYear":"2023","CVV":"361"}}', null, 4);
 		makeFile('profiles.json', JSON.stringify(parsed, null, 4))
 		global.profiles = parsed;
+	}
+
+
+	if (fileExists('emails.json')) {
+		console.log("emails.json exists");
+		var fileContents = fs.readFileSync(appDataDir + "\\emails.json");
+		if (fileContents == '' || fileContents == null || fileContents == undefined) {
+			var parsed = JSON.parse('{}', null, 4);
+			makeFile('emails.json', JSON.stringify(parsed, null, 4))
+			global.emails = parsed;
+		} else {
+			global.emails = JSON.parse(fileContents);
+		}
+	} else {
+		var parsed = JSON.parse('{}', null, 4);
+		makeFile('emails.json', JSON.stringify(parsed, null, 4))
+		global.emails = parsed;
 	}
 
 	if (fileExists('proxies.txt')) {

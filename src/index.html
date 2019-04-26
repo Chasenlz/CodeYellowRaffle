@@ -100,7 +100,7 @@
                <div class="nav-icon"><img src="https://i.imgur.com/L2kuTAp.png" style="width: 80%;image-rendering: -webkit-optimize-contrast;">
                </div>
                <select class="nav-input" id="oneClickFilter" style="background: rgba(14, 14, 14, 0) !important;color: #000 !important;">
-                     <option class="taskSizeOption" value="default">Filter</option>
+                     <option value="default">Filter</option>
 
                </select>
             </div>
@@ -191,7 +191,7 @@
 		 
 		 <div style="width: 50%;" class="two-left">
                <div id="creattask" class="altnavi">Create Task</div>
-			   <div id="eeconfig" class="altnavi">Email Configure</div>
+			   <div id="eeconfig" class="altnavi">Configure emails</div>
             </div>
             <div style="width: 50%;" class="two-right">
                <div class="altnavi">Start All</div>
@@ -237,21 +237,21 @@
 		
 		<div style="padding: 2% 2% 6% 2%;margin-top: 2%;" class="email-gen-hold-con">
 		
-		<div style="margin-bottom: 10px;margin-top: -10px;" class="proxy-gen-i">Enter an email address that you want to jig!</div>
+		<div style="margin-bottom: 10px;margin-top: -10px;" class="proxy-gen-i">Enter a gmail email address that you want to jig!</div>
 		
 			<div style="width: 96%;float:left;margin-left: 2%;margin-top:2%;" class="create-row">
                <div class="inputicon"><i class="fa fa-envelope" aria-hidden="true"></i>
                </div>
-               <input class="createinput" id="eMails" placeholder="Email to jig">
+               <input class="createinput" id="gmailJigInput" placeholder="Gmail to jig">
             </div>
 		
 		
-		<div style="margin-top: 40px;" class="proxy-gen-i">Generate <b id="pamountshow">15</b> emails</div>
+		<div style="margin-top: 40px;" class="proxy-gen-i">Generate <b id="gmailLimitShow">15</b> emails</div>
 		<div style="margin-top: 45px;" class="slidecontainer">
-            <input id="pamount" type="range" min="0" max="100" value="50" class="slider">
+            <input id="gmailLimit" type="range" min="0" max="100" value="15" class="slider">
         </div>		
 		<div class="setterbummer">
-            <div style="margin-top: 10px;width: 30%;margin-bottom: 2%;" class="price-it-up">Generate Emails</div>
+            <div style="margin-top: 10px;width: 30%;margin-bottom: 2%;" id="generateGmails" class="price-it-up">Generate Emails</div>
         </div>
 		</div>
 		
@@ -263,16 +263,16 @@
 			<div style="width: 96%;float:left;margin-left: 2%;margin-top:2%;" class="create-row">
                <div class="inputicon"><i class="fa fa-globe" aria-hidden="true"></i>
                </div>
-               <input class="createinput" id="eMails" placeholder="Catchall">
+               <input class="createinput" id="catchallJigInput" placeholder="Catchall to jig">
             </div>
 		
 		
-		<div style="margin-top: 40px;" class="proxy-gen-i">Generate <b id="pamountshow2">15</b> emails</div>
+		<div style="margin-top: 40px;" class="proxy-gen-i">Generate <b id="catchallLimitShow">15</b> emails</div>
 		<div style="margin-top: 45px;" class="slidecontainer">
-            <input id="pamount2" type="range" min="0" max="100" value="50" class="slider">
+            <input id="catchallLimit" type="range" min="0" max="100" value="15" class="slider">
         </div>		
 		<div class="setterbummer">
-            <div style="margin-top: 10px;width: 30%;margin-bottom: 2%;" class="price-it-up">Generate Emails</div>
+            <div style="margin-top: 10px;width: 30%;margin-bottom: 2%;" id="generateCatchalls" class="price-it-up">Generate Emails</div>
         </div>
 		</div>
 		
@@ -282,14 +282,14 @@
 	  <div class="rights">
 		<div style="width: 100%; margin-left: 0%;background: rgba(0,0,0,0.5);" class="setterhat">
             <div class="settit">Input Emails</div>
-            <div class="setinfo">input emails here or use our generation to jig your emails!</div>
+            <div class="setinfo">input emails here or use our generation to easilly jig your emails!</div>
         </div>
             <div class="addcon" style="margin-top: 2%;">
                <!--    					<div style="padding: 20px;margin-bottom: 0px;background:rgba(0,0,0,0.6);" class="setterhat">
                   <div class="settit">Input proxies</div>
                   <div class="setinfo">Input your proxies here!</div>
                   </div> -->
-               <textarea class="barea" id="emailsToAdd" placeholder="email@email.com
+               <textarea class="barea" id="emailsToSave" placeholder="email@email.com
 email@email.com
 email@email.com
 email@email.com
@@ -299,7 +299,7 @@ email@email.com
 email@email.com
 email@email.com"></textarea>
                <div class="setterbummer">
-                  <div style="margin-top: 10px;width: 30%;" id="addMails" class="price-it-up">Input emails</div>
+                  <div style="margin-top: 10px;width: 30%;" id="saveEmailList" class="price-it-up">Save email list</div>
                </div>
             </div>
       </div>
@@ -394,10 +394,12 @@ email@email.com"></textarea>
                   <option value="Canada">Canada</option>
                   <option value="North Ireland">North Ireland</option>
                   <option value="Germany">Germany</option>
+                  <option value="Netherlands">Netherlands</option>
                   <option value="Switzerland">Switzerland</option>
                   <option value="France">France</option>
                   <option value="Spain">Spain</option>
                   <option value="Italy">Italy</option>
+                  <option value="Czech Republic">Czech Republic</option>
                </select>
             </div>
             <div style="width: 49%;float:right;" class="create-row">
@@ -411,6 +413,56 @@ email@email.com"></textarea>
                <select class="createinput" id="stateProvince">
                   <option value="default">State / Province</option>
                   <option value="none">None</option>
+				   <option value="AL" class="USProfileState">Alabama</option>
+					  <option value="AK" class="USProfileState">Alaska</option>
+					  <option value="AZ" class="USProfileState">Arizona</option>
+					  <option value="AR" class="USProfileState">Arkansas</option>
+					  <option value="CA" class="USProfileState">California</option>
+					  <option value="CO" class="USProfileState">Colorado</option>
+					  <option value="CT" class="USProfileState">Connecticut</option>
+					  <option value="DE" class="USProfileState">Delaware</option>
+					  <option value="FL" class="USProfileState">Florida</option>
+					  <option value="GA" class="USProfileState">Georgia</option>
+					  <option value="HI" class="USProfileState">Hawaii</option>
+					  <option value="ID" class="USProfileState">Idaho</option>
+					  <option value="IL" class="USProfileState">Illinois</option>
+					  <option value="IN" class="USProfileState">Indiana</option>
+					  <option value="IA" class="USProfileState">Iowa</option>
+					  <option value="KS" class="USProfileState">Kansas</option>
+					  <option value="KY" class="USProfileState">Kentucky</option>
+					  <option value="LA" class="USProfileState">Louisiana</option>
+					  <option value="ME" class="USProfileState">Maine</option>
+					  <option value="MD" class="USProfileState">Maryland</option>
+					  <option value="MA" class="USProfileState">Massachusetts</option>
+					  <option value="MI" class="USProfileState">Michigan</option>
+					  <option value="MN" class="USProfileState">Minnesota</option>
+					  <option value="MS" class="USProfileState">Mississippi</option>
+					  <option value="MO" class="USProfileState">Missouri</option>
+					  <option value="MT" class="USProfileState">Montana</option>
+					  <option value="NE" class="USProfileState">Nebraska</option>
+					  <option value="NV" class="USProfileState">Nevada</option>
+					  <option value="NH" class="USProfileState">New Hampshire</option>
+					  <option value="NJ" class="USProfileState">New Jersey</option>
+					  <option value="NM" class="USProfileState">New Mexico</option>
+					  <option value="NY" class="USProfileState">New York</option>
+					  <option value="NC" class="USProfileState">North Carolina</option>
+					  <option value="ND" class="USProfileState">North Dakota</option>
+					  <option value="OH" class="USProfileState">Ohio</option>
+					  <option value="OK" class="USProfileState">Oklahoma</option>
+					  <option value="OR" class="USProfileState">Oregon</option>
+					  <option value="PA" class="USProfileState">Pennsylvania</option>
+					  <option value="RI" class="USProfileState">Rhode Island</option>
+					  <option value="SC" class="USProfileState">South Carolina</option>
+					  <option value="SD" class="USProfileState">South Dakota</option>
+					  <option value="TN" class="USProfileState">Tennessee</option>
+					  <option value="TX" class="USProfileState">Texas</option>
+					  <option value="UT" class="USProfileState">Utah</option>
+					  <option value="VT" class="USProfileState">Vermont</option>
+					  <option value="VA" class="USProfileState">Virginia</option>
+					  <option value="WA" class="USProfileState">Washington</option>
+					  <option value="WV" class="USProfileState">West Virginia</option>
+					  <option value="WI" class="USProfileState">Wisconsin</option>
+					  <option value="WY" class="USProfileState">Wyoming</option>
                </select>
             </div>
             <div style="width: 49%;float:right;" class="create-row">
@@ -804,9 +856,10 @@ Performance mode
                <div class="create-row">
                   <div class="inputicon"><i class="far fa-envelope"></i>
                   </div>
-                  <select style="cursor: not-allowed;" class="createinput" disabled>
-                     <!-- temp disabled -->
-                     <option id="nonemail">Email Type</option>
+                  <select class="createinput" id="taskTypeOfEmail">
+                     <option value="default">Email Type</option>
+                     <option value="saved">Saved Emails</option>
+                     <option value="newEmail">New email</option>
                   </select>
                </div>
             </div>
@@ -816,24 +869,24 @@ Performance mode
                   </div>
                   <select class="createinput" id="taskSizeSelect">
                      <option value="default">Sizes</option>
-                     <option class="taskSizeOption" value="selectOnWin" disabled>Selected on Win</option>
-                     <option class="taskSizeOption" value="4" disabled>4</option>
-                     <option class="taskSizeOption" value="4.5" disabled>4.5</option>
-                     <option class="taskSizeOption" value="5" disabled>5</option>
-                     <option class="taskSizeOption" value="5.5" disabled>5.5</option>
-                     <option class="taskSizeOption" value="6" disabled>6</option>
-                     <option class="taskSizeOption" value="6.5" disabled>6.5</option>
-                     <option class="taskSizeOption" value="7" disabled>7</option>
-                     <option class="taskSizeOption" value="7.5" disabled>7.5</option>
-                     <option class="taskSizeOption" value="8" disabled>8</option>
-                     <option class="taskSizeOption" value="8.5" disabled>8.5</option>
-                     <option class="taskSizeOption" value="9" disabled>9</option>
-                     <option class="taskSizeOption" value="9.5" disabled>9.5</option>
-                     <option class="taskSizeOption" value="10" disabled>10</option>
-                     <option class="taskSizeOption" value="10.5" disabled>10.5</option>
-                     <option class="taskSizeOption" value="11" disabled>11</option>
-                     <option class="taskSizeOption" value="11.5" disabled>11.5</option>
-                     <option class="taskSizeOption" value="12" disabled>12</option>
+                     <option class="taskSizeOptionMass" value="selectOnWin" disabled>Selected on Win</option>
+                     <option class="taskSizeOptionMass" value="4" disabled>4</option>
+                     <option class="taskSizeOptionMass" value="4.5" disabled>4.5</option>
+                     <option class="taskSizeOptionMass" value="5" disabled>5</option>
+                     <option class="taskSizeOptionMass" value="5.5" disabled>5.5</option>
+                     <option class="taskSizeOptionMass" value="6" disabled>6</option>
+                     <option class="taskSizeOptionMass" value="6.5" disabled>6.5</option>
+                     <option class="taskSizeOptionMass" value="7" disabled>7</option>
+                     <option class="taskSizeOptionMass" value="7.5" disabled>7.5</option>
+                     <option class="taskSizeOptionMass" value="8" disabled>8</option>
+                     <option class="taskSizeOptionMass" value="8.5" disabled>8.5</option>
+                     <option class="taskSizeOptionMass" value="9" disabled>9</option>
+                     <option class="taskSizeOptionMass" value="9.5" disabled>9.5</option>
+                     <option class="taskSizeOptionMass" value="10" disabled>10</option>
+                     <option class="taskSizeOptionMass" value="10.5" disabled>10.5</option>
+                     <option class="taskSizeOptionMass" value="11" disabled>11</option>
+                     <option class="taskSizeOptionMass" value="11.5" disabled>11.5</option>
+                     <option class="taskSizeOptionMass" value="12" disabled>12</option>
                   </select>
                </div>
                <div class="create-row">
@@ -851,7 +904,7 @@ Performance mode
                <div style="margin-top: -8px;" class="create-row">
                   <div class="inputicon"><i class="fa fa-envelope" aria-hidden="true"></i>
                   </div>
-                  <input class="createinput" id="taskEmail" placeholder="Email Address">
+                  <input class="createinput" id="taskEmail" placeholder="Email Address" disabled>
                </div>
             </div>
             <div class="setterbummer">

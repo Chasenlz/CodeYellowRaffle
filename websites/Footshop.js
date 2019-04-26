@@ -45,12 +45,22 @@ function getRandomProxy() {
 }
 
 exports.performTask = function (task, profile) {
+	if(checkEmail(task))
+	{
+		mainBot.mainBotWin.send('taskUpdate', {
+			id: task.taskID,
+			type: task.type,
+			message: 'Email previously entered'
+		});
+		return;
+	}
 	var jar = require('request').jar()
 	var request = require('request').defaults({
 		jar: jar
 	});
 	mainBot.mainBotWin.send('taskUpdate', {
 		id: task.taskID,
+		type: task.type,
 		message: 'Obtaining Size ID'
 	});
 	request({
@@ -74,6 +84,7 @@ exports.performTask = function (task, profile) {
 					console.log('Got Size ID : ' + sizeID);
 					mainBot.mainBotWin.send('taskUpdate', {
 						id: task.taskID,
+						type: task.type,
 						message: 'GOT SIZE ID'
 					});
 					exports.getRaffle(request, task, profile, sizeID);
@@ -84,6 +95,7 @@ exports.performTask = function (task, profile) {
 			task['proxy'] = proxy2;
 			mainBot.mainBotWin.send('taskUpdate', {
 				id: task.taskID,
+				type: task.type,
 				message: 'Error. Retrying in ' + global.settings.retryDelay / 1000 + 's'
 			});
 			return setTimeout(() => exports.performTask(task, profile), global.settings.retryDelay);
@@ -95,9 +107,19 @@ exports.performTask = function (task, profile) {
 
 
 exports.getRaffle = function (request, task, profile, sizeID) {
+	if(checkEmail(task))
+	{
+		mainBot.mainBotWin.send('taskUpdate', {
+			id: task.taskID,
+			type: task.type,
+			message: 'Email previously entered'
+		});
+		return;
+	}
 	var raffleURL = 'https://releases.footshop.com/register/' + task['variant'] + '/Unisex/' + sizeID;
 	mainBot.mainBotWin.send('taskUpdate', {
 		id: task.taskID,
+		type: task.type,
 		message: 'Obtaining raffle page'
 	});
 	request({
@@ -116,6 +138,7 @@ exports.getRaffle = function (request, task, profile, sizeID) {
 			console.log('Got raffle page');
 			mainBot.mainBotWin.send('taskUpdate', {
 				id: task.taskID,
+				type: task.type,
 				message: 'Got raffle page'
 			});
 			request({
@@ -145,12 +168,14 @@ exports.getRaffle = function (request, task, profile, sizeID) {
 						console.log('Email used before');
 						return mainBot.mainBotWin.send('taskUpdate', {
 							id: task.taskID,
+							type: task.type,
 							message: 'Email previously entered'
 						});
 					} else if (body.phone == true) {
 						console.log('Phone number used before');
 						return mainBot.mainBotWin.send('taskUpdate', {
 							id: task.taskID,
+							type: task.type,
 							message: 'Phone number previously entered'
 						});
 					} else {
@@ -161,6 +186,7 @@ exports.getRaffle = function (request, task, profile, sizeID) {
 					task['proxy'] = proxy2;
 					mainBot.mainBotWin.send('taskUpdate', {
 						id: task.taskID,
+						type: task.type,
 						message: 'Error. Retrying in ' + global.settings.retryDelay / 1000 + 's'
 					});
 					return setTimeout(() => exports.getRaffle(request, task, profile, sizeID), global.settings.retryDelay);
@@ -171,6 +197,7 @@ exports.getRaffle = function (request, task, profile, sizeID) {
 			task['proxy'] = proxy2;
 			mainBot.mainBotWin.send('taskUpdate', {
 				id: task.taskID,
+				type: task.type,
 				message: 'Error. Retrying in ' + global.settings.retryDelay / 1000 + 's'
 			});
 			return setTimeout(() => exports.getRaffle(request, task, profile, sizeID), global.settings.retryDelay);
@@ -180,9 +207,19 @@ exports.getRaffle = function (request, task, profile, sizeID) {
 
 
 exports.submitRaffle = function (request, task, profile, sizeID) {
+	if(checkEmail(task))
+	{
+		mainBot.mainBotWin.send('taskUpdate', {
+			id: task.taskID,
+			type: task.type,
+			message: 'Email previously entered'
+		});
+		return;
+	}
 	console.log('Submitting entry');
 	mainBot.mainBotWin.send('taskUpdate', {
 		id: task.taskID,
+		type: task.type,
 		message: 'Submitting entry'
 	});
 	request({
@@ -234,7 +271,7 @@ exports.submitRaffle = function (request, task, profile, sizeID) {
 					"birthday": `${getRandomInt(1982, 2000)}-0${getRandomInt(1, 9)}-0${getRandomInt(1, 9)}`,
 					"deliveryAddress": {
 						"country": countryFormatter(profile['country']),
-						"state": "",
+						"state": profile['stateProvince'],
 						"county": "",
 						"city": profile['city'],
 						"street": profile['address'],
@@ -254,14 +291,17 @@ exports.submitRaffle = function (request, task, profile, sizeID) {
 					if (!body['secure3DRedirectUrl']) {
 						mainBot.mainBotWin.send('taskUpdate', {
 							id: task.taskID,
+							type: task.type,
 							message: 'Unknown Error. Retrying in ' + global.settings.retryDelay / 1000 + 's'
 						});
 						return setTimeout(() => exports.submitRaffle(request, task, profile, sizeID), global.settings.retryDelay);
 					} else {
 						var open = require("open");
-						mainBot.sendWebhook(task['taskSiteSelect'], task['taskEmail'], body['secure3DRedirectUrl']);
+						registerEmail(task);
+						mainBot.sendWebhook(task['taskSiteSelect'], task['taskEmail'], body['secure3DRedirectUrl']);	
 						mainBot.mainBotWin.send('taskUpdate', {
 							id: task.taskID,
+							type: task.type,
 							message: 'Open ' + body['secure3DRedirectUrl']
 						});
 						open(body['secure3DRedirectUrl']);
@@ -272,6 +312,7 @@ exports.submitRaffle = function (request, task, profile, sizeID) {
 					task['proxy'] = proxy2;
 					mainBot.mainBotWin.send('taskUpdate', {
 						id: task.taskID,
+						type: task.type,
 						message: 'Error. Retrying in ' + global.settings.retryDelay / 1000 + 's'
 					});
 					return setTimeout(() => exports.submitRaffle(request, task, profile, sizeID), global.settings.retryDelay);
@@ -282,7 +323,31 @@ exports.submitRaffle = function (request, task, profile, sizeID) {
 	});
 }
 
-
+// Checks if this email was already entered into a raffle
+function checkEmail(task)
+{
+	if(task['taskTypeOfEmail'] == 'saved')
+	{
+		if(global.emails[task['taskEmail']][task['taskSiteSelect'] + '_' + task['filterID']] == true && task['type'] == 'mass')
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+}
+// Saves email in emails.json to show email was entered 
+function registerEmail(task)
+{
+	if(task['taskTypeOfEmail'] == 'saved')
+	{
+		var variantName = task['taskSiteSelect'] + '_' + task['filterID'];
+		global.emails[task['taskEmail']][variantName] = true;
+		mainBot.saveEmails(global.emails);
+	}
+}
 
 
 // Needed for country localizations being different per site
@@ -314,6 +379,12 @@ function countryFormatter(profileCountry) {
 			break;
 		case 'Italy':
 			return 'IT';
+			break;
+		case 'Netherlands':
+			return 'NL';
+			break;
+		case 'Czech Republic':
+			return 'CZ';
 			break;
 	}
 }

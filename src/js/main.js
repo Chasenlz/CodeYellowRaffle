@@ -22,20 +22,23 @@ const {
 // Main Variables
 var settings = require('electron').remote.getGlobal('settings');
 var profiles = require('electron').remote.getGlobal('profiles');
+var emails = require('electron').remote.getGlobal('emails');
 var tasks = [];
 var oneClickTasks = [];
 var proxies = require('electron').remote.getGlobal('proxies');
 var releases = require('electron').remote.getGlobal('releases');
 var updateRequired = require('electron').remote.getGlobal('updateRequired');
-var downloadURL = require('electron').remote.getGlobal('downloadURL');
 var selectedQuickTaskRelease;
-if (updateRequired == true) {
-	// $('#updateme').removeClass("hided");
+if (updateRequired != true) {
+	$('.update-dot.updateav').css("display", "none");
 }
 // End Main Variables
 
 // Loads saved proxies
 loadProxies(proxies, false);
+
+// Loads saved emails
+loadEmails(emails);
 
 $('#webhookUrl').val(require('electron').remote.getGlobal('settings').discordWebhook);
 settingsRetryDelay.value = require('electron').remote.getGlobal('settings').retryDelay;
@@ -48,7 +51,9 @@ loadReleases();
 
 
 
-
+$('.update-dot.updateav').click(function () {
+	ipcRenderer.send('downloadUpdate');
+});
 
 // Main notification's from bot
 ipcRenderer.on('notify', function (event, data) {
@@ -84,19 +89,25 @@ $('#openHarvester').click(function () {
 
 // Update tasks
 ipcRenderer.on('taskUpdate', function (event, data) {
-	//$(`#taskResult${data.id}`).html(data.message.toUpperCase())
-	$(`.enterRaffle#${data.id}`).html(data.message)
+	if(data.type == 'mass')
+	{
+		$(`#taskResult${data.id}`).html(data.message.toUpperCase())
+	}
+	else
+	{	
+		$(`.enterRaffle#${data.id}`).html(data.message)
+	}
 });
 
-$("body").on("click", ".startTask", function () {
+$("body").on("click", ".startTaskMass", function () {
 	var task = tasks[$(this).attr('id') - 1];
 	ipcRenderer.send('startTask', task, profiles[task['taskProfile']]);
 });
 
 $("#startAllTasks").click(function () {
-	$.each($(".startTask"), function () {
+	$.each($(".startTaskMass"), function () {
 		var task = tasks[$(this).attr('id') - 1];
-		ipcRenderer.send('startTask', task, profiles[task['taskProfile']]);
+		ipcRenderer.send('startTaskMass', task, profiles[task['taskProfile']]);
 	});
 });
 
@@ -251,6 +262,25 @@ $("#createTaskButton").click(function () {
 	var taskSpecificProxy = $('#taskSpecificProxy').val();
 	var taskQuantity = parseInt($('#taskQuantity').val());
 	var taskEmail = $('#taskEmail').val();
+	var taskTypeOfEmail = $('#taskTypeOfEmail').val();
+	if (taskTypeOfEmail == 'saved') {
+		var emailKeys = Object.keys(emails);
+		taskEmail = emailKeys[Math.floor(Math.random() * emailKeys.length)];
+		/* Here we need to generate a saved proxy but for now its just this*/
+		if (taskEmail == '') {
+			Materialize.toast("You have no saved emails. Please save some emails, or enter a new one", 2000, "rounded");
+			return;
+		}
+	} 
+	else if(taskTypeOfEmail == 'newEmail')
+	{
+		taskEmail = taskEmail;
+	}
+	else
+	{
+		Materialize.toast("Please select an email type", 2000, "rounded");
+		return;
+	}
 	var proxyUsed = '<td><i class="fas fa-bolt noprox"></i></td>';
 	if (selectedQuickTaskRelease != undefined) {
 		if (taskSiteSelect != 'default') {
@@ -275,6 +305,9 @@ $("#createTaskButton").click(function () {
 							if (taskSiteSelect == 'nakedcph') {
 								tasks.push({
 									taskID: taskID,
+									type: 'mass',
+									filterID: selectedQuickTaskRelease['filterID'],
+									taskTypeOfEmail: taskTypeOfEmail,
 									proxy: proxy,
 									taskSiteSelect: taskSiteSelect,
 									taskSizeSelect: taskSizeSelect,
@@ -286,6 +319,9 @@ $("#createTaskButton").click(function () {
 							} else if (taskSiteSelect == 'footshop') {
 								tasks.push({
 									taskID: taskID,
+									type: 'mass',
+									filterID: selectedQuickTaskRelease['filterID'],
+									taskTypeOfEmail: taskTypeOfEmail,
 									proxy: proxy,
 									taskSiteSelect: taskSiteSelect,
 									taskSizeSelect: taskSizeSelect,
@@ -297,6 +333,9 @@ $("#createTaskButton").click(function () {
 							} else if (taskSiteSelect == 'ymeuniverse') {
 								tasks.push({
 									taskID: taskID,
+									type: 'mass',
+									filterID: selectedQuickTaskRelease['filterID'],
+									taskTypeOfEmail: taskTypeOfEmail,
 									proxy: proxy,
 									taskSiteSelect: taskSiteSelect,
 									taskSizeSelect: taskSizeSelect,
@@ -308,6 +347,9 @@ $("#createTaskButton").click(function () {
 							} else {
 								tasks.push({
 									taskID: taskID,
+									type: 'mass',
+									filterID: selectedQuickTaskRelease['filterID'],
+									taskTypeOfEmail: taskTypeOfEmail,
 									proxy: proxy,
 									taskSiteSelect: taskSiteSelect,
 									taskSizeSelect: taskSizeSelect,
@@ -326,7 +368,7 @@ $("#createTaskButton").click(function () {
 								<td id="taskResult${taskID}">IDLE</td>
 								${proxyUsed}
 								<td>
-									<button class="action-butt startTask" id="${taskID}"><i class="fa fa-play" aria-hidden="true"></i>
+									<button class="action-butt startTaskMass" id="${taskID}"><i class="fa fa-play" aria-hidden="true"></i>
 									</button>
 									<button class="action-butt deleteTask" id="${taskID}"><i class="fa fa-trash" aria-hidden="true"></i>
 									</button>
@@ -341,7 +383,7 @@ $("#createTaskButton").click(function () {
 						$('#taskSiteSelect').val('default')
 						$('#taskSizeSelect').val('default')
 						$('.taskSiteOption').prop('disabled', true);
-						$('.taskSizeOption').prop('disabled', true);
+						$('.taskSizeOptionMass').prop('disabled', true);
 						$('#taskSpecificProxy').val('')
 						$('#taskEmail').val('')
 					} else {
@@ -448,6 +490,11 @@ $("#newProfile").click(function () {
 // Saves the current profile selected
 $("#saveProfile").click(function () {
 	var profileName = $('#profileList option:selected').attr('value');
+	var stateProvince = $('#stateProvince').val();
+	if(stateProvince == '' || stateProvince == 'none' || stateProvince == 'default')
+	{
+		stateProvince = '';
+	}
 	if (profileName != 'Example Profile') {
 		profiles[profileName] = {
 			"firstName": $('#firstName').val(),
@@ -457,7 +504,7 @@ $("#saveProfile").click(function () {
 			"zipCode": $('#zipCode').val(),
 			"city": $('#city').val(),
 			"country": $('#country').val(),
-			"stateProvince": $('#stateProvince').val(),
+			"stateProvince": stateProvince,
 			"phoneNumber": $('#phoneNumber').val(),
 			"cardType": $('#cardType').val(),
 			"cardNumber": $('#cardNumber').val(),
@@ -558,19 +605,16 @@ function loadReleases() {
 					variant: variant,
 					nakedcph: release['nakedcph'],
 					ymeuniverse: release['ymeuniverse'],
-					footshop: release['footshop']
+					footshop: release['footshop'],
+					filterID: filterID
 				});
 				var sizesHTML = '';
 				var sizes = release['sizes_supported_' + siteName];
-				for(var z = 0; z < sizes.length; z++)
-				{
-					if(sizes[z] == 'selectOnWin')
-					{
-						sizesHTML = sizesHTML + '<option class="taskSizeOption" value="'+sizes[z]+'">Selected on Win</option>\n';
-					}
-					else
-					{
-						sizesHTML = sizesHTML + '<option class="taskSizeOption" value="'+sizes[z]+'">'+sizes[z]+'</option>\n';
+				for (var z = 0; z < sizes.length; z++) {
+					if (sizes[z] == 'selectOnWin') {
+						sizesHTML = sizesHTML + '<option class="taskSizeOption" value="' + sizes[z] + '">Selected on Win</option>\n';
+					} else {
+						sizesHTML = sizesHTML + '<option class="taskSizeOption" value="' + sizes[z] + '">' + sizes[z] + '</option>\n';
 					}
 				}
 				$(".oneclick-container").append(`
@@ -604,24 +648,29 @@ function loadReleases() {
 	}
 }
 
-$('#oneClickFilter').on('change', function () {
-	var selectedVal = $('#oneClickFilter').val();
-	if(selectedVal != 'default')
+$('#taskTypeOfEmail').on('change', function () {
+	var selectedVal = $('#taskTypeOfEmail').val();
+	if(selectedVal == 'newEmail')
 	{
-		$.each($(".raffle-enter-container"), function () {
-			var filter = $(this).data('filter')
-			if(filter == selectedVal)
-			{
-				$(this).css('display', 'inline-block')
-			}
-			else
-			{
-				$(this).css('display', 'none')
-			}
-		});
+		$('#taskEmail').prop('disabled', false)
 	}
 	else
 	{
+		$('#taskEmail').prop('disabled', true)
+	}
+});
+$('#oneClickFilter').on('change', function () {
+	var selectedVal = $('#oneClickFilter').val();
+	if (selectedVal != 'default') {
+		$.each($(".raffle-enter-container"), function () {
+			var filter = $(this).data('filter')
+			if (filter == selectedVal) {
+				$(this).css('display', 'inline-block')
+			} else {
+				$(this).css('display', 'none')
+			}
+		});
+	} else {
 		$.each($(".raffle-enter-container"), function () {
 			$(this).css('display', 'inline-block')
 		});
@@ -645,6 +694,8 @@ $(".raffle-enter-container").on('click', '.enterRaffle', function () {
 					if (taskSiteSelect == 'nakedcph') {
 						ipcRenderer.send('startTask', {
 							taskID: taskID,
+							type: 'oneclick',
+							filterID: oneClicktask['filterID'],
 							proxy: proxy,
 							taskSiteSelect: taskSiteSelect,
 							taskSizeSelect: taskSizeSelect,
@@ -656,6 +707,8 @@ $(".raffle-enter-container").on('click', '.enterRaffle', function () {
 					} else if (taskSiteSelect == 'footshop') {
 						ipcRenderer.send('startTask', {
 							taskID: taskID,
+							type: 'oneclick',
+							filterID: oneClicktask['filterID'],
 							proxy: proxy,
 							taskSiteSelect: taskSiteSelect,
 							taskSizeSelect: taskSizeSelect,
@@ -667,6 +720,8 @@ $(".raffle-enter-container").on('click', '.enterRaffle', function () {
 					} else if (taskSiteSelect == 'ymeuniverse') {
 						ipcRenderer.send('startTask', {
 							taskID: taskID,
+							type: 'oneclick',
+							filterID: oneClicktask['filterID'],
 							proxy: proxy,
 							taskSiteSelect: taskSiteSelect,
 							taskSizeSelect: taskSizeSelect,
@@ -695,7 +750,7 @@ $(".releases-container").on('click', '.selectQuick', function () {
 	$('#taskSiteSelect').val('default')
 	$('#taskSizeSelect').val('default')
 	$('.taskSiteOption').prop('disabled', true);
-	$('.taskSizeOption').prop('disabled', true);
+	$('.taskSizeOptionMass').prop('disabled', true);
 	var id = $(this).attr('id');
 	var release = releases[id];
 	var sitesAvailable = Object.keys(releases[id]['sites_supported']);
@@ -709,14 +764,127 @@ $(".releases-container").on('click', '.selectQuick', function () {
 
 $('#taskSiteSelect').on('change', function () {
 	$('#taskSizeSelect').val('default')
-	$('.taskSizeOption').prop('disabled', true);
+	$('.taskSizeOptionMass').prop('disabled', true);
 	var sizesAvailable = selectedQuickTaskRelease['sizes_supported_' + this.value];
 	for (var i = 0; i < sizesAvailable.length; i++) {
-		$('.taskSizeOption[value="' + sizesAvailable[i] + '"').prop('disabled', false);
+		$('.taskSizeOptionMass[value="' + sizesAvailable[i] + '"').prop('disabled', false);
 	}
 });
 
 
+
+$("#saveEmailList").click(function () {
+	var emailsToSave = $('#emailsToSave').val().split('\n')
+	if(emailsToSave.length == 1 && emailsToSave[0] == '')
+	{
+		emails = {};
+		loadEmails({});
+		ipcRenderer.send('saveEmails', emails)
+		$('#defaultOpen').click()
+		return;
+	}
+	// just make it click it i think
+	var error = false;
+	var error2 = false;
+	$('#defaultOpen').click()
+	for (var i = 0; i < emailsToSave.length; i++) {
+		var email = emailsToSave[i];
+		if (validateEmail(email) != false) {
+			if (emails[email] == undefined) {
+				emails[email] = {
+				};
+			}
+			else
+			{
+				if(email != '')
+				{
+					error2 = true;
+				}
+			}
+		} else {
+			if(email != '')
+			{
+				error = true;
+			}
+		}
+	}
+	loadEmails(emails);
+	ipcRenderer.send('saveEmails', emails)
+	if (error2) {
+		Materialize.toast("Some of your emails are already saved and therefore have not been saved.", 2000, "rounded");
+		return;
+	}
+
+	if (error) {
+		Materialize.toast("Some of your emails are not valid and therefore have not been saved.", 2000, "rounded");
+	}
+	else
+	{
+		Materialize.toast("Saving and updating emails.", 2000, "rounded");
+	}
+});
+
+// Generate gmail dot trick emails
+$('#generateGmails').click(function () {
+	var gmail = $('#gmailJigInput').val();
+	if (gmail == '') {
+		Materialize.toast("Please enter a gmail email address.", 2000, "rounded");
+	} else {
+		var email = gmail;
+		var emailsRequired = $('#gmailLimit').val();
+		var emailsGenerated = 0;
+		let username = email.split('@')[0];
+		var username_length = username.length;
+		var combinations = Math.pow(2, username_length - 1);
+		for (i = 0; i < combinations; i++) {
+			var bin = decbin(i, username_length - 1);
+			var full_email = "";
+			for (j = 0; j < (username_length - 1); j++) {
+				full_email += username[j];
+				if (bin[j] == 1) {
+					full_email += ".";
+				}
+			}
+			full_email += username[j] + "@gmail.com";
+			if (emailsGenerated < emailsRequired) {
+				$('#emailsToSave').val($('#emailsToSave').val() + full_email + '\n')
+				emailsGenerated += 1;
+			} else {
+				return;
+			}
+		}
+	}
+});
+
+// Generate catchall emails
+$('#generateCatchalls').click(function () {
+	var catchall = $('#catchallJigInput').val();
+	var emailsRequired = $('#catchallLimit').val();
+	if (catchall == '') {
+		Materialize.toast("Please enter a catchall domain.", 2000, "rounded");
+	} else {
+		if (catchall.includes('@')) {
+			for (var i = 0; i < emailsRequired; i++) {
+				var full_email = randomString(Math.floor(Math.random() * (22 - 8) + 8)) + catchall;
+				$('#emailsToSave').val($('#emailsToSave').val() + full_email + '\n')
+			}
+		} else {
+			for (var i = 0; i < emailsRequired; i++) {
+				var full_email = randomString(Math.floor(Math.random() * (22 - 8) + 8)) + '@' + catchall;
+				$('#emailsToSave').val($('#emailsToSave').val() + full_email + '\n')
+			}
+		}
+	}
+});
+
+
+function loadEmails(emailsToAdd) {
+	$('#emailsToSave').val('')
+	emailsToAdd = Object.keys(emailsToAdd);
+	for (var i = 0; i < emailsToAdd.length; i++) {
+		$('#emailsToSave').val($('#emailsToSave').val() + emailsToAdd[i] + '\n')
+	}
+}
 
 
 
@@ -725,3 +893,29 @@ function validateEmail(email) {
 	var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 	return re.test(String(email).toLowerCase());
 }
+
+
+
+
+
+
+
+// Used for gmail jig
+function decbin(dec, length) {
+	var out = "";
+	while (length--)
+		out += (dec >> length) & 1;
+	return out;
+}
+
+// Used for catchall jig
+var randomString = function (len, bits) {
+	bits = bits || 36;
+	var outStr = "",
+		newStr;
+	while (outStr.length < len) {
+		newStr = Math.random().toString(bits).slice(2);
+		outStr += newStr.slice(0, Math.min(newStr.length, (len - outStr.length)));
+	}
+	return outStr.toUpperCase();
+};

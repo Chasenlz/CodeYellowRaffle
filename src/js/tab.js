@@ -132,18 +132,18 @@ $(".singleenter").click(function() {
 
 
 
-var slider = document.getElementById("pamount");
-var output = document.getElementById("pamountshow");
+var slider = document.getElementById("gmailLimit");
+var output = document.getElementById("gmailLimitShow");
 output.innerHTML = slider.value;
 
 slider.oninput = function() {
   output.innerHTML = this.value;
 }
 
-var slider = document.getElementById("pamount2");
-var output = document.getElementById("pamountshow2");
-output.innerHTML = slider.value;
+var slider2 = document.getElementById("catchallLimit");
+var output2 = document.getElementById("catchallLimitShow");
+output2.innerHTML = slider2.value;
 
-slider.oninput = function() {
-  output.innerHTML = this.value;
+slider2.oninput = function() {
+  output2.innerHTML = this.value;
 }
