@@ -15,7 +15,7 @@
 	along with this program (license.md).  If not, see <http://www.gnu.org/licenses/>.
 */
 
-var currentVersion = '0.0.1';
+var currentVersion = '0.0.2';
 // LATER REMOVE EMAIL FROM if (fileExists('profiles.json')) {
 const open = require("open");
 const electron = require('electron');
@@ -363,9 +363,6 @@ function openBot(onReady) {
 			//win.setMenu(null);
 			module.exports.mainBotWin.loadURL(`file://${__dirname}/src/index.html`);
 		});
-		app.on('window-all-closed', () => {
-			if (process.platform != 'darwin') app.quit();
-		});
 	} else {
 		module.exports.mainBotWin = new BrowserWindow({
 			width: 1100,
@@ -375,16 +372,14 @@ function openBot(onReady) {
 		});
 		//win.setMenu(null);
 		module.exports.mainBotWin.loadURL(`file://${__dirname}/src/index.html`);
-		app.on('window-all-closed', () => {
-			if (process.platform != 'darwin') app.quit();
-		});
 	}
 	// FOR DEBUGGING 
-	module.exports.mainBotWin.webContents.openDevTools()
+	//module.exports.mainBotWin.webContents.openDevTools()
 	// WHEN A MESSAGE IS RECEIVED FROM THE APPLICATION
 
 	module.exports.mainBotWin.on('close', function (event) {
-		if (process.platform != 'darwin') app.quit();
+		event.preventDefault();
+		process.exit()
 	});
 
 	// Save retry delay
@@ -503,7 +498,6 @@ function openBot(onReady) {
 		module.exports.mainBotWin.minimize();
 	});
 	ipcMain.on('closeM', function (e) {
-		app.quit();
 		process.exit()
 	});
 }

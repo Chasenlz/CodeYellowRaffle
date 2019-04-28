@@ -32,10 +32,6 @@ $(".sign-op-main").toggleClass("skop");
   
 });
 
-const remote = require('electron').remote
-$('#close').on('click', e => {
-    remote.getCurrentWindow().close()
-})
 
 
 

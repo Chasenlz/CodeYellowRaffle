@@ -55,6 +55,10 @@ $('.update-dot.updateav').click(function () {
 	ipcRenderer.send('downloadUpdate');
 });
 
+$('#close').click(function () {
+	ipcRenderer.send('closeM');
+});
+
 // Main notification's from bot
 ipcRenderer.on('notify', function (event, data) {
 	Materialize.toast(data.message, data.length, "rounded");
