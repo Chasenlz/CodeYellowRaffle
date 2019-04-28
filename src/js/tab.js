@@ -65,7 +65,7 @@ $("#creattask").click(function(){
   tabx = 5;
   if (tabx = 5) {
     $(".tasks").get(0).style.setProperty("left", "100%");
-    $(".tasks").get(0).style.setProperty("top", "0px"); 
+    $(".tasks").get(0).style.setProperty("top", "80px"); 
 	$(".under-line").get(0).style.setProperty("height", "0px");
 }  
 });
