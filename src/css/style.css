@@ -145,6 +145,7 @@ body {
   user-drag: none;
   -webkit-filter: drop-shadow(0px 0px 10px rgba(0,0,0,0.4));
   filter: drop-shadow(0px 0px 10px rgba(0,0,0,0.4));
+  transition: .5s;
 }
 
 .nav-item {
