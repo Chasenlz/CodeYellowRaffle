@@ -1,4 +1,4 @@
-/*
+startAllTasks/*
 	Copyright (C) 2019 Code Yellow
 
 	This program is free software: you can redistribute it and/or modify
@@ -111,7 +111,7 @@ $("body").on("click", ".startTaskMass", function () {
 $("#startAllTasks").click(function () {
 	$.each($(".startTaskMass"), function () {
 		var task = tasks[$(this).attr('id') - 1];
-		ipcRenderer.send('startTaskMass', task, profiles[task['taskProfile']]);
+		ipcRenderer.send('startTask', task, profiles[task['taskProfile']]);
 	});
 });
 
