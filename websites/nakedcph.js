@@ -47,7 +47,10 @@ function getRandomProxy() {
 	}
 }
 
-exports.performTask = function (task, profile) {
+exports.performTask = function (task, profile) {	
+	if (shouldStop(task.taskID) == true) {
+        return;
+    }
 	if(checkEmail(task))
 	{
 		mainBot.mainBotWin.send('taskUpdate', {
@@ -55,6 +58,7 @@ exports.performTask = function (task, profile) {
 			type: task.type,
 			message: 'Email previously entered'
 		});
+		mainBot.taskStatuses[task.taskID] = 'idle';
 		return;
 	}
 	var jar = require('request').jar()
@@ -96,7 +100,10 @@ exports.performTask = function (task, profile) {
 }
 
 
-exports.getRaffleToken = function (request, task, profile) {
+exports.getRaffleToken = function (request, task, profile) {	
+	if (shouldStop(task.taskID) == true) {
+        return;
+    }
 	if(checkEmail(task))
 	{
 		mainBot.mainBotWin.send('taskUpdate', {
@@ -104,6 +111,7 @@ exports.getRaffleToken = function (request, task, profile) {
 			type: task.type,
 			message: 'Email previously entered'
 		});
+		mainBot.taskStatuses[task.taskID] = 'idle';
 		return;
 	}
 	mainBot.mainBotWin.send('taskUpdate', {
@@ -167,7 +175,10 @@ exports.getRaffleToken = function (request, task, profile) {
 }
 
 
-exports.submitRaffle = function (request, task, profile, raffleToken, landedAt) {
+exports.submitRaffle = function (request, task, profile, raffleToken, landedAt) {	
+	if (shouldStop(task.taskID) == true) {
+        return;
+    }
 	if(checkEmail(task))
 	{
 		mainBot.mainBotWin.send('taskUpdate', {
@@ -175,6 +186,7 @@ exports.submitRaffle = function (request, task, profile, raffleToken, landedAt) 
 			type: task.type,
 			message: 'Email previously entered'
 		});
+		mainBot.taskStatuses[task.taskID] = 'idle';
 		return;
 	}
 	var form = JSON.parse(`{"${task['nakedcph']['firstName']}": "${profile['firstName']}","${task['nakedcph']['lastName']}": "${profile['lastName']}","${task['nakedcph']['email']}": "${task['taskEmail']}","${task['nakedcph']['country']}": "${countryFormatter(profile['country'])}","form[token]": "${raffleToken}","form[landed_at]": "${landedAt}","form[language]": "en"}`);
@@ -204,6 +216,7 @@ exports.submitRaffle = function (request, task, profile, raffleToken, landedAt) 
 				});
 				registerEmail(task);
 				mainBot.sendWebhook(task['taskSiteSelect'], task['taskEmail'], '');
+				mainBot.taskStatuses[task.taskID] = 'idle';
 				return;
 			}
 		} else {
@@ -227,6 +240,7 @@ exports.submitRaffle = function (request, task, profile, raffleToken, landedAt) 
 					message: 'Raffle not found'
 				});
 				console.log('Raffle not found');
+				mainBot.taskStatuses[task.taskID] = 'idle';
 				return;
 			}
 		}
@@ -234,7 +248,18 @@ exports.submitRaffle = function (request, task, profile, raffleToken, landedAt) 
 }
 
 
-
+// Check if task should stop, for example if deleted
+function shouldStop(taskid) {
+    if (mainBot.taskStatuses[taskid] == 'stop') {
+        mainBot.taskStatuses[taskid] = 'idle';
+        return true;
+    } else if (mainBot.taskStatuses[taskid] == 'delete') {
+        mainBot.taskStatuses[taskid] = '';
+        return true;
+    } else {
+        return false;
+    }
+}
 
 // Checks if this email was already entered into a raffle
 function checkEmail(task)

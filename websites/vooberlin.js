@@ -46,6 +46,9 @@ function getRandomProxy() {
 }
 
 exports.performTask = function (task, profile) {
+	if (shouldStop(task.taskID) == true) {
+        return;
+    }
 	if(checkEmail(task))
 	{
 		mainBot.mainBotWin.send('taskUpdate', {
@@ -53,6 +56,7 @@ exports.performTask = function (task, profile) {
 			type: task.type,
 			message: 'Email previously entered'
 		});
+		mainBot.taskStatuses[task.taskID] = 'idle';
 		return;
 	}
 	var jar = require('request').jar()
@@ -99,6 +103,7 @@ exports.performTask = function (task, profile) {
 					message: 'Raffle not found'
 				});
 				console.log('Raffle not found');
+				mainBot.taskStatuses[task.taskID] = 'idle';
 				return;
 			}
 			console.log('Got rafle token: ' + raffleToken);
@@ -132,6 +137,9 @@ exports.performTask = function (task, profile) {
 
 
 exports.submitRaffle = function (request, task, profile, raffleToken, pageID) {
+	if (shouldStop(task.taskID) == true) {
+        return;
+    }
 	if(checkEmail(task))
 	{
 		mainBot.mainBotWin.send('taskUpdate', {
@@ -139,6 +147,7 @@ exports.submitRaffle = function (request, task, profile, raffleToken, pageID) {
 			type: task.type,
 			message: 'Email previously entered'
 		});
+		mainBot.taskStatuses[task.taskID] = 'idle';
 		return;
 	}
 	if (mainBot.taskCaptchas[task['taskID']] == undefined || mainBot.taskCaptchas[task['taskID']] == '') {
@@ -182,6 +191,7 @@ exports.submitRaffle = function (request, task, profile, raffleToken, pageID) {
 					type: task.type,
 					message: 'Already entered!'
 				});
+				mainBot.taskStatuses[task.taskID] = 'idle';
 				return;
 			}
 		}
@@ -195,9 +205,23 @@ exports.submitRaffle = function (request, task, profile, raffleToken, pageID) {
 			});
 			registerEmail(task);
 			mainBot.sendWebhook(task['taskSiteSelect'], task['taskEmail'], ''); 
+			mainBot.taskStatuses[task.taskID] = 'idle';
 			return;
 		}
 	});
+}
+
+// Check if task should stop, for example if deleted
+function shouldStop(taskid) {
+    if (mainBot.taskStatuses[taskid] == 'stop') {
+        mainBot.taskStatuses[taskid] = 'idle';
+        return true;
+    } else if (mainBot.taskStatuses[taskid] == 'delete') {
+        mainBot.taskStatuses[taskid] = '';
+        return true;
+    } else {
+        return false;
+    }
 }
 
 // Checks if this email was already entered into a raffle

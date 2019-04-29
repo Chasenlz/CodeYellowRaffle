@@ -22,8 +22,8 @@
 
 	<div class="drag-top"></div>
 	<div class="window-options">
-	<div id="closeM" class="window-icon" onclick="remote.getCurrentWindow().close()"><span class="lnr lnr-cross"></span></div>
-	<div id="minimize" class="window-icon" onclick="remote.getCurrentWindow().minimize();">－</div>
+	<div id="closeM" class="window-icon"><span class="lnr lnr-cross"></span></div>
+	<div id="minimizeM" class="window-icon">－</div>
 	</div>
 
 		<div class="shift-c">
@@ -59,7 +59,7 @@
 			<div class="centro">
 				<div class="titlet">Sign in to <b>RAFFLEAIO</b> </div>
 				<br>
-				<div class="smallinfo">sign in for free using your <b>RAFFLEAIO</b> account.</div>
+				<div class="smallinfo">Sign in for free using your <b>RAFFLEAIO</b> account.</div>
 				<br>
 				<input class="inputtag" id="emailAddress" placeholder="📧 Email Address">
 				<input class="inputtag" type="password" id="password" placeholder="🔑 Password">
@@ -87,7 +87,10 @@
             	Materialize.toast(data.message, data.length, "rounded");
             });
 			$("#closeM").click(function () {
-				ipcRenderer.send('closeA');
+				ipcRenderer.send('closeM');
+			});
+			$("#minimizeM").click(function () {
+				ipcRenderer.send('minimizeM');
 			});
 			$('#emailAddress').keypress(function (e) {
 			 var key = e.which;

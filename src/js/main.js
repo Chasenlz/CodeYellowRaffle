@@ -1,4 +1,4 @@
-startAllTasks/*
+/*
 	Copyright (C) 2019 Code Yellow
 
 	This program is free software: you can redistribute it and/or modify
@@ -51,12 +51,54 @@ loadReleases();
 
 
 
+ipcRenderer.on('profilesImported', function (event, data) {
+	console.log(data);
+	profiles = data;
+	ipcRenderer.send('saveProfiles', profiles);
+	var profileKeys = Object.keys(data);
+	for (var i = 0; i < profileKeys.length; i++) {
+		var keyName = profileKeys[i];
+		if($('#profileList option[value="'+keyName+'"]').length < 1)
+		{
+			$('#profileList').append($('<option>', {
+				value: keyName,
+				text: keyName
+			}));
+			$('#taskProfile').append($('<option>', {
+				value: keyName,
+				text: keyName
+			}));
+			$('#oneClicktaskProfile').append($('<option>', {
+				value: keyName,
+				text: keyName
+			}));
+		}
+	}
+});
+
+document.getElementById('importProfiles').onchange = function() {
+    ipcRenderer.send('importProfiles', this.files[this.files.length-1]['path'])
+	importProfiles.value = '';
+};
+
+document.getElementById('exportProfiles').onchange = function() {
+	ipcRenderer.send('exportProfiles', this.files[this.files.length-1]['path'])
+	exportProfiles.value = '';
+};
+
+//If update available and update icon clicked
 $('.update-dot.updateav').click(function () {
 	ipcRenderer.send('downloadUpdate');
 });
 
-$('#close').click(function () {
+// Close bot
+$('#closeM').click(function () {
 	ipcRenderer.send('closeM');
+});
+
+// Minimize bot
+$("#minimizeM").click(function () {
+	ipcRenderer.send('minimizeM');
 });
 
 // Main notification's from bot
@@ -116,30 +158,19 @@ $("#startAllTasks").click(function () {
 });
 
 $("body").on("click", ".deleteTask", function () {
-	if ($('#taskResult' + $(this).attr('id')).html() == 'IDLE' || $('#taskResult' + $(this).attr('id')).html() == 'ENTRY SUBMITTED!') {
-		var task = tasks[$(this).attr('id') - 1];
-		tasks[$(this).attr('id') - 1] = {};
-		$(this).parent().parent().remove();
-	} else {
-		Materialize.toast("You cannot delete a task in progress", 2000, "rounded");
-	}
+	var task = tasks[$(this).attr('id') - 1];
+	tasks[$(this).attr('id') - 1] = {};
+	ipcRenderer.send('deleteTask', task);
+	$(this).parent().parent().remove();
 });
 
 $("#deleteAllTasks").click(function () {
-	var inprog = false;
 	$.each($(".deleteTask"), function () {
-		if ($('#taskResult' + $(this).attr('id')).html() == 'IDLE' || $('#taskResult' + $(this).attr('id')).html() == 'ENTRY SUBMITTED!') {
-			var task = tasks[$(this).attr('id') - 1];
-			tasks[$(this).attr('id') - 1] = {};
-			$(this).parent().parent().remove();
-		} else {
-			inprog = true;
-		}
+		var task = tasks[$(this).attr('id') - 1];
+		tasks[$(this).attr('id') - 1] = {};
+		ipcRenderer.send('deleteTask', task);
+		$(this).parent().parent().remove();
 	});
-	if (inprog == true) {
-		Materialize.toast("You cannot delete some tasks in progress", 2000, "rounded");
-	}
-
 });
 
 

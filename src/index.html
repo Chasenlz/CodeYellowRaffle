@@ -15,9 +15,9 @@
    <body>
       <div class="drag-top"></div>
       <div class="window-options noselect">
-         <div id="close" class="window-icon"><span class="lnr lnr-cross"></span>
+         <div id="closeM" class="window-icon"><span class="lnr lnr-cross"></span>
          </div>
-         <div id="minimize" onclick="remote.getCurrentWindow().minimize();" class="window-icon">－</div>
+         <div id="minimizeM" class="window-icon">－</div>
       </div>
 	  
 	          <div class="under-line"></div>
@@ -321,13 +321,19 @@ email@email.com"></textarea>
                   <div class="settit">Profile</div>
                   <div class="setinfo">Enter a name for the profile, to create a blank profile.</div>
                </div>
-               <div style="width:80%;float:left;" class="create-row">
+               <div style="width:68%;float:left;" class="create-row">
                   <div class="inputicon"><i class="fa fa-user" aria-hidden="true"></i>
                   </div>
                   <input class="createinput" id="newProfileName" placeholder="Profile Name">
                </div>
-               <div style="width:20%;float:right;" class="create-row">
+               <div style="width:30%;float:right;" class="create-row">
                   <button class="butoneir" data-toggle="tooltip" data-placement="top" title="New profile" id="newProfile"><i class="fas fa-save"></i>
+                  </button>  
+				  <input id="importProfiles" type="file" accept=".json" hidden/>
+				  <button class="butoneir" data-toggle="tooltip" data-placement="top" title="Import profiles" id="importProfilesContainer" onclick="document.getElementById('importProfiles').click();"><i class="fas fa-file-import"></i>
+                  </button>
+				  <input id="exportProfiles" type="file" webkitdirectory directory hidden/>
+				  <button class="butoneir" data-toggle="tooltip" data-placement="top" title="Export profiles" id="exportProfilesContainer" onclick="document.getElementById('exportProfiles').click();"><i class="fas fa-file-import"></i>
                   </button>
                </div>
             </div>

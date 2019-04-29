@@ -45,6 +45,9 @@ function getRandomProxy() {
 }
 
 exports.performTask = function (task, profile) {
+	if (shouldStop(task.taskID) == true) {
+        return;
+    }
 	if(checkEmail(task))
 	{
 		mainBot.mainBotWin.send('taskUpdate', {
@@ -52,6 +55,7 @@ exports.performTask = function (task, profile) {
 			type: task.type,
 			message: 'Email previously entered'
 		});
+		mainBot.taskStatuses[task.taskID] = 'idle';
 		return;
 	}
 	var jar = require('request').jar()
@@ -107,6 +111,9 @@ exports.performTask = function (task, profile) {
 
 
 exports.getRaffle = function (request, task, profile, sizeID) {
+	if (shouldStop(task.taskID) == true) {
+        return;
+    }
 	if(checkEmail(task))
 	{
 		mainBot.mainBotWin.send('taskUpdate', {
@@ -114,6 +121,7 @@ exports.getRaffle = function (request, task, profile, sizeID) {
 			type: task.type,
 			message: 'Email previously entered'
 		});
+		mainBot.taskStatuses[task.taskID] = 'idle';
 		return;
 	}
 	var raffleURL = 'https://releases.footshop.com/register/' + task['variant'] + '/Unisex/' + sizeID;
@@ -166,6 +174,7 @@ exports.getRaffle = function (request, task, profile, sizeID) {
 					console.log(body);
 					if (body.email == true) {
 						console.log('Email used before');
+						mainBot.taskStatuses[task.taskID] = 'idle';
 						return mainBot.mainBotWin.send('taskUpdate', {
 							id: task.taskID,
 							type: task.type,
@@ -173,6 +182,7 @@ exports.getRaffle = function (request, task, profile, sizeID) {
 						});
 					} else if (body.phone == true) {
 						console.log('Phone number used before');
+						mainBot.taskStatuses[task.taskID] = 'idle';
 						return mainBot.mainBotWin.send('taskUpdate', {
 							id: task.taskID,
 							type: task.type,
@@ -207,6 +217,9 @@ exports.getRaffle = function (request, task, profile, sizeID) {
 
 
 exports.submitRaffle = function (request, task, profile, sizeID) {
+	if (shouldStop(task.taskID) == true) {
+        return;
+    }
 	if(checkEmail(task))
 	{
 		mainBot.mainBotWin.send('taskUpdate', {
@@ -214,6 +227,7 @@ exports.submitRaffle = function (request, task, profile, sizeID) {
 			type: task.type,
 			message: 'Email previously entered'
 		});
+		mainBot.taskStatuses[task.taskID] = 'idle';
 		return;
 	}
 	console.log('Submitting entry');
@@ -306,6 +320,7 @@ exports.submitRaffle = function (request, task, profile, sizeID) {
 						});
 						open(body['secure3DRedirectUrl']);
 						console.log(body);
+						mainBot.taskStatuses[task.taskID] = 'idle';
 					}
 				} else {
 					var proxy2 = getRandomProxy();
@@ -321,6 +336,19 @@ exports.submitRaffle = function (request, task, profile, sizeID) {
 
 		}
 	});
+}
+
+// Check if task should stop, for example if deleted
+function shouldStop(taskid) {
+    if (mainBot.taskStatuses[taskid] == 'stop') {
+        mainBot.taskStatuses[taskid] = 'idle';
+        return true;
+    } else if (mainBot.taskStatuses[taskid] == 'delete') {
+        mainBot.taskStatuses[taskid] = '';
+        return true;
+    } else {
+        return false;
+    }
 }
 
 // Checks if this email was already entered into a raffle

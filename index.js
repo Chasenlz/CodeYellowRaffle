@@ -108,6 +108,8 @@ module.exports.taskCaptchas = [];
 
 initialfolderExistsOrMkDir();
 
+module.exports.taskStatuses = [];
+
 
 
 getUpcomingReleases();
@@ -170,9 +172,6 @@ function openActivation(onReady) {
 			win.loadURL(`file://${__dirname}/src/login.html`);
 			//win.webContents.openDevTools()
 		});
-		app.on('window-all-closed', () => {
-			if (process.platform != 'darwin') app.quit();
-		});
 	} else {
 		win = new BrowserWindow({
 			width: 930,
@@ -182,14 +181,12 @@ function openActivation(onReady) {
 		});
 		win.setMenu(null);
 		win.loadURL(`file://${__dirname}/src/login.html`);
-		app.on('window-all-closed', () => {
-			if (process.platform != 'darwin') app.quit();
-		});
 		//win.webContents.openDevTools()
 	}
 	// WHEN A MESSAGE IS RECEIVED FROM THE APPLICATION
 	win.on('close', function (event) {
-		if (process.platform != 'darwin') app.quit();
+		event.preventDefault();
+		process.exit()
 	});
 	ipcMain.on('activateKey', function (e, emailAddress, password) {
 		console.log(emailAddress);
@@ -223,6 +220,14 @@ function openActivation(onReady) {
 	// Opens sign up page
 	ipcMain.on('signUp', function (e) {
 		open(signUpURL);
+	});
+	
+	// Utilities at the bottom
+	ipcMain.on('minimizeM', function (e) {
+		win.minimize();
+	});
+	ipcMain.on('closeM', function (e) {
+		process.exit()
 	});
 }
 
@@ -410,11 +415,16 @@ function openBot(onReady) {
 	// Start Task
 	ipcMain.on('startTask', function (e, task, profile) {
 		//if (module.exports.taskStatuses[task.taskID] != 'active') {
+		if (module.exports.taskStatuses[task.taskID] == 'active') {
+			console.log('Task in progress');
+			return;
+		}
 		module.exports.mainBotWin.send('taskUpdate', {
 			id: task.taskID,
 			type: task.type,
 			message: 'Starting'
 		});
+		module.exports.taskStatuses[task.taskID] = 'active';
 		if (task['taskSiteSelect'] == 'nakedcph') {
 			console.log('Nakedcph task started');
 			nakedcph.performTask(task, profile)
@@ -485,7 +495,94 @@ function openBot(onReady) {
 		global.profiles = profilesToSave;
 		saveProfiles()
 	});
-
+	
+	// Import profiles
+	ipcMain.on('importProfiles', function (e, path) {
+		var fileContents = fs.readFileSync(path);
+		try {
+			parsed = JSON.parse(fileContents);
+		} catch (e) {}
+			profileKeys = Object.keys(parsed);
+			var error1 = false;
+			var error2 = false;
+			var success = false;
+			if(!profileKeys || profileKeys.length < 1)
+			{
+				module.exports.mainBotWin.send('notify', {
+					length: 3000,
+					message: 'Invalid profile format'
+				});
+				return;
+			}
+			for(var i = 0; i < profileKeys.length; i++)
+			{
+				var currProfileName = profileKeys[i];
+				var currProfile = parsed[currProfileName];
+				if(currProfile['CVV'] == undefined || currProfile['address'] == undefined || currProfile['aptSuite'] == undefined ||  currProfile['cardNumber'] == undefined || currProfile['cardType'] == undefined || currProfile['city'] == undefined || currProfile['country'] == undefined || currProfile['expiryMonth'] == undefined || currProfile['expiryYear'] == undefined || currProfile['firstName'] == undefined || currProfile['lastName'] == undefined || currProfile['phoneNumber'] == undefined || currProfile['zipCode'] == undefined)
+				{	
+					console.log('Not a valid profile');
+					error1 = true;
+				}
+				else
+				{
+					if(global.profiles[currProfileName] == undefined)
+					{
+						if(currProfileName != 'Example Profile')
+						{
+							global.profiles[currProfileName] = currProfile;
+							console.log('Imported');
+							console.log(global.profiles);
+							success = true;
+						}
+					}
+					else if(currProfileName != 'Example Profile')
+					{
+						error2 = true;
+					}
+				}
+				if(i == profileKeys.length-1 && success == true)
+				{
+					module.exports.mainBotWin.send('notify', {
+						length: 3000,
+						message: 'Profiles imported and saved'
+					});
+					module.exports.mainBotWin.send('profilesImported', global.profiles);
+					saveProfiles()
+				}
+			}
+			if(error1)
+			{
+				module.exports.mainBotWin.send('notify', {
+					length: 3000,
+					message: 'Some profiles were not valid and therefore not imported'
+				});
+			}
+			if(error2)
+			{
+				module.exports.mainBotWin.send('notify', {
+					length: 3000,
+					message: 'Some profiles already exist with the same name and therefore were not imported'
+				});
+			}
+	});
+	
+	// Export profiles
+	ipcMain.on('exportProfiles', function (e, path) {
+		fs.writeFile(path + "\\profiles.json", JSON.stringify(global.profiles, null, 4), function (err) {
+			if (err) {
+				module.exports.mainBotWin.send('notify', {
+					length: 3000,
+					message: 'Error exporting profiles'
+				});
+				return;
+			}
+			module.exports.mainBotWin.send('notify', {
+				length: 3000,
+				message: 'Profiles exported'
+			});
+		});
+		
+	});
 
 
 	ipcMain.on('downloadUpdate', function (e) {
