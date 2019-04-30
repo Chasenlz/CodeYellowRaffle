@@ -205,7 +205,10 @@
 				document.getElementById('capTaskID').innerHTML = 'Awaiting Captcha';
 			}
 		}
-
+		
+		$('openGoogleLogin').click(function () {
+			ipcRenderer.send('login');
+		});
 		function minimize() {
             ipcRenderer.send('minimize');
         }

@@ -29,6 +29,7 @@ var proxies = require('electron').remote.getGlobal('proxies');
 var releases = require('electron').remote.getGlobal('releases');
 var updateRequired = require('electron').remote.getGlobal('updateRequired');
 var selectedQuickTaskRelease;
+var emailsForTasks = {};
 if (updateRequired != true) {
 	$('.update-dot.updateav').css("display", "none");
 }
@@ -298,22 +299,9 @@ $("#createTaskButton").click(function () {
 	var taskQuantity = parseInt($('#taskQuantity').val());
 	var taskEmail = $('#taskEmail').val();
 	var taskTypeOfEmail = $('#taskTypeOfEmail').val();
-	if (taskTypeOfEmail == 'saved') {
-		var emailKeys = Object.keys(emails);
-		taskEmail = emailKeys[Math.floor(Math.random() * emailKeys.length)];
-		/* Here we need to generate a saved proxy but for now its just this*/
-		if (taskEmail == '') {
-			Materialize.toast("You have no saved emails. Please save some emails, or enter a new one", 2000, "rounded");
-			return;
-		}
-	} 
-	else if(taskTypeOfEmail == 'newEmail')
+	if(taskQuantity > Object.keys(emails).length && taskTypeOfEmail == 'saved')
 	{
-		taskEmail = taskEmail;
-	}
-	else
-	{
-		Materialize.toast("Please select an email type", 2000, "rounded");
+		Materialize.toast("You only have " + Object.keys(emails).length + " emails saved, but want " + taskQuantity + " tasks", 3500, "rounded");
 		return;
 	}
 	var proxyUsed = '<td><i class="fas fa-bolt noprox"></i></td>';
@@ -321,95 +309,14 @@ $("#createTaskButton").click(function () {
 		if (taskSiteSelect != 'default') {
 			if (taskSizeSelect != 'default') {
 				if (taskQuantity >= 1) {
-					if (validateEmail(taskEmail) != false) {
+					if (validateEmail(taskEmail) != false || taskTypeOfEmail != 'newEmail') {
 						for (var i = 0; i < taskQuantity; i++) {
-							var taskID = tasks.length + 1;
-							var proxy = '';
-							if (taskSpecificProxy == '') {
-								proxy = proxies[Math.floor(Math.random() * proxies.length)]
-								/* Here we need to generate a saved proxy but for now its just this*/
-								if (proxy == undefined) {
-									proxy = '';
-								}
-							} else {
-								proxy = taskSpecificProxy;
+							if(createTask(taskSiteSelect, taskSizeSelect, taskProfile, taskSpecificProxy, taskQuantity, taskEmail, taskTypeOfEmail, proxyUsed) == true)
+							{
+								return;
 							}
-							if (proxy != '') {
-								proxyUsed = '<td><i class="fas fa-bolt isprox"></i></td>'
-							}
-							if (taskSiteSelect == 'nakedcph') {
-								tasks.push({
-									taskID: taskID,
-									type: 'mass',
-									filterID: selectedQuickTaskRelease['filterID'],
-									taskTypeOfEmail: taskTypeOfEmail,
-									proxy: proxy,
-									taskSiteSelect: taskSiteSelect,
-									taskSizeSelect: taskSizeSelect,
-									taskProfile: taskProfile,
-									taskEmail: taskEmail,
-									variant: selectedQuickTaskRelease['sites_supported'][taskSiteSelect],
-									nakedcph: selectedQuickTaskRelease['nakedcph']
-								});
-							} else if (taskSiteSelect == 'footshop') {
-								tasks.push({
-									taskID: taskID,
-									type: 'mass',
-									filterID: selectedQuickTaskRelease['filterID'],
-									taskTypeOfEmail: taskTypeOfEmail,
-									proxy: proxy,
-									taskSiteSelect: taskSiteSelect,
-									taskSizeSelect: taskSizeSelect,
-									taskProfile: taskProfile,
-									taskEmail: taskEmail,
-									variant: selectedQuickTaskRelease['sites_supported'][taskSiteSelect],
-									footshop: selectedQuickTaskRelease['footshop']
-								});
-							} else if (taskSiteSelect == 'ymeuniverse') {
-								tasks.push({
-									taskID: taskID,
-									type: 'mass',
-									filterID: selectedQuickTaskRelease['filterID'],
-									taskTypeOfEmail: taskTypeOfEmail,
-									proxy: proxy,
-									taskSiteSelect: taskSiteSelect,
-									taskSizeSelect: taskSizeSelect,
-									taskProfile: taskProfile,
-									taskEmail: taskEmail,
-									variant: selectedQuickTaskRelease['sites_supported'][taskSiteSelect],
-									ymeuniverse: selectedQuickTaskRelease['ymeuniverse']
-								});
-							} else {
-								tasks.push({
-									taskID: taskID,
-									type: 'mass',
-									filterID: selectedQuickTaskRelease['filterID'],
-									taskTypeOfEmail: taskTypeOfEmail,
-									proxy: proxy,
-									taskSiteSelect: taskSiteSelect,
-									taskSizeSelect: taskSizeSelect,
-									taskProfile: taskProfile,
-									taskEmail: taskEmail,
-									variant: selectedQuickTaskRelease['sites_supported'][taskSiteSelect],
-									fields: ''
-								});
-							}
-
-							$("tbody#tasks").append(
-								`<tr>
-								<td>${taskID}</td>
-								<td>${taskSiteSelect.toUpperCase()}</td>
-								<td>${taskProfile.toUpperCase()}</td>
-								<td id="taskResult${taskID}">IDLE</td>
-								${proxyUsed}
-								<td>
-									<button class="action-butt startTaskMass" id="${taskID}"><i class="fa fa-play" aria-hidden="true"></i>
-									</button>
-									<button class="action-butt deleteTask" id="${taskID}"><i class="fa fa-trash" aria-hidden="true"></i>
-									</button>
-								</td>
-							</tr>`);
 						}
+							
 						$('#defaultOpen').click()
 						$('#defaultOpen').attr('class', 'nav-item active')
 						selectedQuickTaskRelease = undefined;
@@ -443,7 +350,131 @@ $("#createTaskButton").click(function () {
 
 
 
+function createTask(taskSiteSelect, taskSizeSelect, taskProfile, taskSpecificProxy, taskQuantity, taskEmail, taskTypeOfEmail, proxyUsed)
+{
+	if (taskTypeOfEmail == 'saved') {
+		var emailKeys = Object.keys(emails);
+		taskEmail = emailKeys[Math.floor(Math.random() * emailKeys.length)];
+		if (taskEmail == '') {
+			Materialize.toast("You have no saved emails. Please save some emails, or enter a new one", 2000, "rounded");
+			return true;
+		}
+	} 
+	else if(taskTypeOfEmail == 'newEmail')
+	{
+		taskEmail = taskEmail;
+	}
+	else
+	{
+		Materialize.toast("Please select an email type", 2000, "rounded");
+		return true;
+	}
+	var taskID = tasks.length + 1;
+	var proxy = '';
+	if (taskSpecificProxy == '') {
+		proxy = proxies[Math.floor(Math.random() * proxies.length)]
+		/* Here we need to generate a saved proxy but for now its just this*/
+		if (proxy == undefined) {
+			proxy = '';
+		}
+	} else {
+		proxy = taskSpecificProxy;
+	}
+	if (proxy != '') {
+		proxyUsed = '<td><i class="fas fa-bolt isprox"></i></td>'
+	}
+	var variantName = taskSiteSelect + '_' + selectedQuickTaskRelease['filterID'];
+	if(emailsForTasks[taskEmail] != undefined)
+	{
+		if(emailsForTasks[taskEmail][variantName] == true)
+		{
+			//console.log("Email already used");
+			if(Object.keys(emailsForTasks).length == Object.keys(emails).length)
+			{
+				Materialize.toast("Maximum amount of tasks already created for your emails saved", 2000, "rounded");
+				return true;
+			}
+			else
+			{
+				createTask(taskSiteSelect, taskSizeSelect, taskProfile, taskSpecificProxy, taskQuantity, taskEmail, taskTypeOfEmail, proxyUsed)
+				return;
+			}
+		}
+	}
+	emailsForTasks[taskEmail] = { };
+	emailsForTasks[taskEmail][variantName] = true;
+	if (taskSiteSelect == 'nakedcph') {
+		tasks.push({
+			taskID: taskID,
+			type: 'mass',
+			filterID: selectedQuickTaskRelease['filterID'],
+			taskTypeOfEmail: taskTypeOfEmail,
+			proxy: proxy,
+			taskSiteSelect: taskSiteSelect,
+			taskSizeSelect: taskSizeSelect,
+			taskProfile: taskProfile,
+			taskEmail: taskEmail,
+			variant: selectedQuickTaskRelease['sites_supported'][taskSiteSelect],
+			nakedcph: selectedQuickTaskRelease['nakedcph']
+		});
+	} else if (taskSiteSelect == 'footshop') {
+		tasks.push({
+			taskID: taskID,
+			type: 'mass',
+			filterID: selectedQuickTaskRelease['filterID'],
+			taskTypeOfEmail: taskTypeOfEmail,
+			proxy: proxy,
+			taskSiteSelect: taskSiteSelect,
+			taskSizeSelect: taskSizeSelect,
+			taskProfile: taskProfile,
+			taskEmail: taskEmail,
+			variant: selectedQuickTaskRelease['sites_supported'][taskSiteSelect],
+			footshop: selectedQuickTaskRelease['footshop']
+		});
+	} else if (taskSiteSelect == 'ymeuniverse') {
+		tasks.push({
+			taskID: taskID,
+			type: 'mass',
+			filterID: selectedQuickTaskRelease['filterID'],
+			taskTypeOfEmail: taskTypeOfEmail,
+			proxy: proxy,
+			taskSiteSelect: taskSiteSelect,
+			taskSizeSelect: taskSizeSelect,
+			taskProfile: taskProfile,
+			taskEmail: taskEmail,
+			variant: selectedQuickTaskRelease['sites_supported'][taskSiteSelect],
+			ymeuniverse: selectedQuickTaskRelease['ymeuniverse']
+		});
+	} else {
+		tasks.push({
+			taskID: taskID,
+			type: 'mass',
+			filterID: selectedQuickTaskRelease['filterID'],
+			taskTypeOfEmail: taskTypeOfEmail,
+			proxy: proxy,
+			taskSiteSelect: taskSiteSelect,
+			taskSizeSelect: taskSizeSelect,
+			taskProfile: taskProfile,
+			taskEmail: taskEmail,
+			variant: selectedQuickTaskRelease['sites_supported'][taskSiteSelect]
+		});
+	}
 
+	$("tbody#tasks").append(
+		`<tr>
+		<td>${taskID}</td>
+		<td>${taskSiteSelect.toUpperCase()}</td>
+		<td>${taskProfile.toUpperCase()}</td>
+		<td id="taskResult${taskID}">IDLE</td>
+		${proxyUsed}
+		<td>
+			<button class="action-butt startTaskMass" id="${taskID}"><i class="fa fa-play" aria-hidden="true"></i>
+			</button>
+			<button class="action-butt deleteTask" id="${taskID}"><i class="fa fa-trash" aria-hidden="true"></i>
+			</button>
+		</td>
+	</tr>`);
+}
 
 
 
@@ -615,6 +646,7 @@ function loadReleases() {
 		var sitesSupported = release['sites_supported'];
 		var sitesSupportedKeys = Object.keys(sitesSupported);
 		var filterID = release['filterID'];
+		var selectButton = release['closed'] == undefined ? `<div class="price-it-up selectQuick" id="${i}">SELECT</div>` : `<div class="price-it-up" style="font-weight: 600;">RELEASED</div>`;
 		$(".releases-container").append(
 			`<div style="height: 230px;" class="realsetter">
 						<div class="setterhat">
@@ -623,7 +655,7 @@ function loadReleases() {
 						</div>
 						<img class="retimg" src="${release['image']}" style="margin-top:-17px;">
 						<div class="setterbum">
-							<div class="price-it-up selectQuick" id="${i}">SELECT</div>
+							${selectButton}
 						</div>
 					</div>`
 		);
@@ -766,6 +798,20 @@ $(".raffle-enter-container").on('click', '.enterRaffle', function () {
 							ymeuniverse: oneClicktask['ymeuniverse']
 						}, profiles[taskProfile]);
 					}
+					else
+					{
+						ipcRenderer.send('startTask', {
+							taskID: taskID,
+							type: 'oneclick',
+							filterID: oneClicktask['filterID'],
+							proxy: proxy,
+							taskSiteSelect: taskSiteSelect,
+							taskSizeSelect: taskSizeSelect,
+							taskProfile: taskProfile,
+							taskEmail: taskEmail,
+							variant: oneClicktask['variant']
+						}, profiles[taskProfile]);
+					}
 				} else {
 					Materialize.toast("Please input a valid Email", 2000, "rounded");
 				}
@@ -810,6 +856,7 @@ $('#taskSiteSelect').on('change', function () {
 
 $("#saveEmailList").click(function () {
 	var emailsToSave = $('#emailsToSave').val().split('\n')
+	emails = {};
 	if(emailsToSave.length == 1 && emailsToSave[0] == '')
 	{
 		emails = {};
@@ -818,7 +865,6 @@ $("#saveEmailList").click(function () {
 		$('#defaultOpen').click()
 		return;
 	}
-	// just make it click it i think
 	var error = false;
 	var error2 = false;
 	$('#defaultOpen').click()

@@ -109,6 +109,11 @@ exports.performTask = function (task, profile) {
 			console.log('Got rafle token: ' + raffleToken);
 			console.log('Got page ID: ' + pageID);
 			console.log('Now needs captcha');
+			mainBot.mainBotWin.send('taskUpdate', {
+				id: task.taskID,
+				type: task.type,
+				message: 'Awaiting captcha'
+			});
 			mainBot.requestCaptcha('vooberlin', task, false);
 			const capHandler = () => {
 				if (mainBot.taskCaptchas[task['taskID']] == undefined || mainBot.taskCaptchas[task['taskID']] == '') {
@@ -166,7 +171,7 @@ exports.submitRaffle = function (request, task, profile, raffleToken, pageID) {
 			'authority': 'raffle.vooberlin.com',
 			'x-requested-with': 'XMLHttpRequest'
 		},
-		body: 'token=' + raffleToken + '&page_id=' + pageID + '&shoes_size=69&action=send_request&fax=&name='+profile['firstName']+'&lastname='+profile['lastName']+'&email='+task['taskEmail']+'&contact_number='+profile['phoneNumber']+'&streetname='+profile['address']+'&housenumber='+profile['address']+'&postalcode='+profile['zipCode']+'&city='+profile['city']+'&country='+countryFormatter(profile['country'])+'&countryhidden=&g-recaptcha-response=' + mainBot.taskCaptchas[task['taskID']],
+		body: 'token=' + raffleToken + '&page_id=' + pageID + '&shoes_size='+sizeFormatter(task['taskSizeSelect'])+'&action=send_request&fax=&name='+profile['firstName']+'&lastname='+profile['lastName']+'&email='+task['taskEmail']+'&contact_number='+profile['phoneNumber']+'&streetname='+profile['address']+'&housenumber='+profile['address']+'&postalcode='+profile['zipCode']+'&city='+profile['city']+'&country='+countryFormatter(profile['country'])+'&countryhidden=&g-recaptcha-response=' + mainBot.taskCaptchas[task['taskID']],
 		proxy: formatProxy(task['proxy'])
 	}, function callback(error, response, body) {
 		body = JSON.parse(body);
@@ -288,6 +293,26 @@ function countryFormatter(profileCountry)
 			break;
 		case 'Czech Republic':
 			return 'Czech Republic';
+			break;
+	}
+}
+
+function sizeFormatter(taskSize) {
+	switch (taskSize) {
+		case '8':
+			return '56';
+			break;
+		case '9':
+			return '19';
+			break;
+		case '10':
+			return '76';
+			break;
+		case '11':
+			return '77';
+			break;
+		case '12':
+			return '78';
 			break;
 	}
 }
