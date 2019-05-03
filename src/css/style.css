@@ -1084,14 +1084,16 @@ select {
 
 .sliderf:before {
   position: absolute;
-  content: "";
+  content: "✕";
   height: 26px;
+  line-height: 26px;
   width: 26px;
   left: 0px;
   bottom: -8px;
   background-color: orange;
   -webkit-transition: .4s;
   transition: .4s;
+  background: #ff5454;
 }
 
 input:checked + .sliderf {
@@ -1106,6 +1108,8 @@ input:checked + .sliderf:before {
   -webkit-transform: translateX(34px);
   -ms-transform: translateX(34px);
   transform: translateX(34px);
+  content: "✔";
+  background: #54ff59;
 }
 
 /* Rounded sliders */
@@ -1900,4 +1904,50 @@ rgba(255, 255, 255, 0.1);
 	100% {
 		transform: scale(0.9);
 	}
+}
+
+.jig-tit {
+	margin-top: 10px;
+	height: 30px;
+	width: 100%;
+	float: left;
+	line-height: 30px;
+	text-align: center;
+	display: inline-block;
+	font-size: 20px;
+	color: #ffa500;
+}
+
+.jig-info {
+	height: 10px;
+	width: 100%;
+	float: left;
+	line-height: 10px;
+	text-align: center;
+	display: inline-block;
+	font-size: 12px;
+	color: #aaa;
+}
+
+.half-check-con {
+	height: 40px;
+	width: 33%;
+	float: left;
+	line-height: 40px;
+	text-align: center;
+	display: inline-block;
+	margin-top: 10px;
+}
+
+
+.half-check-tit {
+	height: 20px;
+	width: 33%;
+	float: left;
+	line-height: 20px;
+	text-align: center;
+	display: inline-block;
+	margin-top: -10px;
+	color: #aaa;
+	font-size: 12px;
 }
