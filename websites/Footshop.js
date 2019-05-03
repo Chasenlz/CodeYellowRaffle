@@ -16,7 +16,7 @@
 */
 
 var mainBot = require('../index.js')
-var cheerio = require('cheerio');
+const faker = require('faker');
 
 function formatProxy(proxy) {
 	if (proxy == '') {
@@ -45,7 +45,7 @@ function getRandomProxy() {
 }
 
 exports.performTask = function (task, profile) {
-	if (shouldStop(task.taskID) == true) {
+	if (shouldStop(task) == true) {
         return;
     }
 	if(checkEmail(task))
@@ -55,13 +55,30 @@ exports.performTask = function (task, profile) {
 			type: task.type,
 			message: 'Email previously entered'
 		});
-		mainBot.taskStatuses[task.taskID] = 'idle';
+		mainBot.taskStatuses[task['type']][task.taskID] = 'idle';
 		return;
 	}
 	var jar = require('request').jar()
 	var request = require('request').defaults({
 		jar: jar
 	});
+	
+	if(profile['jigProfileName'] == true)
+	{
+		profile['firstName'] = faker.fake("{{name.firstName}}");
+		profile['lastName'] = faker.fake("{{name.lastName}}");
+	}
+
+	if(profile['jigProfileAddress'] == true)
+	{
+		profile['aptSuite'] = faker.fake("{{address.secondaryAddress}}");
+	}
+
+	if(profile['jigProfilePhoneNumber'] == true)
+	{
+		profile['phoneNumber'] = faker.fake("{{phone.phoneNumberFormat}}");
+	}
+
 	mainBot.mainBotWin.send('taskUpdate', {
 		id: task.taskID,
 		type: task.type,
@@ -111,7 +128,7 @@ exports.performTask = function (task, profile) {
 
 
 exports.getRaffle = function (request, task, profile, sizeID) {
-	if (shouldStop(task.taskID) == true) {
+	if (shouldStop(task) == true) {
         return;
     }
 	if(checkEmail(task))
@@ -121,7 +138,7 @@ exports.getRaffle = function (request, task, profile, sizeID) {
 			type: task.type,
 			message: 'Email previously entered'
 		});
-		mainBot.taskStatuses[task.taskID] = 'idle';
+		mainBot.taskStatuses[task['type']][task.taskID] = 'idle';
 		return;
 	}
 	var raffleURL = 'https://releases.footshop.com/register/' + task['variant'] + '/Unisex/' + sizeID;
@@ -174,7 +191,7 @@ exports.getRaffle = function (request, task, profile, sizeID) {
 					console.log(body);
 					if (body.email == true) {
 						console.log('Email used before');
-						mainBot.taskStatuses[task.taskID] = 'idle';
+						mainBot.taskStatuses[task['type']][task.taskID] = 'idle';
 						return mainBot.mainBotWin.send('taskUpdate', {
 							id: task.taskID,
 							type: task.type,
@@ -182,7 +199,7 @@ exports.getRaffle = function (request, task, profile, sizeID) {
 						});
 					} else if (body.phone == true) {
 						console.log('Phone number used before');
-						mainBot.taskStatuses[task.taskID] = 'idle';
+						mainBot.taskStatuses[task['type']][task.taskID] = 'idle';
 						return mainBot.mainBotWin.send('taskUpdate', {
 							id: task.taskID,
 							type: task.type,
@@ -217,7 +234,7 @@ exports.getRaffle = function (request, task, profile, sizeID) {
 
 
 exports.submitRaffle = function (request, task, profile, sizeID) {
-	if (shouldStop(task.taskID) == true) {
+	if (shouldStop(task) == true) {
         return;
     }
 	if(checkEmail(task))
@@ -227,7 +244,7 @@ exports.submitRaffle = function (request, task, profile, sizeID) {
 			type: task.type,
 			message: 'Email previously entered'
 		});
-		mainBot.taskStatuses[task.taskID] = 'idle';
+		mainBot.taskStatuses[task['type']][task.taskID] = 'idle';
 		return;
 	}
 	console.log('Submitting entry');
@@ -312,7 +329,7 @@ exports.submitRaffle = function (request, task, profile, sizeID) {
 					} else {
 						var open = require("open");
 						registerEmail(task);
-						mainBot.sendWebhook(task['taskSiteSelect'], task['taskEmail'], body['secure3DRedirectUrl']);	
+						mainBot.sendWebhook(task['taskSiteSelect'], task['taskEmail'], body['secure3DRedirectUrl'], '');	
 						mainBot.mainBotWin.send('taskUpdate', {
 							id: task.taskID,
 							type: task.type,
@@ -320,7 +337,7 @@ exports.submitRaffle = function (request, task, profile, sizeID) {
 						});
 						open(body['secure3DRedirectUrl']);
 						console.log(body);
-						mainBot.taskStatuses[task.taskID] = 'idle';
+						mainBot.taskStatuses[task['type']][task.taskID] = 'idle';
 					}
 				} else {
 					var proxy2 = getRandomProxy();
@@ -339,12 +356,12 @@ exports.submitRaffle = function (request, task, profile, sizeID) {
 }
 
 // Check if task should stop, for example if deleted
-function shouldStop(taskid) {
-    if (mainBot.taskStatuses[taskid] == 'stop') {
-        mainBot.taskStatuses[taskid] = 'idle';
+function shouldStop(task) {
+    if (mainBot.taskStatuses[task['type']][task['taskID']] == 'stop') {
+        mainBot.taskStatuses[task['type']][task['taskID']] = 'idle';
         return true;
-    } else if (mainBot.taskStatuses[taskid] == 'delete') {
-        mainBot.taskStatuses[taskid] = '';
+    } else if (mainBot.taskStatuses[task['type']][task['taskID']] == 'delete') {
+        mainBot.taskStatuses[task['type']][task['taskID']] = '';
         return true;
     } else {
         return false;

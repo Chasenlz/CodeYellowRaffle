@@ -17,6 +17,7 @@
 
 var mainBot = require('../index.js')
 var cheerio = require('cheerio');
+const faker = require('faker');
 
 function formatProxy(proxy)
 {
@@ -46,7 +47,7 @@ function getRandomProxy() {
 }
 
 exports.performTask = function (task, profile) {
-	if (shouldStop(task.taskID) == true) {
+	if (shouldStop(task) == true) {
         return;
     }
 	if(checkEmail(task))
@@ -56,13 +57,30 @@ exports.performTask = function (task, profile) {
 			type: task.type,
 			message: 'Email previously entered'
 		});
-		mainBot.taskStatuses[task.taskID] = 'idle';
+		mainBot.taskStatuses[task['type']][task.taskID] = 'idle';
 		return;
 	}
 	var jar = require('request').jar()
 	var request = require('request').defaults({
 		jar: jar
 	});
+
+	
+	if(profile['jigProfileName'] == true)
+	{
+		profile['firstName'] = faker.fake("{{name.firstName}}");
+		profile['lastName'] = faker.fake("{{name.lastName}}");
+	}
+
+	if(profile['jigProfileAddress'] == true)
+	{
+		profile['aptSuite'] = faker.fake("{{address.secondaryAddress}}");
+	}
+
+	if(profile['jigProfilePhoneNumber'] == true)
+	{
+		profile['phoneNumber'] = faker.fake("{{phone.phoneNumberFormat}}");
+	}
 
 	request({
 		url: task['variant'],
@@ -103,7 +121,7 @@ exports.performTask = function (task, profile) {
 					message: 'Raffle not found'
 				});
 				console.log('Raffle not found');
-				mainBot.taskStatuses[task.taskID] = 'idle';
+				mainBot.taskStatuses[task['type']][task.taskID] = 'idle';
 				return;
 			}
 			console.log('Got rafle token: ' + raffleToken);
@@ -116,7 +134,7 @@ exports.performTask = function (task, profile) {
 			});
 			mainBot.requestCaptcha('vooberlin', task, false);
 			const capHandler = () => {
-				if (mainBot.taskCaptchas[task['taskID']] == undefined || mainBot.taskCaptchas[task['taskID']] == '') {
+				if (mainBot.taskCaptchas[task['type']][task['taskID']] == undefined || mainBot.taskCaptchas[task['type']][task['taskID']] == '') {
 					setTimeout(() => capHandler(), 100);
 				} else {
 					exports.submitRaffle(request, task, profile, raffleToken, pageID);
@@ -142,7 +160,7 @@ exports.performTask = function (task, profile) {
 
 
 exports.submitRaffle = function (request, task, profile, raffleToken, pageID) {
-	if (shouldStop(task.taskID) == true) {
+	if (shouldStop(task) == true) {
         return;
     }
 	if(checkEmail(task))
@@ -152,10 +170,10 @@ exports.submitRaffle = function (request, task, profile, raffleToken, pageID) {
 			type: task.type,
 			message: 'Email previously entered'
 		});
-		mainBot.taskStatuses[task.taskID] = 'idle';
+		mainBot.taskStatuses[task['type']][task.taskID] = 'idle';
 		return;
 	}
-	if (mainBot.taskCaptchas[task['taskID']] == undefined || mainBot.taskCaptchas[task['taskID']] == '') {
+	if (mainBot.taskCaptchas[task['type']][task['taskID']] == undefined || mainBot.taskCaptchas[task['type']][task['taskID']] == '') {
 		// NEEDS CAPTCHA AGAIN
 		return setTimeout(() => exports.performTask(task, profile), global.settings.retryDelay); // REPLACE 3000 WITH RETRY DELAY
 	}
@@ -171,17 +189,17 @@ exports.submitRaffle = function (request, task, profile, raffleToken, pageID) {
 			'authority': 'raffle.vooberlin.com',
 			'x-requested-with': 'XMLHttpRequest'
 		},
-		body: 'token=' + raffleToken + '&page_id=' + pageID + '&shoes_size='+sizeFormatter(task['taskSizeSelect'])+'&action=send_request&fax=&name='+profile['firstName']+'&lastname='+profile['lastName']+'&email='+task['taskEmail']+'&contact_number='+profile['phoneNumber']+'&streetname='+profile['address']+'&housenumber='+profile['address']+'&postalcode='+profile['zipCode']+'&city='+profile['city']+'&country='+countryFormatter(profile['country'])+'&countryhidden=&g-recaptcha-response=' + mainBot.taskCaptchas[task['taskID']],
+		body: 'token=' + raffleToken + '&page_id=' + pageID + '&shoes_size='+sizeFormatter(task['taskSizeSelect'])+'&action=send_request&fax=&name='+profile['firstName']+'&lastname='+profile['lastName']+'&email='+task['taskEmail']+'&contact_number='+profile['phoneNumber']+'&streetname='+profile['address']+'&housenumber='+profile['address']+'&postalcode='+profile['zipCode']+'&city='+profile['city']+'&country='+countryFormatter(profile['country'])+'&countryhidden=&g-recaptcha-response=' + mainBot.taskCaptchas[task['type']][task['taskID']],
 		proxy: formatProxy(task['proxy'])
 	}, function callback(error, response, body) {
 		body = JSON.parse(body);
-		console.log(body);
+		console.log('token=' + raffleToken + '&page_id=' + pageID + '&shoes_size='+sizeFormatter(task['taskSizeSelect'])+'&action=send_request&fax=&name='+profile['firstName']+'&lastname='+profile['lastName']+'&email='+task['taskEmail']+'&contact_number='+profile['phoneNumber']+'&streetname='+profile['address']+'&housenumber='+profile['address']+'&postalcode='+profile['zipCode']+'&city='+profile['city']+'&country='+countryFormatter(profile['country'])+'&countryhidden=&g-recaptcha-response=' + mainBot.taskCaptchas[task['type']][task['taskID']]);
 		if(body.error == true)
 		{
 			console.log('ERROR: ' + body.msg);
 			if(body.msg == 'Error Captcha!')
 			{
-				mainBot.taskCaptchas[task['taskID']] = '';
+				mainBot.taskCaptchas[task['type']][task['taskID']] = '';
 				mainBot.mainBotWin.send('taskUpdate', {
 					id: task.taskID,
 					type: task.type,
@@ -196,33 +214,53 @@ exports.submitRaffle = function (request, task, profile, raffleToken, pageID) {
 					type: task.type,
 					message: 'Already entered!'
 				});
-				mainBot.taskStatuses[task.taskID] = 'idle';
+				mainBot.taskStatuses[task['type']][task.taskID] = 'idle';
+				return;
+			}
+			else if(body.msg == 'Invalid shoes size!')
+			{
+				mainBot.mainBotWin.send('taskUpdate', {
+					id: task.taskID,
+					type: task.type,
+					message: 'Size error. Contact the devs'
+				});
+				mainBot.taskStatuses[task['type']][task.taskID] = 'idle';
+				return;
+			}
+			else if(body.msg == 'Required fields are empty!')
+			{
+				mainBot.mainBotWin.send('taskUpdate', {
+					id: task.taskID,
+					type: task.type,
+					message: 'Please enter every address detail'
+				});
+				mainBot.taskStatuses[task['type']][task.taskID] = 'idle';
 				return;
 			}
 		}
 		else
 		{
-			mainBot.taskCaptchas[task['taskID']]
+			mainBot.taskCaptchas[task['type']][task['taskID']]
 			mainBot.mainBotWin.send('taskUpdate', {
 				id: task.taskID,
 				type: task.type,
 				message: 'Entry submitted!'
 			});
 			registerEmail(task);
-			mainBot.sendWebhook(task['taskSiteSelect'], task['taskEmail'], ''); 
-			mainBot.taskStatuses[task.taskID] = 'idle';
+			mainBot.sendWebhook(task['taskSiteSelect'], task['taskEmail'], '', ''); 
+			mainBot.taskStatuses[task['type']][task.taskID] = 'idle';
 			return;
 		}
 	});
 }
 
 // Check if task should stop, for example if deleted
-function shouldStop(taskid) {
-    if (mainBot.taskStatuses[taskid] == 'stop') {
-        mainBot.taskStatuses[taskid] = 'idle';
+function shouldStop(task) {
+    if (mainBot.taskStatuses[task['type']][task['taskID']] == 'stop') {
+        mainBot.taskStatuses[task['type']][task['taskID']] = 'idle';
         return true;
-    } else if (mainBot.taskStatuses[taskid] == 'delete') {
-        mainBot.taskStatuses[taskid] = '';
+    } else if (mainBot.taskStatuses[task['type']][task['taskID']] == 'delete') {
+        mainBot.taskStatuses[task['type']][task['taskID']] = '';
         return true;
     } else {
         return false;
@@ -294,25 +332,64 @@ function countryFormatter(profileCountry)
 		case 'Czech Republic':
 			return 'Czech Republic';
 			break;
+		case 'Australia':
+			return 'Czech Republic';
+			break;
 	}
 }
 
 function sizeFormatter(taskSize) {
 	switch (taskSize) {
+		case '4':
+			return '64';
+			break;
+		case '4.5':
+			return '79';
+			break;
+		case '5':
+			return '80';
+			break;
+		case '5.5':
+			return '61';
+			break;
+		case '6':
+			return '81';
+			break;
+		case '6.5':
+			return '82';
+			break;
+		case '7':
+			return '58';
+			break;
+		case '7.5':
+			return '65';
+			break;
 		case '8':
-			return '56';
+			return '66';
+			break;
+		case '8.5':
+			return '67';
 			break;
 		case '9':
-			return '19';
+			return '68';
+			break;
+		case '9.5':
+			return '69';
 			break;
 		case '10':
-			return '76';
+			return '83';
+			break;
+		case '10.5':
+			return '84';
 			break;
 		case '11':
-			return '77';
+			return '85';
+			break;
+		case '11.5':
+			return '86';
 			break;
 		case '12':
-			return '78';
+			return '87';
 			break;
 	}
 }

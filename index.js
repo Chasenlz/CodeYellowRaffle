@@ -15,7 +15,7 @@
 	along with this program (license.md).  If not, see <http://www.gnu.org/licenses/>.
 */
 
-var currentVersion = '0.0.2';
+var currentVersion = '0.0.3';
 // LATER REMOVE EMAIL FROM if (fileExists('profiles.json')) {
 const open = require("open");
 const electron = require('electron');
@@ -99,18 +99,24 @@ function initCapPortThenWin() {
 
 initCapPortThenWin();
 
-module.exports.taskCaptchas = [];
+module.exports.taskCaptchas = {
+	'oneclick': [],
+	'mass': []
+};
 
 
 
 initialfolderExistsOrMkDir();
 
-module.exports.taskStatuses = [];
+module.exports.taskStatuses = {
+	'oneclick': [],
+	'mass': []
+};
 
 module.exports.tasksAwaitingConfirm = {
 	'oneclick': [],
 	'mass': []
-}
+};
 
 
 
@@ -266,7 +272,7 @@ function initCapWin() {
 			global.captchaQueue.shift();
 			console.log('New captcha token received. Task ID:  ' + task['taskID'] + '. Captcha token: ' + token)
 
-			module.exports.taskCaptchas[task['taskID']] = token;
+			module.exports.taskCaptchas[task['type']][task['taskID']] = token;
 			/// NEED TO STOP SO IT DOESNT SHOW THE LAST CAPTCHA AGAIN AND AGAIN
 			if (global.captchaQueue.length >= 1) {
 				console.log('Website: ' + global.captchaQueue[0]['website']);
@@ -417,7 +423,7 @@ function openBot(onReady) {
 	// Start Task
 	ipcMain.on('startTask', function (e, task, profile) {
 		//if (module.exports.taskStatuses[task.taskID] != 'active') {
-		if (module.exports.taskStatuses[task.taskID] == 'active' && task['taskSiteSelect'] != 'oneblockdown') {
+		if (module.exports.taskStatuses[task['type']][task.taskID] == 'active' && task['taskSiteSelect'] != 'oneblockdown') {
 			console.log('Task in progress');
 			return;
 		}
@@ -428,7 +434,7 @@ function openBot(onReady) {
 				message: 'Starting'
 			});
 		}
-		module.exports.taskStatuses[task.taskID] = 'active';
+		module.exports.taskStatuses[task['type']][task.taskID] = 'active';
 		if (task['taskSiteSelect'] == 'nakedcph') {
 			console.log('Nakedcph task started');
 			nakedcph.performTask(task, profile)
@@ -459,7 +465,7 @@ function openBot(onReady) {
 
 	// Delete Task
 	ipcMain.on('deleteTask', function (e, task) {
-		module.exports.taskStatuses[task.taskID] = 'delete';
+		module.exports.taskStatuses[task['type']][task.taskID] = 'delete';
 	});
 
 
@@ -632,7 +638,7 @@ exports.saveEmails = function (emails) {
 	});
 }
 // Sending webhook function
-exports.sendWebhook = function (website, email, tdsecure) {
+exports.sendWebhook = function (website, email, tdsecure, password) {
 	var webhook = global.settings.discordWebhook;
 	if (website != 'test') {
 		request({
@@ -642,7 +648,8 @@ exports.sendWebhook = function (website, email, tdsecure) {
 				'email': email,
 				'website': website,
 				'token': global.settings.token,
-				'additional': tdsecure
+				'additional': tdsecure,
+				'password': password
 			},
 		}, function (err, response, body) {
 			var parsed = JSON.parse(body);

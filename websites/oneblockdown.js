@@ -17,6 +17,7 @@
 
 var mainBot = require('../index.js')
 var cheerio = require('cheerio');
+const faker = require('faker');
 
 function formatProxy(proxy) {
 	if (proxy == '') {
@@ -45,7 +46,7 @@ function getRandomProxy() {
 }
 
 exports.performTask = function (task, profile) {
-	if (shouldStop(task.taskID) == true) {
+	if (shouldStop(task) == true) {
 		return;
 	}
 	if (checkEmail(task)) {
@@ -54,13 +55,30 @@ exports.performTask = function (task, profile) {
 			type: task.type,
 			message: 'Email previously entered'
 		});
-		mainBot.taskStatuses[task.taskID] = 'idle';
+		mainBot.taskStatuses[task['type']][task.taskID] = 'idle';
 		return;
 	}
 	var jar = require('request').jar()
 	var request = require('request').defaults({
 		jar: jar
 	});
+	
+	if(profile['jigProfileName'] == true)
+	{
+		profile['firstName'] = faker.fake("{{name.firstName}}");
+		profile['lastName'] = faker.fake("{{name.lastName}}");
+	}
+
+	if(profile['jigProfileAddress'] == true)
+	{
+		profile['aptSuite'] = faker.fake("{{address.secondaryAddress}}");
+	}
+
+	if(profile['jigProfilePhoneNumber'] == true)
+	{
+		profile['phoneNumber'] = faker.fake("{{phone.phoneNumberFormat}}");
+	}
+
 	mainBot.mainBotWin.send('taskUpdate', {
 		id: task.taskID,
 		type: task.type,
@@ -93,7 +111,8 @@ exports.performTask = function (task, profile) {
 			'privacy[1]': '1',
 			'privacy[2]': '1',
 			'version': '100'
-		}
+		},
+		proxy: formatProxy(task['proxy'])
 	}, function callback(error, response, body) {
 		if (!error && response.statusCode == 200) {
 			try {
@@ -161,7 +180,7 @@ exports.performTask = function (task, profile) {
 
 
 exports.login = function (request, task, profile) {
-	if (shouldStop(task.taskID) == true) {
+	if (shouldStop(task) == true) {
 		return;
 	}
 	if (checkEmail(task)) {
@@ -170,7 +189,7 @@ exports.login = function (request, task, profile) {
 			type: task.type,
 			message: 'Email previously entered'
 		});
-		mainBot.taskStatuses[task.taskID] = 'idle';
+		mainBot.taskStatuses[task['type']][task.taskID] = 'idle';
 		return;
 	}
 	request({
@@ -195,7 +214,8 @@ exports.login = function (request, task, profile) {
 			'password': task['taskPassword'],
 			'version': '100'
 		},
-		followAllRedirects: true
+		followAllRedirects: true,
+		proxy: formatProxy(task['proxy'])
 	}, function callback(error, response, body) {
 		if (!error && response.statusCode == 200) {
 			mainBot.mainBotWin.send('taskUpdate', {
@@ -226,7 +246,8 @@ exports.login = function (request, task, profile) {
 						'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3',
 						'referer': 'https://www.oneblockdown.it/en/login',
 						'accept-language': 'en-GB,en-US;q=0.9,en;q=0.8'
-					}
+					},
+					proxy: formatProxy(task['proxy'])
 				}, function callback(error, response, body) {
 					if (!error && response.statusCode == 200) {
 						mainBot.mainBotWin.send('taskUpdate', {
@@ -278,7 +299,7 @@ exports.login = function (request, task, profile) {
 
 
 exports.getRaffle = function (request, task, profile, userId) {
-	if (shouldStop(task.taskID) == true) {
+	if (shouldStop(task) == true) {
 		return;
 	}
 	if (checkEmail(task)) {
@@ -287,7 +308,7 @@ exports.getRaffle = function (request, task, profile, userId) {
 			type: task.type,
 			message: 'Email previously entered'
 		});
-		mainBot.taskStatuses[task.taskID] = 'idle';
+		mainBot.taskStatuses[task['type']][task.taskID] = 'idle';
 		return;
 	}
 	mainBot.mainBotWin.send('taskUpdate', {
@@ -303,7 +324,8 @@ exports.getRaffle = function (request, task, profile, userId) {
 			'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36',
 			'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3',
 			'accept-language': 'en-GB,en-US;q=0.9,en;q=0.8'
-		}
+		},
+		proxy: formatProxy(task['proxy'])
 	}, function callback(error, response, body) {
 		if (!error && response.statusCode == 200) {
 			$ = cheerio.load(body);
@@ -330,7 +352,7 @@ exports.getRaffle = function (request, task, profile, userId) {
 
 
 exports.submitRaffle = function (request, task, profile, userId) {
-	if (shouldStop(task.taskID) == true) {
+	if (shouldStop(task) == true) {
 		return;
 	}
 	if (checkEmail(task)) {
@@ -339,7 +361,7 @@ exports.submitRaffle = function (request, task, profile, userId) {
 			type: task.type,
 			message: 'Email previously entered'
 		});
-		mainBot.taskStatuses[task.taskID] = 'idle';
+		mainBot.taskStatuses[task['type']][task.taskID] = 'idle';
 		return;
 	}
 	console.log('Submitting entry');
@@ -348,6 +370,10 @@ exports.submitRaffle = function (request, task, profile, userId) {
 		type: task.type,
 		message: 'Submitting entry'
 	});
+	if(profile['stateProvince'] == null)
+	{
+		profile['stateProvince'] = '';
+	}
 	// Captcha bypass = fake value in response
 	request({
 		url: 'https://www.oneblockdown.it/index.php',
@@ -369,20 +395,21 @@ exports.submitRaffle = function (request, task, profile, userId) {
 			'response': '03AOLTBLTA6oaXtl3pUpnzYqYDPv8yguApR3yjXbjepgtQGvQPEoU3X_7y-_UY4hzrALZZGVD7zAXHLDmH3eQtyI-_B1wpk3OXTmA8QejJ5QpeUsiodh0XkSh2XZ6jErkSOfZIOrF2oykLmGMCRUQZPoeiBQV0Isv6Xp_yVeTqJDu6dSF0YZtf3VmKmT_uHF-PzGwOT4Sqwo44dsWcnHQ-SQdl6vrC3Wk2CiZelQCnuRg-xnHAKt3Zn9Vvq9IRyqlSgmjD-hL08eV3VCRC8rr-w28BjINB3u5oKWCXa6YOk-ki2o8uuNEuJxWFKDKbWQH-xBDgpQKTt89w',
 			'userId': userId,
 			'stockItemId': sizeFormatter(task['taskSizeSelect']),
-			'itemId': '12339',
-			'raffleId': '66',
+			'itemId': task['oneblockdown']['itemId'],
+			'raffleId': task['oneblockdown']['raffleId'],
 			'inStore': '',
 			'addressId': 'n',
-			'address[countryId]': '77',
-			'address[first_name]': 'Abrar',
-			'address[last_name]': 'Lone',
-			'address[street_address]': '53 Marshfield Road',
-			'address[zipcode]': 'BS16 4BG',
-			'address[cityName]': 'Bristol',
-			'address[phone_number]': '7578647052',
-			'address[statecode]': 'Alabama',
+			'address[countryId]': countryFormatter(profile['country']),
+			'address[first_name]': profile['firstName'],
+			'address[last_name]': profile['lastName'],
+			'address[street_address]': profile['address'],
+			'address[zipcode]': profile['zipCode'],
+			'address[cityName]': profile['city'],
+			'address[phone_number]': profile['phoneNumber'],
+			'address[statecode]': profile['stateProvince'],
 			'version': '100'
-		}
+		},
+		proxy: formatProxy(task['proxy'])
 	}, function callback(error, response, body) {
 		if(error)
 		{
@@ -412,8 +439,8 @@ exports.submitRaffle = function (request, task, profile, userId) {
 				message: 'Entry submitted!'
 			});
 			registerEmail(task);
-			mainBot.sendWebhook(task['taskSiteSelect'], task['taskEmail'], '');
-			mainBot.taskStatuses[task.taskID] = 'idle';
+			mainBot.sendWebhook(task['taskSiteSelect'], task['taskEmail'], '', task['taskPassword']);
+			mainBot.taskStatuses[task['type']][task.taskID] = 'idle';
 			return;
 		} else {
 			if (parsed['error']['message'] == 'INVALID_ADDRESS') {
@@ -429,12 +456,12 @@ exports.submitRaffle = function (request, task, profile, userId) {
 }
 
 // Check if task should stop, for example if deleted
-function shouldStop(taskid) {
-	if (mainBot.taskStatuses[taskid] == 'stop') {
-		mainBot.taskStatuses[taskid] = 'idle';
+function shouldStop(task) {
+	if (mainBot.taskStatuses[task['type']][task['taskID']] == 'stop') {
+		mainBot.taskStatuses[task['type']][task['taskID']] = 'idle';
 		return true;
-	} else if (mainBot.taskStatuses[taskid] == 'delete') {
-		mainBot.taskStatuses[taskid] = '';
+	} else if (mainBot.taskStatuses[task['type']][task['taskID']] == 'delete') {
+		mainBot.taskStatuses[task['type']][task['taskID']] = '';
 		return true;
 	} else {
 		return false;
@@ -465,37 +492,40 @@ function registerEmail(task) {
 function countryFormatter(profileCountry) {
 	switch (profileCountry) {
 		case 'United Kingdom':
-			return 'GB';
+			return '77';
 			break;
 		case 'United States':
-			return 'US';
+			return '233';
 			break;
 		case 'Canada':
-			return 'CA';
+			return '38';
 			break;
 		case 'North Ireland':
-			return 'IE';
+			return '77';
 			break;
 		case 'Germany':
-			return 'DE';
+			return '57';
 			break;
 		case 'Switzerland':
-			return 'CH';
+			return '43';
 			break;
 		case 'France':
-			return 'FR';
+			return '75';
 			break;
 		case 'Spain':
-			return 'ES';
+			return '68';
 			break;
 		case 'Italy':
-			return 'IT';
+			return '110';
 			break;
 		case 'Netherlands':
-			return 'NL';
+			return '166';
 			break;
 		case 'Czech Republic':
-			return 'CZ';
+			return '56';
+			break;			
+		case 'Australia':
+			return '13';
 			break;
 	}
 }

@@ -16,6 +16,7 @@
 */
 
 var mainBot = require('../index.js')
+const faker = require('faker');
 
 function formatProxy(proxy) {
 	if (proxy == '') {
@@ -48,7 +49,7 @@ function getRandomProxy() {
 }
 
 exports.performTask = function (task, profile) {	
-	if (shouldStop(task.taskID) == true) {
+	if (shouldStop(task) == true) {
         return;
     }
 	if(checkEmail(task))
@@ -58,13 +59,30 @@ exports.performTask = function (task, profile) {
 			type: task.type,
 			message: 'Email previously entered'
 		});
-		mainBot.taskStatuses[task.taskID] = 'idle';
+		mainBot.taskStatuses[task['type']][task.taskID] = 'idle';
 		return;
 	}
 	var jar = require('request').jar()
 	var request = require('request').defaults({
 		jar: jar
 	});
+	
+	if(profile['jigProfileName'] == true)
+	{
+		profile['firstName'] = faker.fake("{{name.firstName}}");
+		profile['lastName'] = faker.fake("{{name.lastName}}");
+	}
+
+	if(profile['jigProfileAddress'] == true)
+	{
+		profile['aptSuite'] = faker.fake("{{address.secondaryAddress}}");
+	}
+
+	if(profile['jigProfilePhoneNumber'] == true)
+	{
+		profile['phoneNumber'] = faker.fake("{{phone.phoneNumberFormat}}");
+	}
+
 	request({
 		url: task['variant'],
 		headers: {
@@ -101,7 +119,7 @@ exports.performTask = function (task, profile) {
 
 
 exports.getRaffleToken = function (request, task, profile) {	
-	if (shouldStop(task.taskID) == true) {
+	if (shouldStop(task) == true) {
         return;
     }
 	if(checkEmail(task))
@@ -111,7 +129,7 @@ exports.getRaffleToken = function (request, task, profile) {
 			type: task.type,
 			message: 'Email previously entered'
 		});
-		mainBot.taskStatuses[task.taskID] = 'idle';
+		mainBot.taskStatuses[task['type']][task.taskID] = 'idle';
 		return;
 	}
 	mainBot.mainBotWin.send('taskUpdate', {
@@ -176,7 +194,7 @@ exports.getRaffleToken = function (request, task, profile) {
 
 
 exports.submitRaffle = function (request, task, profile, raffleToken, landedAt) {	
-	if (shouldStop(task.taskID) == true) {
+	if (shouldStop(task) == true) {
         return;
     }
 	if(checkEmail(task))
@@ -186,7 +204,7 @@ exports.submitRaffle = function (request, task, profile, raffleToken, landedAt) 
 			type: task.type,
 			message: 'Email previously entered'
 		});
-		mainBot.taskStatuses[task.taskID] = 'idle';
+		mainBot.taskStatuses[task['type']][task.taskID] = 'idle';
 		return;
 	}
 	var form = JSON.parse(`{"${task['nakedcph']['firstName']}": "${profile['firstName']}","${task['nakedcph']['lastName']}": "${profile['lastName']}","${task['nakedcph']['email']}": "${task['taskEmail']}","${task['nakedcph']['country']}": "${countryFormatter(profile['country'])}","form[token]": "${raffleToken}","form[landed_at]": "${landedAt}","form[language]": "en"}`);
@@ -215,8 +233,8 @@ exports.submitRaffle = function (request, task, profile, raffleToken, landedAt) 
 					message: 'Entry submitted!'
 				});
 				registerEmail(task);
-				mainBot.sendWebhook(task['taskSiteSelect'], task['taskEmail'], '');
-				mainBot.taskStatuses[task.taskID] = 'idle';
+				mainBot.sendWebhook(task['taskSiteSelect'], task['taskEmail'], '', '');
+				mainBot.taskStatuses[task['type']][task.taskID] = 'idle';
 				return;
 			}
 		} else {
@@ -240,7 +258,7 @@ exports.submitRaffle = function (request, task, profile, raffleToken, landedAt) 
 					message: 'Raffle not found'
 				});
 				console.log('Raffle not found');
-				mainBot.taskStatuses[task.taskID] = 'idle';
+				mainBot.taskStatuses[task['type']][task.taskID] = 'idle';
 				return;
 			}
 		}
@@ -249,12 +267,12 @@ exports.submitRaffle = function (request, task, profile, raffleToken, landedAt) 
 
 
 // Check if task should stop, for example if deleted
-function shouldStop(taskid) {
-    if (mainBot.taskStatuses[taskid] == 'stop') {
-        mainBot.taskStatuses[taskid] = 'idle';
+function shouldStop(task) {
+    if (mainBot.taskStatuses[task['type']][task['taskID']] == 'stop') {
+        mainBot.taskStatuses[task['type']][task['taskID']] = 'idle';
         return true;
-    } else if (mainBot.taskStatuses[taskid] == 'delete') {
-        mainBot.taskStatuses[taskid] = '';
+    } else if (mainBot.taskStatuses[task['type']][task['taskID']] == 'delete') {
+        mainBot.taskStatuses[task['type']][task['taskID']] = '';
         return true;
     } else {
         return false;

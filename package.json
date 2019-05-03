@@ -1,6 +1,6 @@
 {
   "name": "CodeYellowRaffle",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Open source raffle bot made to help increase the chance of winning limited sneaker raffles by automating entries",
   "main": "index.js",
   "scripts": {
@@ -18,11 +18,11 @@
   },
   "dependencies": {
     "body-parser": "^1.18.3",
-    "chance": "^1.0.18",
     "cheerio": "^1.0.0-rc.3",
     "electron-squirrel-startup": "^1.0.0",
     "electron-window-manager": "^1.0.6",
     "express": "^4.16.3",
+    "faker": "^4.1.0",
     "fs": "0.0.1-security",
     "open": "0.0.5",
     "request": "^2.88.0"

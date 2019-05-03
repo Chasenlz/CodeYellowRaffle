@@ -301,6 +301,11 @@ $("#createTaskButton").click(function () {
 		Materialize.toast("You only have " + Object.keys(emails).length + " emails saved, but want " + taskQuantity + " tasks", 3500, "rounded");
 		return;
 	}
+	if(taskProfile == 'Example Profile')
+	{
+		Materialize.toast("You cannot create a task with the example profile", 2000, "rounded");
+		return;
+	}
 	var proxyUsed = '<td><i class="fas fa-bolt noprox"></i></td>';
 	if (selectedQuickTaskRelease != undefined) {
 		if (taskSiteSelect != 'default') {
@@ -431,6 +436,20 @@ function createTask(taskSiteSelect, taskSizeSelect, taskProfile, taskSpecificPro
 			variant: selectedQuickTaskRelease['sites_supported'][taskSiteSelect],
 			ymeuniverse: selectedQuickTaskRelease['ymeuniverse']
 		});
+	} else if (taskSiteSelect == 'oneblockdown') {
+		tasks.push({
+			taskID: taskID,
+			type: 'mass',
+			filterID: selectedQuickTaskRelease['filterID'],
+			taskTypeOfEmail: taskTypeOfEmail,
+			proxy: proxy,
+			taskSiteSelect: taskSiteSelect,
+			taskSizeSelect: taskSizeSelect,
+			taskProfile: taskProfile,
+			taskEmail: taskEmail,
+			variant: selectedQuickTaskRelease['sites_supported'][taskSiteSelect],
+			oneblockdown: selectedQuickTaskRelease['oneblockdown']
+		});
 	} else {
 		tasks.push({
 			taskID: taskID,
@@ -526,7 +545,10 @@ $("#newProfile").click(function () {
 				"cardNumber": "",
 				"expiryMonth": "MM",
 				"expiryYear": "YY",
-				"CVV": ""
+				"CVV": "",
+				"jigProfileName": false,
+				"jigProfileAddress": false,
+				"jigProfilePhoneNumber": false
 			};
 			$('#profileList').val(profileName);
 			Materialize.toast("Profile '" + profileName + "' Created!", 2000, "rounded");
@@ -561,7 +583,10 @@ $("#saveProfile").click(function () {
 			"cardNumber": $('#cardNumber').val(),
 			"expiryMonth": $('#expiryMonth').val(),
 			"expiryYear": $('#expiryYear').val(),
-			"CVV": $('#CVV').val()
+			"CVV": $('#CVV').val(),
+			"jigProfileName": $('#jigProfileName').is(':checked'),
+			"jigProfileAddress": $('#jigProfileAddress').is(':checked'),
+			"jigProfilePhoneNumber": $('#jigProfilePhoneNumber').is(':checked')
 		};
 		ipcRenderer.send('saveProfiles', profiles);
 		Materialize.toast("Profile '" + profileName + "' Saved!", 2000, "rounded");
@@ -601,7 +626,21 @@ function loadProfile(profileName, notify) {
 	var keys = Object.keys(profile)
 	for (var i = 0; i < keys.length; i++) {
 		var value = profile[keys[i]];
-		$('#' + keys[i]).val(value);
+		if(keys[i] == 'jigProfileName' || keys[i] == 'jigProfileAddress' || keys[i] == 'jigProfilePhoneNumber')
+		{
+			if(value == true)
+			{
+				document.getElementById(keys[i]).checked = true;
+			}
+			else
+			{
+				document.getElementById(keys[i]).checked = false;
+			}
+		}
+		else
+		{
+			$('#' + keys[i]).val(value);
+		}
 	}
 	if (notify) {
 		Materialize.toast("Profile '" + profileName + "' loaded!", 2000, "rounded");
@@ -658,6 +697,7 @@ function loadReleases() {
 					nakedcph: release['nakedcph'],
 					ymeuniverse: release['ymeuniverse'],
 					footshop: release['footshop'],
+					oneblockdown: release['oneblockdown'],
 					filterID: filterID
 				});
 				var sizesHTML = '';
@@ -778,6 +818,19 @@ $(".raffle-enter-container").on('click', '.enterRaffle', function () {
 							taskEmail: taskEmail,
 							variant: oneClicktask['variant'],
 							ymeuniverse: oneClicktask['ymeuniverse']
+						}, profiles[taskProfile]);
+					} else if (taskSiteSelect == 'oneblockdown') {
+						ipcRenderer.send('startTask', {
+							taskID: taskID,
+							type: 'oneclick',
+							filterID: oneClicktask['filterID'],
+							proxy: proxy,
+							taskSiteSelect: taskSiteSelect,
+							taskSizeSelect: taskSizeSelect,
+							taskProfile: taskProfile,
+							taskEmail: taskEmail,
+							variant: oneClicktask['variant'],
+							oneblockdown: oneClicktask['oneblockdown']
 						}, profiles[taskProfile]);
 					} else {
 						ipcRenderer.send('startTask', {

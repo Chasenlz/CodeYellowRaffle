@@ -117,7 +117,7 @@ $("#addMails").click(function(){
  }
 });
 
-$('#sickomode').change(function(){
+$('.customCheckbx').change(function(){
     if ($(this).is(':checked')) {
 		$(".under-line").get(0).style.setProperty("transition", "0s");
 		$(".tasks").get(0).style.setProperty("transition", "0s");
