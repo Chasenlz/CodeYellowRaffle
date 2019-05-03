@@ -82,20 +82,7 @@
 			<div class="altnavi">Enter all</div>
          </div> -->
 		 
-		 <div class="altnav">
-		 
-		    <div style="float: left;display: none;" class="nav-row">
-               <div class="nav-icon"><i class="fa fa-shopping-bag" aria-hidden="true"></i>
-               </div>
-               <select class="nav-input" style="background: rgba(14, 14, 14, 0) !important;color: #000 !important;">
-                     <option value="default">Sites</option>
-                     <option class="taskSiteOption" value="nakedcph">Naked</option>
-                     <option class="taskSiteOption" value="ymeuniverse">YMEuniverse</option>
-                     <option class="taskSiteOption" value="vooberlin">VooBerlin</option>
-                     <option class="taskSiteOption" value="footshop">FootShop</option>
-               </select>
-            </div>
-			
+		 <div class="altnav">			
 			<div style="float: left;" class="nav-row">
                <div class="nav-icon"><img src="https://i.imgur.com/L2kuTAp.png" style="width: 80%;image-rendering: -webkit-optimize-contrast;">
                </div>
@@ -418,57 +405,72 @@ email@email.com"></textarea>
                </div>
                <select class="createinput" id="stateProvince">
                   <option value="default">State / Province</option>
-                  <option value="none">None</option>
-				   <option value="AL" class="USProfileState">Alabama</option>
-					  <option value="AK" class="USProfileState">Alaska</option>
-					  <option value="AZ" class="USProfileState">Arizona</option>
-					  <option value="AR" class="USProfileState">Arkansas</option>
-					  <option value="CA" class="USProfileState">California</option>
-					  <option value="CO" class="USProfileState">Colorado</option>
-					  <option value="CT" class="USProfileState">Connecticut</option>
-					  <option value="DE" class="USProfileState">Delaware</option>
-					  <option value="FL" class="USProfileState">Florida</option>
-					  <option value="GA" class="USProfileState">Georgia</option>
-					  <option value="HI" class="USProfileState">Hawaii</option>
-					  <option value="ID" class="USProfileState">Idaho</option>
-					  <option value="IL" class="USProfileState">Illinois</option>
-					  <option value="IN" class="USProfileState">Indiana</option>
-					  <option value="IA" class="USProfileState">Iowa</option>
-					  <option value="KS" class="USProfileState">Kansas</option>
-					  <option value="KY" class="USProfileState">Kentucky</option>
-					  <option value="LA" class="USProfileState">Louisiana</option>
-					  <option value="ME" class="USProfileState">Maine</option>
-					  <option value="MD" class="USProfileState">Maryland</option>
-					  <option value="MA" class="USProfileState">Massachusetts</option>
-					  <option value="MI" class="USProfileState">Michigan</option>
-					  <option value="MN" class="USProfileState">Minnesota</option>
-					  <option value="MS" class="USProfileState">Mississippi</option>
-					  <option value="MO" class="USProfileState">Missouri</option>
-					  <option value="MT" class="USProfileState">Montana</option>
-					  <option value="NE" class="USProfileState">Nebraska</option>
-					  <option value="NV" class="USProfileState">Nevada</option>
-					  <option value="NH" class="USProfileState">New Hampshire</option>
-					  <option value="NJ" class="USProfileState">New Jersey</option>
-					  <option value="NM" class="USProfileState">New Mexico</option>
-					  <option value="NY" class="USProfileState">New York</option>
-					  <option value="NC" class="USProfileState">North Carolina</option>
-					  <option value="ND" class="USProfileState">North Dakota</option>
-					  <option value="OH" class="USProfileState">Ohio</option>
-					  <option value="OK" class="USProfileState">Oklahoma</option>
-					  <option value="OR" class="USProfileState">Oregon</option>
-					  <option value="PA" class="USProfileState">Pennsylvania</option>
-					  <option value="RI" class="USProfileState">Rhode Island</option>
-					  <option value="SC" class="USProfileState">South Carolina</option>
-					  <option value="SD" class="USProfileState">South Dakota</option>
-					  <option value="TN" class="USProfileState">Tennessee</option>
-					  <option value="TX" class="USProfileState">Texas</option>
-					  <option value="UT" class="USProfileState">Utah</option>
-					  <option value="VT" class="USProfileState">Vermont</option>
-					  <option value="VA" class="USProfileState">Virginia</option>
-					  <option value="WA" class="USProfileState">Washington</option>
-					  <option value="WV" class="USProfileState">West Virginia</option>
-					  <option value="WI" class="USProfileState">Wisconsin</option>
-					  <option value="WY" class="USProfileState">Wyoming</option>
+                  <option value="none" class="EUProfileState">None</option>
+					  
+                  <option value="AL" class="USProfileState" style="display:none;">Alabama</option>
+                  <option value="AK" class="USProfileState" style="display:none;">Alaska</option>
+                  <option value="AZ" class="USProfileState" style="display:none;">Arizona</option>
+                  <option value="AR" class="USProfileState" style="display:none;">Arkansas</option>
+                  <option value="CA" class="USProfileState" style="display:none;">California</option>
+                  <option value="CO" class="USProfileState" style="display:none;">Colorado</option>
+                  <option value="CT" class="USProfileState" style="display:none;">Connecticut</option>
+                  <option value="DE" class="USProfileState" style="display:none;">Delaware</option>
+                  <option value="FL" class="USProfileState" style="display:none;">Florida</option>
+                  <option value="GA" class="USProfileState" style="display:none;">Georgia</option>
+                  <option value="HI" class="USProfileState" style="display:none;">Hawaii</option>
+                  <option value="ID" class="USProfileState" style="display:none;">Idaho</option>
+                  <option value="IL" class="USProfileState" style="display:none;">Illinois</option>
+                  <option value="IN" class="USProfileState" style="display:none;">Indiana</option>
+                  <option value="IA" class="USProfileState" style="display:none;">Iowa</option>
+                  <option value="KS" class="USProfileState" style="display:none;">Kansas</option>
+                  <option value="KY" class="USProfileState" style="display:none;">Kentucky</option>
+                  <option value="LA" class="USProfileState" style="display:none;">Louisiana</option>
+                  <option value="ME" class="USProfileState" style="display:none;">Maine</option>
+                  <option value="MD" class="USProfileState" style="display:none;">Maryland</option>
+                  <option value="MA" class="USProfileState" style="display:none;">Massachusetts</option>
+                  <option value="MI" class="USProfileState" style="display:none;">Michigan</option>
+                  <option value="MN" class="USProfileState" style="display:none;">Minnesota</option>
+                  <option value="MS" class="USProfileState" style="display:none;">Mississippi</option>
+                  <option value="MO" class="USProfileState" style="display:none;">Missouri</option>
+                  <option value="MT" class="USProfileState" style="display:none;">Montana</option>
+                  <option value="NE" class="USProfileState" style="display:none;">Nebraska</option>
+                  <option value="NV" class="USProfileState" style="display:none;">Nevada</option>
+                  <option value="NH" class="USProfileState" style="display:none;">New Hampshire</option>
+                  <option value="NJ" class="USProfileState" style="display:none;">New Jersey</option>
+                  <option value="NM" class="USProfileState" style="display:none;">New Mexico</option>
+                  <option value="NY" class="USProfileState" style="display:none;">New York</option>
+                  <option value="NC" class="USProfileState" style="display:none;">North Carolina</option>
+                  <option value="ND" class="USProfileState" style="display:none;">North Dakota</option>
+                  <option value="OH" class="USProfileState" style="display:none;">Ohio</option>
+                  <option value="OK" class="USProfileState" style="display:none;">Oklahoma</option>
+                  <option value="OR" class="USProfileState" style="display:none;">Oregon</option>
+                  <option value="PA" class="USProfileState" style="display:none;">Pennsylvania</option>
+                  <option value="RI" class="USProfileState" style="display:none;">Rhode Island</option>
+                  <option value="SC" class="USProfileState" style="display:none;">South Carolina</option>
+                  <option value="SD" class="USProfileState" style="display:none;">South Dakota</option>
+                  <option value="TN" class="USProfileState" style="display:none;">Tennessee</option>
+                  <option value="TX" class="USProfileState" style="display:none;">Texas</option>
+                  <option value="UT" class="USProfileState" style="display:none;">Utah</option>
+                  <option value="VT" class="USProfileState" style="display:none;">Vermont</option>
+                  <option value="VA" class="USProfileState" style="display:none;">Virginia</option>
+                  <option value="WA" class="USProfileState" style="display:none;">Washington</option>
+                  <option value="WV" class="USProfileState" style="display:none;">West Virginia</option>
+                  <option value="WI" class="USProfileState" style="display:none;">Wisconsin</option>
+                  <option value="WY" class="USProfileState" style="display:none;">Wyoming</option>
+                  
+                   <option value="AB" class="CAProfileState" style="display:none;">AB</option>
+                   <option value="BC" class="CAProfileState" style="display:none;">BC</option>
+                   <option value="MB" class="CAProfileState" style="display:none;">MB</option>
+                   <option value="NB" class="CAProfileState" style="display:none;">NB</option>
+                   <option value="NL" class="CAProfileState" style="display:none;">NL</option>
+                   <option value="NT" class="CAProfileState" style="display:none;">NT</option>
+                   <option value="NS" class="CAProfileState" style="display:none;">NS</option>
+                   <option value="NU" class="CAProfileState" style="display:none;">NU</option>
+                   <option value="ON" class="CAProfileState" style="display:none;">ON</option>
+                   <option value="PE" class="CAProfileState" style="display:none;">PE</option>
+                   <option value="QC" class="CAProfileState" style="display:none;">QC</option>
+                   <option value="SK" class="CAProfileState" style="display:none;">SK</option>
+                   <option value="YT" class="CAProfileState" style="display:none;">YT</option>
                </select>
             </div>
             <div style="width: 49%;float:right;" class="create-row">
@@ -851,6 +853,7 @@ Performance mode
                      <option class="taskSiteOption" value="ymeuniverse" disabled>YMEuniverse</option>
                      <option class="taskSiteOption" value="vooberlin" disabled>VooBerlin</option>
                      <option class="taskSiteOption" value="footshop" disabled>FootShop</option>
+                     <option class="taskSiteOption" value="oneblockdown" disabled>OneBlockDown</option>
                   </select>
                </div>
                <div class="create-row">

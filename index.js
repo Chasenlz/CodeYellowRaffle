@@ -30,6 +30,7 @@ const footshop = require('./websites/footshop.js');
 const nakedcph = require('./websites/nakedcph.js');
 const vooberlin = require('./websites/vooberlin.js');
 const ymeuniverse = require('./websites/ymeuniverse.js');
+const oneblockdown = require('./websites/oneblockdown.js');
 
 var signUpURL = 'https://codeyellow.io/account.php?type=signup';
 
@@ -85,15 +86,11 @@ var isPortTaken = function (port, fn) {
 }
 
 // This function sets the port and initalises the captcha window
-function initCapPortThenWin()
-{
+function initCapPortThenWin() {
 	isPortTaken(globalPort, function (err, taken) {
-		if(!taken && !err)
-		{
+		if (!taken && !err) {
 			initCapWin();
-		}
-		else
-		{
+		} else {
 			globalPort = globalPort += 1;
 			initCapPortThenWin()
 		}
@@ -109,6 +106,11 @@ module.exports.taskCaptchas = [];
 initialfolderExistsOrMkDir();
 
 module.exports.taskStatuses = [];
+
+module.exports.tasksAwaitingConfirm = {
+	'oneclick': [],
+	'mass': []
+}
 
 
 
@@ -221,7 +223,7 @@ function openActivation(onReady) {
 	ipcMain.on('signUp', function (e) {
 		open(signUpURL);
 	});
-	
+
 	// Utilities at the bottom
 	ipcMain.on('minimizeM', function (e) {
 		win.minimize();
@@ -415,15 +417,17 @@ function openBot(onReady) {
 	// Start Task
 	ipcMain.on('startTask', function (e, task, profile) {
 		//if (module.exports.taskStatuses[task.taskID] != 'active') {
-		if (module.exports.taskStatuses[task.taskID] == 'active') {
+		if (module.exports.taskStatuses[task.taskID] == 'active' && task['taskSiteSelect'] != 'oneblockdown') {
 			console.log('Task in progress');
 			return;
 		}
-		module.exports.mainBotWin.send('taskUpdate', {
-			id: task.taskID,
-			type: task.type,
-			message: 'Starting'
-		});
+		if (module.exports.tasksAwaitingConfirm[task.type][task.taskID] != 'awaiting') {
+			module.exports.mainBotWin.send('taskUpdate', {
+				id: task.taskID,
+				type: task.type,
+				message: 'Starting'
+			});
+		}
 		module.exports.taskStatuses[task.taskID] = 'active';
 		if (task['taskSiteSelect'] == 'nakedcph') {
 			console.log('Nakedcph task started');
@@ -438,7 +442,19 @@ function openBot(onReady) {
 		} else if (task['taskSiteSelect'] == 'ymeuniverse') {
 			console.log('YMEuniverse task started');
 			ymeuniverse.performTask(task, profile)
-		} 
+		} else if (task['taskSiteSelect'] == 'oneblockdown') {
+			if (module.exports.tasksAwaitingConfirm[task.type][task.taskID] != 'awaiting') {
+				console.log('Oneblockdown task started');
+				oneblockdown.performTask(task, profile)
+			} else {
+				module.exports.tasksAwaitingConfirm[task.type][task.taskID] = 'confirmed';
+				module.exports.mainBotWin.send('taskUpdate', {
+					id: task.taskID,
+					type: task.type,
+					message: 'Attempting login'
+				});
+			}
+		}
 	});
 
 	// Delete Task
@@ -495,77 +511,65 @@ function openBot(onReady) {
 		global.profiles = profilesToSave;
 		saveProfiles()
 	});
-	
+
 	// Import profiles
 	ipcMain.on('importProfiles', function (e, path) {
 		var fileContents = fs.readFileSync(path);
 		try {
 			parsed = JSON.parse(fileContents);
 		} catch (e) {}
-			profileKeys = Object.keys(parsed);
-			var error1 = false;
-			var error2 = false;
-			var success = false;
-			if(!profileKeys || profileKeys.length < 1)
-			{
-				module.exports.mainBotWin.send('notify', {
-					length: 3000,
-					message: 'Invalid profile format'
-				});
-				return;
-			}
-			for(var i = 0; i < profileKeys.length; i++)
-			{
-				var currProfileName = profileKeys[i];
-				var currProfile = parsed[currProfileName];
-				if(currProfile['CVV'] == undefined || currProfile['address'] == undefined || currProfile['aptSuite'] == undefined ||  currProfile['cardNumber'] == undefined || currProfile['cardType'] == undefined || currProfile['city'] == undefined || currProfile['country'] == undefined || currProfile['expiryMonth'] == undefined || currProfile['expiryYear'] == undefined || currProfile['firstName'] == undefined || currProfile['lastName'] == undefined || currProfile['phoneNumber'] == undefined || currProfile['zipCode'] == undefined)
-				{	
-					console.log('Not a valid profile');
-					error1 = true;
-				}
-				else
-				{
-					if(global.profiles[currProfileName] == undefined)
-					{
-						if(currProfileName != 'Example Profile')
-						{
-							global.profiles[currProfileName] = currProfile;
-							console.log('Imported');
-							console.log(global.profiles);
-							success = true;
-						}
+		profileKeys = Object.keys(parsed);
+		var error1 = false;
+		var error2 = false;
+		var success = false;
+		if (!profileKeys || profileKeys.length < 1) {
+			module.exports.mainBotWin.send('notify', {
+				length: 3000,
+				message: 'Invalid profile format'
+			});
+			return;
+		}
+		for (var i = 0; i < profileKeys.length; i++) {
+			var currProfileName = profileKeys[i];
+			var currProfile = parsed[currProfileName];
+			if (currProfile['CVV'] == undefined || currProfile['address'] == undefined || currProfile['aptSuite'] == undefined || currProfile['cardNumber'] == undefined || currProfile['cardType'] == undefined || currProfile['city'] == undefined || currProfile['country'] == undefined || currProfile['expiryMonth'] == undefined || currProfile['expiryYear'] == undefined || currProfile['firstName'] == undefined || currProfile['lastName'] == undefined || currProfile['phoneNumber'] == undefined || currProfile['zipCode'] == undefined) {
+				console.log('Not a valid profile');
+				error1 = true;
+			} else {
+				if (global.profiles[currProfileName] == undefined) {
+					if (currProfileName != 'Example Profile') {
+						global.profiles[currProfileName] = currProfile;
+						console.log('Imported');
+						console.log(global.profiles);
+						success = true;
 					}
-					else if(currProfileName != 'Example Profile')
-					{
-						error2 = true;
-					}
-				}
-				if(i == profileKeys.length-1 && success == true)
-				{
-					module.exports.mainBotWin.send('notify', {
-						length: 3000,
-						message: 'Profiles imported and saved'
-					});
-					module.exports.mainBotWin.send('profilesImported', global.profiles);
-					saveProfiles()
+				} else if (currProfileName != 'Example Profile') {
+					error2 = true;
 				}
 			}
-			if(error1)
-			{
+			if (i == profileKeys.length - 1 && success == true) {
 				module.exports.mainBotWin.send('notify', {
 					length: 3000,
-					message: 'Some profiles were not valid and therefore not imported'
+					message: 'Profiles imported and saved'
 				});
+				module.exports.mainBotWin.send('profilesImported', global.profiles);
+				saveProfiles()
 			}
-			if(error2)
-			{
-				module.exports.mainBotWin.send('notify', {
-					length: 3000,
-					message: 'Some profiles already exist with the same name and therefore were not imported'
-				});
-			}
+		}
+		if (error1) {
+			module.exports.mainBotWin.send('notify', {
+				length: 3000,
+				message: 'Some profiles were not valid and therefore not imported'
+			});
+		}
+		if (error2) {
+			module.exports.mainBotWin.send('notify', {
+				length: 3000,
+				message: 'Some profiles already exist with the same name and therefore were not imported'
+			});
+		}
 	});
-	
+
 	// Export profiles
 	ipcMain.on('exportProfiles', function (e, path) {
 		fs.writeFile(path + "\\profiles.json", JSON.stringify(global.profiles, null, 4), function (err) {
@@ -581,7 +585,7 @@ function openBot(onReady) {
 				message: 'Profiles exported'
 			});
 		});
-		
+
 	});
 
 
@@ -630,8 +634,7 @@ exports.saveEmails = function (emails) {
 // Sending webhook function
 exports.sendWebhook = function (website, email, tdsecure) {
 	var webhook = global.settings.discordWebhook;
-	if(website != 'test')
-	{
+	if (website != 'test') {
 		request({
 			url: 'https://codeyellow.io/api/entry.php',
 			method: 'post',
@@ -642,10 +645,10 @@ exports.sendWebhook = function (website, email, tdsecure) {
 				'additional': tdsecure
 			},
 		}, function (err, response, body) {
-				var parsed = JSON.parse(body);
-				if (parsed.valid == true) {
-					console.log("Entry saved")
-				}
+			var parsed = JSON.parse(body);
+			if (parsed.valid == true) {
+				console.log("Entry saved")
+			}
 		});
 	}
 	if (/^(ftp|http|https):\/\/[^ "]+$/.test(webhook) == true) {
@@ -726,9 +729,7 @@ exports.sendWebhook = function (website, email, tdsecure) {
 			} catch (e) {
 				return;
 			}
-		}
-		else
-		{
+		} else {
 			try {
 				request({
 						url: webhook,
@@ -872,7 +873,7 @@ function getUpcomingReleases() {
 				'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36'
 			},
 			json: true,
-			url: 'https://codeyellow.io/api/releases_2.php'
+			url: 'https://codeyellow.io/api/releases_3.php'
 		},
 		function (error, response, body) {
 			global.releases = body;

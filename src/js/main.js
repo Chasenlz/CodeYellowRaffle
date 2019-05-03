@@ -59,8 +59,7 @@ ipcRenderer.on('profilesImported', function (event, data) {
 	var profileKeys = Object.keys(data);
 	for (var i = 0; i < profileKeys.length; i++) {
 		var keyName = profileKeys[i];
-		if($('#profileList option[value="'+keyName+'"]').length < 1)
-		{
+		if ($('#profileList option[value="' + keyName + '"]').length < 1) {
 			$('#profileList').append($('<option>', {
 				value: keyName,
 				text: keyName
@@ -77,13 +76,13 @@ ipcRenderer.on('profilesImported', function (event, data) {
 	}
 });
 
-document.getElementById('importProfiles').onchange = function() {
-    ipcRenderer.send('importProfiles', this.files[this.files.length-1]['path'])
+document.getElementById('importProfiles').onchange = function () {
+	ipcRenderer.send('importProfiles', this.files[this.files.length - 1]['path'])
 	importProfiles.value = '';
 };
 
-document.getElementById('exportProfiles').onchange = function() {
-	ipcRenderer.send('exportProfiles', this.files[this.files.length-1]['path'])
+document.getElementById('exportProfiles').onchange = function () {
+	ipcRenderer.send('exportProfiles', this.files[this.files.length - 1]['path'])
 	exportProfiles.value = '';
 };
 
@@ -136,12 +135,9 @@ $('#openHarvester').click(function () {
 
 // Update tasks
 ipcRenderer.on('taskUpdate', function (event, data) {
-	if(data.type == 'mass')
-	{
+	if (data.type == 'mass') {
 		$(`#taskResult${data.id}`).html(data.message.toUpperCase())
-	}
-	else
-	{	
+	} else {
 		$(`.enterRaffle#${data.id}`).html(data.message)
 	}
 });
@@ -162,6 +158,7 @@ $("body").on("click", ".deleteTask", function () {
 	var task = tasks[$(this).attr('id') - 1];
 	tasks[$(this).attr('id') - 1] = {};
 	ipcRenderer.send('deleteTask', task);
+	emailsForTasks[task['taskEmail']][task['taskSiteSelect'] + '_' + task['filterID']] = false;
 	$(this).parent().parent().remove();
 });
 
@@ -170,6 +167,7 @@ $("#deleteAllTasks").click(function () {
 		var task = tasks[$(this).attr('id') - 1];
 		tasks[$(this).attr('id') - 1] = {};
 		ipcRenderer.send('deleteTask', task);
+		emailsForTasks[task['taskEmail']][task['taskSiteSelect'] + '_' + task['filterID']] = false;
 		$(this).parent().parent().remove();
 	});
 });
@@ -299,8 +297,7 @@ $("#createTaskButton").click(function () {
 	var taskQuantity = parseInt($('#taskQuantity').val());
 	var taskEmail = $('#taskEmail').val();
 	var taskTypeOfEmail = $('#taskTypeOfEmail').val();
-	if(taskQuantity > Object.keys(emails).length && taskTypeOfEmail == 'saved')
-	{
+	if (taskQuantity > Object.keys(emails).length && taskTypeOfEmail == 'saved') {
 		Materialize.toast("You only have " + Object.keys(emails).length + " emails saved, but want " + taskQuantity + " tasks", 3500, "rounded");
 		return;
 	}
@@ -311,12 +308,11 @@ $("#createTaskButton").click(function () {
 				if (taskQuantity >= 1) {
 					if (validateEmail(taskEmail) != false || taskTypeOfEmail != 'newEmail') {
 						for (var i = 0; i < taskQuantity; i++) {
-							if(createTask(taskSiteSelect, taskSizeSelect, taskProfile, taskSpecificProxy, taskQuantity, taskEmail, taskTypeOfEmail, proxyUsed) == true)
-							{
+							if (createTask(taskSiteSelect, taskSizeSelect, taskProfile, taskSpecificProxy, taskQuantity, taskEmail, taskTypeOfEmail, proxyUsed) == true) {
 								return;
 							}
 						}
-							
+
 						$('#defaultOpen').click()
 						$('#defaultOpen').attr('class', 'nav-item active')
 						selectedQuickTaskRelease = undefined;
@@ -350,8 +346,7 @@ $("#createTaskButton").click(function () {
 
 
 
-function createTask(taskSiteSelect, taskSizeSelect, taskProfile, taskSpecificProxy, taskQuantity, taskEmail, taskTypeOfEmail, proxyUsed)
-{
+function createTask(taskSiteSelect, taskSizeSelect, taskProfile, taskSpecificProxy, taskQuantity, taskEmail, taskTypeOfEmail, proxyUsed) {
 	if (taskTypeOfEmail == 'saved') {
 		var emailKeys = Object.keys(emails);
 		taskEmail = emailKeys[Math.floor(Math.random() * emailKeys.length)];
@@ -359,13 +354,9 @@ function createTask(taskSiteSelect, taskSizeSelect, taskProfile, taskSpecificPro
 			Materialize.toast("You have no saved emails. Please save some emails, or enter a new one", 2000, "rounded");
 			return true;
 		}
-	} 
-	else if(taskTypeOfEmail == 'newEmail')
-	{
+	} else if (taskTypeOfEmail == 'newEmail') {
 		taskEmail = taskEmail;
-	}
-	else
-	{
+	} else {
 		Materialize.toast("Please select an email type", 2000, "rounded");
 		return true;
 	}
@@ -384,24 +375,19 @@ function createTask(taskSiteSelect, taskSizeSelect, taskProfile, taskSpecificPro
 		proxyUsed = '<td><i class="fas fa-bolt isprox"></i></td>'
 	}
 	var variantName = taskSiteSelect + '_' + selectedQuickTaskRelease['filterID'];
-	if(emailsForTasks[taskEmail] != undefined)
-	{
-		if(emailsForTasks[taskEmail][variantName] == true)
-		{
+	if (emailsForTasks[taskEmail] != undefined) {
+		if (emailsForTasks[taskEmail][variantName] == true) {
 			//console.log("Email already used");
-			if(Object.keys(emailsForTasks).length == Object.keys(emails).length)
-			{
+			if (Object.keys(emailsForTasks).length == Object.keys(emails).length) {
 				Materialize.toast("Maximum amount of tasks already created for your emails saved", 2000, "rounded");
 				return true;
-			}
-			else
-			{
+			} else {
 				createTask(taskSiteSelect, taskSizeSelect, taskProfile, taskSpecificProxy, taskQuantity, taskEmail, taskTypeOfEmail, proxyUsed)
 				return;
 			}
 		}
 	}
-	emailsForTasks[taskEmail] = { };
+	emailsForTasks[taskEmail] = {};
 	emailsForTasks[taskEmail][variantName] = true;
 	if (taskSiteSelect == 'nakedcph') {
 		tasks.push({
@@ -557,8 +543,7 @@ $("#newProfile").click(function () {
 $("#saveProfile").click(function () {
 	var profileName = $('#profileList option:selected').attr('value');
 	var stateProvince = $('#stateProvince').val();
-	if(stateProvince == '' || stateProvince == 'none' || stateProvince == 'default')
-	{
+	if (stateProvince == '' || stateProvince == 'none' || stateProvince == 'default') {
 		stateProvince = '';
 	}
 	if (profileName != 'Example Profile') {
@@ -717,12 +702,9 @@ function loadReleases() {
 
 $('#taskTypeOfEmail').on('change', function () {
 	var selectedVal = $('#taskTypeOfEmail').val();
-	if(selectedVal == 'newEmail')
-	{
+	if (selectedVal == 'newEmail') {
 		$('#taskEmail').prop('disabled', false)
-	}
-	else
-	{
+	} else {
 		$('#taskEmail').prop('disabled', true)
 	}
 });
@@ -797,9 +779,7 @@ $(".raffle-enter-container").on('click', '.enterRaffle', function () {
 							variant: oneClicktask['variant'],
 							ymeuniverse: oneClicktask['ymeuniverse']
 						}, profiles[taskProfile]);
-					}
-					else
-					{
+					} else {
 						ipcRenderer.send('startTask', {
 							taskID: taskID,
 							type: 'oneclick',
@@ -857,8 +837,7 @@ $('#taskSiteSelect').on('change', function () {
 $("#saveEmailList").click(function () {
 	var emailsToSave = $('#emailsToSave').val().split('\n')
 	emails = {};
-	if(emailsToSave.length == 1 && emailsToSave[0] == '')
-	{
+	if (emailsToSave.length == 1 && emailsToSave[0] == '') {
 		emails = {};
 		loadEmails({});
 		ipcRenderer.send('saveEmails', emails)
@@ -872,19 +851,14 @@ $("#saveEmailList").click(function () {
 		var email = emailsToSave[i];
 		if (validateEmail(email) != false) {
 			if (emails[email] == undefined) {
-				emails[email] = {
-				};
-			}
-			else
-			{
-				if(email != '')
-				{
+				emails[email] = {};
+			} else {
+				if (email != '') {
 					error2 = true;
 				}
 			}
 		} else {
-			if(email != '')
-			{
+			if (email != '') {
 				error = true;
 			}
 		}
@@ -898,9 +872,7 @@ $("#saveEmailList").click(function () {
 
 	if (error) {
 		Materialize.toast("Some of your emails are not valid and therefore have not been saved.", 2000, "rounded");
-	}
-	else
-	{
+	} else {
 		Materialize.toast("Saving and updating emails.", 2000, "rounded");
 	}
 });
@@ -1000,3 +972,48 @@ var randomString = function (len, bits) {
 	}
 	return outStr.toUpperCase();
 };
+
+$('#country').on('change', function () {
+	var country = $(this).val();
+	if (country == 'United Kingdom') {
+		$.each($(".EUProfileState"), function () {
+			$(this).css('display', 'block')
+		});
+		$.each($(".CAProfileState"), function () {
+			$(this).css('display', 'none')
+		});
+		$.each($(".USProfileState"), function () {
+			$(this).css('display', 'none')
+		});
+	} else if (country == 'United States') {
+		$.each($(".USProfileState"), function () {
+			$(this).css('display', 'block')
+		});
+		$.each($(".CAProfileState"), function () {
+			$(this).css('display', 'none')
+		});
+		$.each($(".EUProfileState"), function () {
+			$(this).css('display', 'none')
+		});
+	} else if (country == 'Canada') {
+		$.each($(".CAProfileState"), function () {
+			$(this).css('display', 'block')
+		});
+		$.each($(".USProfileState"), function () {
+			$(this).css('display', 'none')
+		});
+		$.each($(".EUProfileState"), function () {
+			$(this).css('display', 'none')
+		});
+	} else {
+		$.each($(".EUProfileState"), function () {
+			$(this).css('display', 'block')
+		});
+		$.each($(".CAProfileState"), function () {
+			$(this).css('display', 'none')
+		});
+		$.each($(".USProfileState"), function () {
+			$(this).css('display', 'none')
+		});
+	}
+});

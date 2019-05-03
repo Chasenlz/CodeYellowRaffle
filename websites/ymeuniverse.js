@@ -16,7 +16,8 @@
 */
 
 var mainBot = require('../index.js')
-var cheerio = require('cheerio');
+var Chance = require('chance');
+var chance = new Chance();
 
 function formatProxy(proxy) {
 	if (proxy == '') {
@@ -193,8 +194,10 @@ exports.submitRaffle = function (request, task, profile, raffleToken, landedAt) 
 		`{"${task['ymeuniverse']['fullName']}": "${profile['firstName']} ${task['ymeuniverse']['lastName']}",
 	"${task['ymeuniverse']['gender']}": "Man",
 	"${task['ymeuniverse']['blank']}": "",
+	"${task['ymeuniverse']['phoneNumber']}": "${chance.phone({ formatted: false })}",
 	"${task['ymeuniverse']['email']}": "${task['taskEmail']}",
-	"${task['ymeuniverse']['size']}": "${sizeFormatter(task['taskSizeSelect'])}",
+	"${task['ymeuniverse']['city']}": "${profile['city']}",
+	"${task['ymeuniverse']['country']}": "${profile['country']}",
 	"form[token]": "${raffleToken}",
 	"form[landed_at]": "${landedAt}",
 	"form[language]": "en"}`);
