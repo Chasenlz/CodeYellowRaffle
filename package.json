@@ -24,6 +24,8 @@
     "express": "^4.16.3",
     "faker": "^4.1.0",
     "fs": "0.0.1-security",
+    "http-proxy-agent": "^2.1.0",
+    "https-proxy-agent": "^2.2.1",
     "open": "0.0.5",
     "request": "^2.88.0"
   }

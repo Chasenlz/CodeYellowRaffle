@@ -14,7 +14,31 @@
 	You should have received a copy of the GNU General Public License
 	along with this program (license.md).  If not, see <http://www.gnu.org/licenses/>.
 */
+var HttpsProxyAgent = require('https-proxy-agent');
+const request = require('request');
+exports.testProxy = function(proxy, callback) {
+	var agent = new HttpsProxyAgent(proxy);
+   request.get({
+			headers: {
+				'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36'
+			},
+			agent: agent,
+			url: 'https://www.google.com/',
+			time: true
+		},
+		function (error, response, body) {
+			if (!error && response.statusCode == 200) {
+				callback({ message: `VALID (${Math.floor(response.timingPhases.firstByte)}ms)` });
+			} else {
+				callback({ message: 'FAILED'});
+			}
+		});
+}
 
+
+// Old proxy test
+
+/*
 const request = require('request');
 exports.testProxy = function(proxy, callback) {
    request.get({
@@ -33,3 +57,4 @@ exports.testProxy = function(proxy, callback) {
 			}
 		});
 }
+*/

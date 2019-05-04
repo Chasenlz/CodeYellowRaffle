@@ -22,7 +22,13 @@ function formatProxy(proxy) {
 	if (proxy == '') {
 		return '';
 	}
-	var sProxy = proxy.split(':');
+	try 
+	{
+		var sProxy = proxy.split(':');
+	} catch (e)
+	{
+		return '';
+	}
 	var proxyHost = sProxy[0] + ":" + sProxy[1];
 	if (sProxy.length == 2) {
 		sProxy = "http://" + proxyHost;

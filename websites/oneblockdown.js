@@ -19,11 +19,18 @@ var mainBot = require('../index.js')
 var cheerio = require('cheerio');
 const faker = require('faker');
 
-function formatProxy(proxy) {
+function formatProxy(proxy) 
+{
 	if (proxy == '') {
 		return '';
 	}
-	var sProxy = proxy.split(':');
+	try 
+	{
+		var sProxy = proxy.split(':');
+	} catch (e)
+	{
+		return '';
+	}
 	var proxyHost = sProxy[0] + ":" + sProxy[1];
 	if (sProxy.length == 2) {
 		sProxy = "http://" + proxyHost;
@@ -370,6 +377,8 @@ exports.submitRaffle = function (request, task, profile, userId) {
 		type: task.type,
 		message: 'Submitting entry'
 	});
+	console.log(JSON.stringify(task));
+	console.log(JSON.stringify(profile));
 	if(profile['stateProvince'] == null)
 	{
 		profile['stateProvince'] = '';
@@ -411,6 +420,28 @@ exports.submitRaffle = function (request, task, profile, userId) {
 		},
 		proxy: formatProxy(task['proxy'])
 	}, function callback(error, response, body) {
+		console.log(JSON.stringify({
+			'extension': 'raffle',
+			'controller': 'raffles',
+			'action': 'subscribe',
+			'response': '03AOLTBLTA6oaXtl3pUpnzYqYDPv8yguApR3yjXbjepgtQGvQPEoU3X_7y-_UY4hzrALZZGVD7zAXHLDmH3eQtyI-_B1wpk3OXTmA8QejJ5QpeUsiodh0XkSh2XZ6jErkSOfZIOrF2oykLmGMCRUQZPoeiBQV0Isv6Xp_yVeTqJDu6dSF0YZtf3VmKmT_uHF-PzGwOT4Sqwo44dsWcnHQ-SQdl6vrC3Wk2CiZelQCnuRg-xnHAKt3Zn9Vvq9IRyqlSgmjD-hL08eV3VCRC8rr-w28BjINB3u5oKWCXa6YOk-ki2o8uuNEuJxWFKDKbWQH-xBDgpQKTt89w',
+			'userId': userId,
+			'stockItemId': sizeFormatter(task['taskSizeSelect']),
+			'itemId': task['oneblockdown']['itemId'],
+			'raffleId': task['oneblockdown']['raffleId'],
+			'inStore': '',
+			'addressId': 'n',
+			'address[countryId]': countryFormatter(profile['country']),
+			'address[first_name]': profile['firstName'],
+			'address[last_name]': profile['lastName'],
+			'address[street_address]': profile['address'],
+			'address[zipcode]': profile['zipCode'],
+			'address[cityName]': profile['city'],
+			'address[phone_number]': profile['phoneNumber'],
+			'address[statecode]': profile['stateProvince'],
+			'version': '100'
+		}));
+		console.log(body)
 		if(error)
 		{
 			var proxy2 = getRandomProxy();
@@ -471,6 +502,10 @@ function shouldStop(task) {
 // Checks if this email was already entered into a raffle
 function checkEmail(task) {
 	if (task['taskTypeOfEmail'] == 'saved') {
+		if(global.emails[task['taskEmail']] == undefined)
+		{
+			return;
+		}
 		if (global.emails[task['taskEmail']][task['taskSiteSelect'] + '_' + task['filterID']] == true && task['type'] == 'mass') {
 			return true;
 		} else {
@@ -526,6 +561,24 @@ function countryFormatter(profileCountry) {
 			break;			
 		case 'Australia':
 			return '13';
+			break;		
+		case 'Belgium':
+			return '20';
+			break;
+		case 'Singapore':
+			return '198';
+			break;
+		case 'Malaysia':
+			return '158';
+			break;
+		case 'Hong Kong':
+			return '95';
+			break;
+		case 'China':
+			return '48';
+			break;
+		case 'Japan':
+			return '114';
 			break;
 	}
 }

@@ -21,20 +21,22 @@ const faker = require('faker');
 function formatProxy(proxy) {
 	if (proxy == '') {
 		return '';
-	}
-	try {
+	}	
+	try 
+	{
 		var sProxy = proxy.split(':');
-		var proxyHost = sProxy[0] + ":" + sProxy[1];
-		if (sProxy.length == 2) {
-			sProxy = "http://" + proxyHost;
-			return (sProxy);
-		} else {
-			var proxyAuth = sProxy[2] + ":" + sProxy[3];
-			sProxy = "http://" + proxyAuth.trimLeft().trimRight().toString() + "@" + proxyHost;
-			return (sProxy);
-		}
-	} catch (e) {
+	} catch (e)
+	{
 		return '';
+	}
+	var proxyHost = sProxy[0] + ":" + sProxy[1];
+	if (sProxy.length == 2) {
+		sProxy = "http://" + proxyHost;
+		return (sProxy);
+	} else {
+		var proxyAuth = sProxy[2] + ":" + sProxy[3];
+		sProxy = "http://" + proxyAuth.trimLeft().trimRight().toString() + "@" + proxyHost;
+		return (sProxy);
 	}
 }
 

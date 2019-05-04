@@ -25,7 +25,13 @@ function formatProxy(proxy)
 	{
 		return '';
 	}
-	var sProxy = proxy.split(':');
+	try 
+	{
+		var sProxy = proxy.split(':');
+	} catch (e)
+	{
+		return '';
+	}
 	var proxyHost = sProxy[0] + ":" + sProxy[1];
 	if (sProxy.length == 2) {
 		sProxy = "http://" + proxyHost;
@@ -192,6 +198,7 @@ exports.submitRaffle = function (request, task, profile, raffleToken, pageID) {
 		body: 'token=' + raffleToken + '&page_id=' + pageID + '&shoes_size='+sizeFormatter(task['taskSizeSelect'])+'&action=send_request&fax=&name='+profile['firstName']+'&lastname='+profile['lastName']+'&email='+task['taskEmail']+'&contact_number='+profile['phoneNumber']+'&streetname='+profile['address']+'&housenumber='+profile['address']+'&postalcode='+profile['zipCode']+'&city='+profile['city']+'&country='+countryFormatter(profile['country'])+'&countryhidden=&g-recaptcha-response=' + mainBot.taskCaptchas[task['type']][task['taskID']],
 		proxy: formatProxy(task['proxy'])
 	}, function callback(error, response, body) {
+		console.log(body)
 		body = JSON.parse(body);
 		console.log('token=' + raffleToken + '&page_id=' + pageID + '&shoes_size='+sizeFormatter(task['taskSizeSelect'])+'&action=send_request&fax=&name='+profile['firstName']+'&lastname='+profile['lastName']+'&email='+task['taskEmail']+'&contact_number='+profile['phoneNumber']+'&streetname='+profile['address']+'&housenumber='+profile['address']+'&postalcode='+profile['zipCode']+'&city='+profile['city']+'&country='+countryFormatter(profile['country'])+'&countryhidden=&g-recaptcha-response=' + mainBot.taskCaptchas[task['type']][task['taskID']]);
 		if(body.error == true)
@@ -333,7 +340,25 @@ function countryFormatter(profileCountry)
 			return 'Czech Republic';
 			break;
 		case 'Australia':
-			return 'Czech Republic';
+			return 'Australia';
+			break;
+		case 'Belgium':
+			return 'Belgium';
+			break;
+		case 'Singapore':
+			return 'Singapore';
+			break;
+		case 'Malaysia':
+			return 'Malaysia';
+			break;
+		case 'Hong Kong':
+			return 'Hong Kong';
+			break;
+		case 'China':
+			return 'China';
+			break;
+		case 'Japan':
+			return 'Japan';
 			break;
 	}
 }

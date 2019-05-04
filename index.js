@@ -34,6 +34,16 @@ const oneblockdown = require('./websites/oneblockdown.js');
 
 var signUpURL = 'https://codeyellow.io/account.php?type=signup';
 
+var trueLog = console.log;
+console.log = function(msg) {
+    fs.appendFile(appDataDir + "\\log.txt", msg + "\r\n", function(err) {
+        if(err) {
+            return trueLog(err);
+        }
+    });
+    trueLog(msg);
+}
+
 global.websites = {
 	'vooberlin': {
 		sitekey: '6LcyNx4UAAAAAGF7EPoti8G18kv9j9kDeQWzcVec',
@@ -436,21 +446,21 @@ function openBot(onReady) {
 		}
 		module.exports.taskStatuses[task['type']][task.taskID] = 'active';
 		if (task['taskSiteSelect'] == 'nakedcph') {
-			console.log('Nakedcph task started');
+			//console.log('Nakedcph task started');
 			nakedcph.performTask(task, profile)
 			//module.exports.requestCaptcha('nakedcph', task, false);
 		} else if (task['taskSiteSelect'] == 'vooberlin') {
-			console.log('VooBerlin task started');
+			//console.log('VooBerlin task started');
 			vooberlin.performTask(task, profile)
 		} else if (task['taskSiteSelect'] == 'footshop') {
-			console.log('Footshop task started');
+			//console.log('Footshop task started');
 			footshop.performTask(task, profile)
 		} else if (task['taskSiteSelect'] == 'ymeuniverse') {
-			console.log('YMEuniverse task started');
+			//console.log('YMEuniverse task started');
 			ymeuniverse.performTask(task, profile)
 		} else if (task['taskSiteSelect'] == 'oneblockdown') {
 			if (module.exports.tasksAwaitingConfirm[task.type][task.taskID] != 'awaiting') {
-				console.log('Oneblockdown task started');
+				//console.log('Oneblockdown task started');
 				oneblockdown.performTask(task, profile)
 			} else {
 				module.exports.tasksAwaitingConfirm[task.type][task.taskID] = 'confirmed';
