@@ -342,6 +342,9 @@ function countryFormatter(profileCountry)
 			return 'Canada';
 			break;
 		case 'North Ireland':
+			return 'North Ireland';
+			break;
+		case 'Ireland':
 			return 'Ireland';
 			break;
 		case 'Germany':
@@ -370,6 +373,9 @@ function countryFormatter(profileCountry)
 			break;
 		case 'Belgium':
 			return 'Belgium';
+			break;
+		case 'Slovenia':
+			return 'Slovenia';
 			break;
 		case 'Singapore':
 			return 'Singapore';

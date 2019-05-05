@@ -15,7 +15,7 @@
 	along with this program (license.md).  If not, see <http://www.gnu.org/licenses/>.
 */
 
-var currentVersion = '0.0.3';
+var currentVersion = '0.0.4';
 // LATER REMOVE EMAIL FROM if (fileExists('profiles.json')) {
 const open = require("open");
 const electron = require('electron');
@@ -31,6 +31,8 @@ const nakedcph = require('./websites/nakedcph.js');
 const vooberlin = require('./websites/vooberlin.js');
 const ymeuniverse = require('./websites/ymeuniverse.js');
 const oneblockdown = require('./websites/oneblockdown.js');
+
+initialfolderExistsOrMkDir();
 
 var signUpURL = 'https://codeyellow.io/account.php?type=signup';
 
@@ -116,7 +118,6 @@ module.exports.taskCaptchas = {
 
 
 
-initialfolderExistsOrMkDir();
 
 module.exports.taskStatuses = {
 	'oneclick': [],
@@ -480,10 +481,11 @@ function openBot(onReady) {
 
 
 
-	ipcMain.on('saveProxies', function (e, proxies) {
-		global.proxies = proxies.split('\n');
-		fs.writeFile(appDataDir + "\\proxies.txt", proxies, function (err) {
+	ipcMain.on('saveProxies', function (e, proxiesToSave) {
+		global.proxies = proxiesToSave.split('\n');
+		fs.writeFile(appDataDir + "\\proxies.txt", proxiesToSave, function (err) {
 			if (err) {
+				console.log('Error saving (saveProxies) proxies: ' + proxiesToSave + ' to file');
 				return;
 			}
 			module.exports.mainBotWin.send('notify', {
@@ -493,10 +495,11 @@ function openBot(onReady) {
 		});
 	});
 
-	ipcMain.on('saveEmails', function (e, emails) {
+	ipcMain.on('saveEmails', function (e, emailsToSave) {
 		global.emails = emails;
-		fs.writeFile(appDataDir + "\\emails.json", JSON.stringify(emails, null, 4), function (err) {
+		fs.writeFile(appDataDir + "\\emails.json", JSON.stringify(emailsToSave, null, 4), function (err) {
 			if (err) {
+				console.log('Error saving (saveEmails) emails: ' + emailsToSave + ' to file');
 				return;
 			}
 			module.exports.mainBotWin.send('notify', {
@@ -594,6 +597,7 @@ function openBot(onReady) {
 					length: 3000,
 					message: 'Error exporting profiles'
 				});
+				console.log('Error exporting profiles (exportProfiles) to path: ' + path);
 				return;
 			}
 			module.exports.mainBotWin.send('notify', {
@@ -623,6 +627,7 @@ function openBot(onReady) {
 function saveSettings() {
 	fs.writeFile(appDataDir + "\\settings.json", JSON.stringify(global.settings, null, 4), function (err) {
 		if (err) {
+			console.log('Error saving (fn saveSettings) settings: ' + JSON.stringify(global.settings) + ' to path: ' + appDataDir + "\\settings.json");
 			return;
 		}
 		console.log("Settings saved.");
@@ -632,6 +637,7 @@ function saveSettings() {
 function saveProfiles() {
 	fs.writeFile(appDataDir + "\\profiles.json", JSON.stringify(global.profiles, null, 4), function (err) {
 		if (err) {
+			console.log('Error saving (fn saveProfiles) profiles: ' + JSON.stringify(global.profiles) + ' to path: ' + appDataDir + "\\profiles.json");
 			return;
 		}
 		console.log("Profiles saved.");
@@ -642,6 +648,7 @@ exports.saveEmails = function (emails) {
 	global.emails = emails;
 	fs.writeFile(appDataDir + "\\emails.json", JSON.stringify(emails, null, 4), function (err) {
 		if (err) {
+			console.log('Error saving (fn saveEmails) emails: ' + JSON.stringify(global.profiles) + ' to path: ' + appDataDir + "\\profiles.json");
 			return;
 		}
 		console.log('Emails saved')
@@ -798,9 +805,13 @@ function initialfolderExistsOrMkDir() {
 	fs.mkdir(appDataDir, function (err) {
 		if (err) {
 			if (err.code == 'EEXIST') {
-				console.log("Folder Exists")
+				console.log("Folder path: " + appDataDir + " exists")
 				createOrGetFiles();
 				loadBot();
+			}
+			else
+			{
+				console.log('Error (fn initialfolderExistsOrMkDir) error: ' + err);
 			}
 		} else {
 			createOrGetFiles();
@@ -826,42 +837,54 @@ function createOrGetFiles() {
 			}
 		});
 	if (fileExists('settings.json')) {
-		console.log("settings.json exists");
-		var fileContents = fs.readFileSync(appDataDir + "\\settings.json");
+		var fileContents = fs.readFileSync(appDataDir + "\\settings.json", 'utf8');
+		console.log("settings.json exists Contents:");
+		console.log(fileContents);
 		if (fileContents == '' || fileContents == null || fileContents == undefined) {
-			var parsed = JSON.parse('{"token": "","email": "", "retryDelay": "", "discordWebhook": ""}', null, 4);
+			console.log("fileContents == '' || fileContents == null || fileContents == undefined so creating a blank new canvas for settings.json");
+			var parsed = JSON.parse('{"token": "","email": "", "retryDelay": "500", "discordWebhook": ""}', null, 4);
 			makeFile('settings.json', JSON.stringify(parsed, null, 4))
 			global.settings = parsed;
 		} else {
+			console.log("settings already has data");
 			global.settings = JSON.parse(fileContents);
+			if(global.settings.retryDelay == '')
+			{
+				// maybe remove this
+				global.settings.retryDelay = 500;
+			}
 		}
 	} else {
-		var parsed = JSON.parse('{"token": "","email": "", "retryDelay": "", "discordWebhook": ""}', null, 4);
+		var parsed = JSON.parse('{"token": "","email": "", "retryDelay": "500", "discordWebhook": ""}', null, 4);
 		makeFile('settings.json', JSON.stringify(parsed, null, 4))
 		global.settings = parsed;
 	}
 
 	if (fileExists('profiles.json')) {
-		console.log("profiles.json exists");
-		var fileContents = fs.readFileSync(appDataDir + "\\profiles.json");
+		var fileContents = fs.readFileSync(appDataDir + "\\profiles.json", 'utf8');
+		console.log("profiles.json exists Contents:")
+		console.log(fileContents);
 		if (fileContents == '' || fileContents == null || fileContents == undefined) {
-			var parsed = JSON.parse('{"Example Profile":{"email":"example@gmail.com","firstName":"John", "lastName": "Doe", "address":"21 Cresent Road","aptSuite":"","zipCode":"UB3 1RJ","city":"London","country":"State/Province","country":"United Kingdom","stateProvince":"none","phoneNumber": "07700900087","email":"johndoe@gmail.com","cardType":"visa","cardNumber":"4242424242424242","expiryMonth":"06","expiryYear":"2023","CVV":"361"}}', null, 4);
+			console.log("fileContents == '' || fileContents == null || fileContents == undefined so creating a blank new canvas for profiles.json");
+			var parsed = JSON.parse('{"Example Profile":{"email":"example@gmail.com","firstName":"John", "lastName": "Doe", "address":"21 Cresent Road","aptSuite":"","zipCode":"UB3 1RJ","city":"London","country":"Country","country":"United Kingdom","stateProvince":"","phoneNumber": "07700900087","email":"johndoe@gmail.com","cardType":"visa","cardNumber":"4242424242424242","expiryMonth":"06","expiryYear":"2023","CVV":"361", "jigProfileName": true, "jigProfileAddress": false, "jigProfilePhoneNumber": true}}', null, 4);
 			makeFile('profiles.json', JSON.stringify(parsed, null, 4))
 			global.profiles = parsed;
 		} else {
 			global.profiles = JSON.parse(fileContents);
 		}
 	} else {
-		var parsed = JSON.parse('{"Example Profile":{"email":"example@gmail.com","firstName":"John", "lastName": "Doe", "address":"21 Cresent Road","aptSuite":"","zipCode":"UB3 1RJ","city":"London","country":"State/Province","country":"United Kingdom","stateProvince":"none","phoneNumber": "07700900087","email":"johndoe@gmail.com","cardType":"visa","cardNumber":"4242424242424242","expiryMonth":"06","expiryYear":"2023","CVV":"361"}}', null, 4);
+		var parsed = JSON.parse('{"Example Profile":{"email":"example@gmail.com","firstName":"John", "lastName": "Doe", "address":"21 Cresent Road","aptSuite":"","zipCode":"UB3 1RJ","city":"London","country":"Country","country":"United Kingdom","stateProvince":"","phoneNumber": "07700900087","email":"johndoe@gmail.com","cardType":"visa","cardNumber":"4242424242424242","expiryMonth":"06","expiryYear":"2023","CVV":"361", "jigProfileName": true, "jigProfileAddress": false, "jigProfilePhoneNumber": true}}', null, 4);
 		makeFile('profiles.json', JSON.stringify(parsed, null, 4))
 		global.profiles = parsed;
 	}
 
 
 	if (fileExists('emails.json')) {
-		console.log("emails.json exists");
-		var fileContents = fs.readFileSync(appDataDir + "\\emails.json");
+		var fileContents = fs.readFileSync(appDataDir + "\\emails.json", 'utf8');
+		console.log("emails.json exists Contents:")
+		console.log(fileContents);
 		if (fileContents == '' || fileContents == null || fileContents == undefined) {
+			console.log("fileContents == '' || fileContents == null || fileContents == undefined so creating a blank new canvas for emails.json");
 			var parsed = JSON.parse('{}', null, 4);
 			makeFile('emails.json', JSON.stringify(parsed, null, 4))
 			global.emails = parsed;
@@ -875,8 +898,9 @@ function createOrGetFiles() {
 	}
 
 	if (fileExists('proxies.txt')) {
-		console.log("proxies.txt exists");
 		var proxyFile = fs.readFileSync(appDataDir + "\\proxies.txt", 'utf8').split('\n');
+		console.log("proxies.txt exists Contents:");
+		console.log(proxyFile);
 		global.proxies = proxyFile == '' ? [] : proxyFile;
 	} else {
 		makeFile('proxies.txt', '')
@@ -909,6 +933,7 @@ function fileExists(name) {
 function makeFile(name, data) {
 	fs.writeFile(appDataDir + "\\" + name, data, function (err) {
 		if (err) {
+			console.log("Error creating inital file (fn makeFile)");
 			return console.log(err);
 		}
 	});

@@ -1023,137 +1023,79 @@ var randomString = function (len, bits) {
 
 $('#country').on('change', function () {
 	var country = $(this).val();
-	if (country == 'United Kingdom') {
-		$.each($(".NONEProfileState"), function () {
-			$(this).css('display', 'block')
-		});
-		$.each($(".DEProfileState"), function () {
-			$(this).css('display', 'none')
-		});
-		$.each($(".AUSProfileState"), function () {
-			$(this).css('display', 'none')
-		});
-		$.each($(".CAProfileState"), function () {
+	if (country == 'United States') {
+		$.each($(".stateSelectOption"), function () {
 			$(this).css('display', 'none')
 		});
 		$.each($(".USProfileState"), function () {
-			$(this).css('display', 'none')
-		});
-		$.each($(".ITProfileState"), function () {
-			$(this).css('display', 'none')
-		});
-	} else if (country == 'United States') {
-		$.each($(".USProfileState"), function () {
 			$(this).css('display', 'block')
-		});
-		$.each($(".AUSProfileState"), function () {
-			$(this).css('display', 'none')
-		});
-		$.each($(".DEProfileState"), function () {
-			$(this).css('display', 'none')
-		});
-		$.each($(".CAProfileState"), function () {
-			$(this).css('display', 'none')
-		});
-		$.each($(".NONEProfileState"), function () {
-			$(this).css('display', 'none')
-		});
-		$.each($(".ITProfileState"), function () {
-			$(this).css('display', 'none')
 		});
 	} else if (country == 'Canada') {
+		$.each($(".stateSelectOption"), function () {
+			$(this).css('display', 'none')
+		});
 		$.each($(".CAProfileState"), function () {
 			$(this).css('display', 'block')
-		});
-		$.each($(".AUSProfileState"), function () {
-			$(this).css('display', 'none')
-		});
-		$.each($(".DEProfileState"), function () {
-			$(this).css('display', 'none')
-		});
-		$.each($(".USProfileState"), function () {
-			$(this).css('display', 'none')
-		});
-		$.each($(".NONEProfileState"), function () {
-			$(this).css('display', 'none')
-		});
-		$.each($(".ITProfileState"), function () {
-			$(this).css('display', 'none')
 		});
 	} else if (country == 'Italy') {
+		$.each($(".stateSelectOption"), function () {
+			$(this).css('display', 'none')
+		});
 		$.each($(".ITProfileState"), function () {
 			$(this).css('display', 'block')
 		});
-		$.each($(".AUSProfileState"), function () {
+	} else if (country == 'Belgium') {
+		$.each($(".stateSelectOption"), function () {
 			$(this).css('display', 'none')
 		});
-		$.each($(".DEProfileState"), function () {
-			$(this).css('display', 'none')
-		});
-		$.each($(".CAProfileState"), function () {
-			$(this).css('display', 'none')
-		});
-		$.each($(".USProfileState"), function () {
-			$(this).css('display', 'none')
-		});
-		$.each($(".NONEProfileState"), function () {
-			$(this).css('display', 'none')
-		});
-	} else if (country == 'Australia') {
-		$.each($(".AUSProfileState"), function () {
+		$.each($(".BGProfileState"), function () {
 			$(this).css('display', 'block')
 		});
-		$.each($(".ITProfileState"), function () {
+	}
+	 else if (country == 'Australia') {
+		$.each($(".stateSelectOption"), function () {
 			$(this).css('display', 'none')
 		});
-		$.each($(".DEProfileState"), function () {
-			$(this).css('display', 'none')
-		});
-		$.each($(".CAProfileState"), function () {
-			$(this).css('display', 'none')
-		});
-		$.each($(".USProfileState"), function () {
-			$(this).css('display', 'none')
-		});
-		$.each($(".NONEProfileState"), function () {
-			$(this).css('display', 'none')
+		$.each($(".AUSProfileState"), function () {
+			$(this).css('display', 'block')
 		});
 	} else if (country == 'Germany') {
+		$.each($(".stateSelectOption"), function () {
+			$(this).css('display', 'none')
+		});
 		$.each($(".DEProfileState"), function () {
 			$(this).css('display', 'block')
 		});
-		$.each($(".AUSProfileState"), function () {
+	} else if (country == 'Slovenia') {
+		$.each($(".stateSelectOption"), function () {
 			$(this).css('display', 'none')
 		});
-		$.each($(".ITProfileState"), function () {
+		$.each($(".SIProfileState"), function () {
+			$(this).css('display', 'block')
+		});
+	} else if (country == 'France') {
+		$.each($(".stateSelectOption"), function () {
 			$(this).css('display', 'none')
 		});
-		$.each($(".CAProfileState"), function () {
+		$.each($(".FRProfileState"), function () {
+			$(this).css('display', 'block')
+		});
+	} else if (country == 'Netherlands') {
+		$.each($(".stateSelectOption"), function () {
 			$(this).css('display', 'none')
 		});
-		$.each($(".USProfileState"), function () {
+		$.each($(".NLProfileState"), function () {
+			$(this).css('display', 'block')
+		});
+	} else if (country == 'China') {
+		$.each($(".stateSelectOption"), function () {
 			$(this).css('display', 'none')
 		});
-		$.each($(".NONEProfileState"), function () {
-			$(this).css('display', 'none')
+		$.each($(".CNProfileState"), function () {
+			$(this).css('display', 'block')
 		});
 	} else {
-		$.each($(".NONEProfileState"), function () {
-			$(this).css('display', 'block')
-		});
-		$.each($(".DEProfileState"), function () {
-			$(this).css('display', 'none')
-		});
-		$.each($(".AUSProfileState"), function () {
-			$(this).css('display', 'none')
-		});
-		$.each($(".CAProfileState"), function () {
-			$(this).css('display', 'none')
-		});
-		$.each($(".USProfileState"), function () {
-			$(this).css('display', 'none')
-		});
-		$.each($(".ITProfileState"), function () {
+		$.each($(".stateSelectOption"), function () {
 			$(this).css('display', 'none')
 		});
 	}

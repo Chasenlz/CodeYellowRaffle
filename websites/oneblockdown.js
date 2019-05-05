@@ -589,6 +589,9 @@ function countryFormatter(profileCountry) {
 		case 'North Ireland':
 			return '77';
 			break;
+		case 'Ireland':
+			return '102';
+			break;
 		case 'Germany':
 			return '57';
 			break;
@@ -615,6 +618,9 @@ function countryFormatter(profileCountry) {
 			break;		
 		case 'Belgium':
 			return '20';
+			break;	
+		case 'Slovenia':
+			return '200';
 			break;
 		case 'Singapore':
 			return '198';

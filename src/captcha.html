@@ -183,7 +183,7 @@
 			</div>
 
 			<div class="setterbum">
-                  <div class="price-it-up">Sign in with <i class="fab fa-google"></i></div>
+                  <div class="price-it-up" id="openGoogleLogin" onclick="ipcRenderer.send('login');">Sign in with <i class="fab fa-google"></i></div>
             </div>
 
 		</div>
@@ -231,9 +231,6 @@
 			}
 		}
 		
-		$('openGoogleLogin').click(function () {
-			ipcRenderer.send('login');
-		});
 		function minimize() {
             ipcRenderer.send('minimize');
         }
