@@ -301,6 +301,10 @@ function registerEmail(task)
 {
 	if(task['taskTypeOfEmail'] == 'saved')
 	{
+		if(global.emails[task['taskEmail']] == undefined)
+		{
+			return;
+		}
 		var variantName = task['taskSiteSelect'] + '_' + task['filterID'];
 		global.emails[task['taskEmail']][variantName] = true;
 		mainBot.saveEmails(global.emails);

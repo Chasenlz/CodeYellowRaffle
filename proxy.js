@@ -15,9 +15,18 @@
 	along with this program (license.md).  If not, see <http://www.gnu.org/licenses/>.
 */
 var HttpsProxyAgent = require('https-proxy-agent');
-const request = require('request');
+const request = require('request').defaults({
+	timeout: 10000
+});
 exports.testProxy = function(proxy, callback) {
-	var agent = new HttpsProxyAgent(proxy);
+	if(proxy != '')
+	{
+		var agent = new HttpsProxyAgent(proxy);
+	}
+	else
+	{
+		agent = '';
+	}
    request.get({
 			headers: {
 				'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36'

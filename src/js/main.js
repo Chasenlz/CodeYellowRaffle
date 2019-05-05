@@ -383,13 +383,8 @@ function createTask(taskSiteSelect, taskSizeSelect, taskProfile, taskSpecificPro
 	if (emailsForTasks[taskEmail] != undefined) {
 		if (emailsForTasks[taskEmail][variantName] == true) {
 			//console.log("Email already used");
-			if (Object.keys(emailsForTasks).length == Object.keys(emails).length) {
-				Materialize.toast("Maximum amount of tasks already created for your emails saved", 2000, "rounded");
-				return true;
-			} else {
-				createTask(taskSiteSelect, taskSizeSelect, taskProfile, taskSpecificProxy, taskQuantity, taskEmail, taskTypeOfEmail, proxyUsed)
-				return;
-			}
+			createTask(taskSiteSelect, taskSizeSelect, taskProfile, taskSpecificProxy, taskQuantity, taskEmail, taskTypeOfEmail, proxyUsed)
+			return;
 		}
 	}
 	emailsForTasks[taskEmail] = {};
@@ -1029,43 +1024,136 @@ var randomString = function (len, bits) {
 $('#country').on('change', function () {
 	var country = $(this).val();
 	if (country == 'United Kingdom') {
-		$.each($(".EUProfileState"), function () {
+		$.each($(".NONEProfileState"), function () {
 			$(this).css('display', 'block')
+		});
+		$.each($(".DEProfileState"), function () {
+			$(this).css('display', 'none')
+		});
+		$.each($(".AUSProfileState"), function () {
+			$(this).css('display', 'none')
 		});
 		$.each($(".CAProfileState"), function () {
 			$(this).css('display', 'none')
 		});
 		$.each($(".USProfileState"), function () {
+			$(this).css('display', 'none')
+		});
+		$.each($(".ITProfileState"), function () {
 			$(this).css('display', 'none')
 		});
 	} else if (country == 'United States') {
 		$.each($(".USProfileState"), function () {
 			$(this).css('display', 'block')
 		});
+		$.each($(".AUSProfileState"), function () {
+			$(this).css('display', 'none')
+		});
+		$.each($(".DEProfileState"), function () {
+			$(this).css('display', 'none')
+		});
 		$.each($(".CAProfileState"), function () {
 			$(this).css('display', 'none')
 		});
-		$.each($(".EUProfileState"), function () {
+		$.each($(".NONEProfileState"), function () {
+			$(this).css('display', 'none')
+		});
+		$.each($(".ITProfileState"), function () {
 			$(this).css('display', 'none')
 		});
 	} else if (country == 'Canada') {
 		$.each($(".CAProfileState"), function () {
 			$(this).css('display', 'block')
 		});
+		$.each($(".AUSProfileState"), function () {
+			$(this).css('display', 'none')
+		});
+		$.each($(".DEProfileState"), function () {
+			$(this).css('display', 'none')
+		});
 		$.each($(".USProfileState"), function () {
 			$(this).css('display', 'none')
 		});
-		$.each($(".EUProfileState"), function () {
+		$.each($(".NONEProfileState"), function () {
 			$(this).css('display', 'none')
 		});
-	} else {
-		$.each($(".EUProfileState"), function () {
+		$.each($(".ITProfileState"), function () {
+			$(this).css('display', 'none')
+		});
+	} else if (country == 'Italy') {
+		$.each($(".ITProfileState"), function () {
 			$(this).css('display', 'block')
+		});
+		$.each($(".AUSProfileState"), function () {
+			$(this).css('display', 'none')
+		});
+		$.each($(".DEProfileState"), function () {
+			$(this).css('display', 'none')
 		});
 		$.each($(".CAProfileState"), function () {
 			$(this).css('display', 'none')
 		});
 		$.each($(".USProfileState"), function () {
+			$(this).css('display', 'none')
+		});
+		$.each($(".NONEProfileState"), function () {
+			$(this).css('display', 'none')
+		});
+	} else if (country == 'Australia') {
+		$.each($(".AUSProfileState"), function () {
+			$(this).css('display', 'block')
+		});
+		$.each($(".ITProfileState"), function () {
+			$(this).css('display', 'none')
+		});
+		$.each($(".DEProfileState"), function () {
+			$(this).css('display', 'none')
+		});
+		$.each($(".CAProfileState"), function () {
+			$(this).css('display', 'none')
+		});
+		$.each($(".USProfileState"), function () {
+			$(this).css('display', 'none')
+		});
+		$.each($(".NONEProfileState"), function () {
+			$(this).css('display', 'none')
+		});
+	} else if (country == 'Germany') {
+		$.each($(".DEProfileState"), function () {
+			$(this).css('display', 'block')
+		});
+		$.each($(".AUSProfileState"), function () {
+			$(this).css('display', 'none')
+		});
+		$.each($(".ITProfileState"), function () {
+			$(this).css('display', 'none')
+		});
+		$.each($(".CAProfileState"), function () {
+			$(this).css('display', 'none')
+		});
+		$.each($(".USProfileState"), function () {
+			$(this).css('display', 'none')
+		});
+		$.each($(".NONEProfileState"), function () {
+			$(this).css('display', 'none')
+		});
+	} else {
+		$.each($(".NONEProfileState"), function () {
+			$(this).css('display', 'block')
+		});
+		$.each($(".DEProfileState"), function () {
+			$(this).css('display', 'none')
+		});
+		$.each($(".AUSProfileState"), function () {
+			$(this).css('display', 'none')
+		});
+		$.each($(".CAProfileState"), function () {
+			$(this).css('display', 'none')
+		});
+		$.each($(".USProfileState"), function () {
+			$(this).css('display', 'none')
+		});
+		$.each($(".ITProfileState"), function () {
 			$(this).css('display', 'none')
 		});
 	}

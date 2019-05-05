@@ -15,6 +15,7 @@
 	along with this program (license.md).  If not, see <http://www.gnu.org/licenses/>.
 */
 
+var HttpsProxyAgent = require('https-proxy-agent');
 var mainBot = require('../index.js')
 const faker = require('faker');
 
@@ -85,6 +86,14 @@ exports.performTask = function (task, profile) {
 		profile['phoneNumber'] = faker.fake("{{phone.phoneNumberFormat}}");
 	}
 
+	if(task['proxy'] != '')
+	{
+		var agent = new HttpsProxyAgent(formatProxy(task['proxy']));
+	}
+	else
+	{
+		agent = '';
+	}
 	request({
 		url: task['variant'],
 		headers: {
@@ -95,7 +104,7 @@ exports.performTask = function (task, profile) {
 			'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3',
 			'Accept-Language': 'en-GB,en-US;q=0.9,en;q=0.8',
 		},
-		proxy: formatProxy(task['proxy']),
+		agent: agent
 	}, function (error, response, body) {
 		if (!error && response.statusCode == 200) {
 			mainBot.mainBotWin.send('taskUpdate', {
@@ -103,7 +112,7 @@ exports.performTask = function (task, profile) {
 				type: task.type,
 				message: 'GOT RAFFLE PAGE'
 			});
-			console.log('Got raffle page');
+			console.log(`[${task.taskID}] ` + ' Got raffle page');
 			exports.getRaffleToken(request, task, profile);
 		} else {
 			var proxy2 = getRandomProxy();
@@ -139,6 +148,16 @@ exports.getRaffleToken = function (request, task, profile) {
 		type: task.type,
 		message: 'Obtaining raffle token'
 	});
+	console.log(`[${task.taskID}] ` + ' Obtaining raffle token');
+
+	if(task['proxy'] != '')
+	{
+		var agent = new HttpsProxyAgent(formatProxy(task['proxy']));
+	}
+	else
+	{
+		agent = '';
+	}
 	request({
 		url: task['ymeuniverse']['raffleToken'],
 		method: 'POST',
@@ -152,7 +171,7 @@ exports.getRaffleToken = function (request, task, profile) {
 			'Connection': 'keep-alive',
 			'Content-Length': '0',
 		},
-		proxy: formatProxy(task['proxy']),
+		agent: agent
 	}, function callback(error, response, body) {
 		if (!error && response.statusCode == 200) {
 			var parsed = JSON.parse(body);
@@ -171,18 +190,16 @@ exports.getRaffleToken = function (request, task, profile) {
 				type: task.type,
 				message: 'Got raffle token'
 			});
+			console.log(`[${task.taskID}] ` + ' Got raffle token');
 			console.log('Raffle Token: ' + raffleToken);
 			console.log('Landed at: ' + landedAt);
 			mainBot.mainBotWin.send('taskUpdate', {
 				id: task.taskID,
 				type: task.type,
-				message: 'Got raffle token'
-			});
-			mainBot.mainBotWin.send('taskUpdate', {
-				id: task.taskID,
-				type: task.type,
 				message: 'Submitting entry in ' + task['ymeuniverse']['submit_delay'] / 1000 + 's'
 			});
+			
+			console.log(`[${task.taskID}] ` + 'Submitting entry in ' + task['ymeuniverse']['submit_delay'] / 1000 + 's');
 			return setTimeout(() => exports.submitRaffle(request, task, profile, raffleToken, landedAt), task['ymeuniverse']['submit_delay']);
 		} else {
 			var proxy2 = getRandomProxy();
@@ -223,6 +240,14 @@ exports.submitRaffle = function (request, task, profile, raffleToken, landedAt) 
 	"form[token]": "${raffleToken}",
 	"form[landed_at]": "${landedAt}",
 	"form[language]": "en"}`);
+	if(task['proxy'] != '')
+	{
+		var agent = new HttpsProxyAgent(formatProxy(task['proxy']));
+	}
+	else
+	{
+		agent = '';
+	}
 	request({
 		url: task['ymeuniverse']['submitRaffle'],
 		method: 'POST',
@@ -236,9 +261,10 @@ exports.submitRaffle = function (request, task, profile, raffleToken, landedAt) 
 			'Connection': 'keep-alive'
 		},
 		formData: form,
-		proxy: formatProxy(task['proxy']),
+		agent: agent
 	}, function callback(error, response, body) {
 		if (!error && response.statusCode == 200) {
+			console.log(body);
 			try {
 				parsed = JSON.parse(body);
 			} catch (e) {}
@@ -266,6 +292,7 @@ exports.submitRaffle = function (request, task, profile, raffleToken, landedAt) 
 					type: task.type,
 					message: 'Unknown error. Please contact the developers'
 				});
+				console.log(`[${task.taskID}] ` + body);
 				mainBot.taskStatuses[task['type']][task.taskID] = 'idle';
 				return;
 			}
@@ -275,7 +302,7 @@ exports.submitRaffle = function (request, task, profile, raffleToken, landedAt) 
 					type: task.type,
 					message: 'Raffle not found'
 				});
-				console.log('Raffle not found');
+				console.log(`[${task.taskID}] ` + ' Raffle not found');
 				mainBot.taskStatuses[task['type']][task.taskID] = 'idle';
 				return;
 			}
@@ -317,6 +344,10 @@ function registerEmail(task)
 {
 	if(task['taskTypeOfEmail'] == 'saved')
 	{
+		if(global.emails[task['taskEmail']] == undefined)
+		{
+			return;
+		}
 		var variantName = task['taskSiteSelect'] + '_' + task['filterID'];
 		global.emails[task['taskEmail']][variantName] = true;
 		mainBot.saveEmails(global.emails);

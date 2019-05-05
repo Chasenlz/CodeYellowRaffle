@@ -15,6 +15,7 @@
 	along with this program (license.md).  If not, see <http://www.gnu.org/licenses/>.
 */
 
+var HttpsProxyAgent = require('https-proxy-agent');
 var mainBot = require('../index.js')
 var cheerio = require('cheerio');
 const faker = require('faker');
@@ -67,7 +68,8 @@ exports.performTask = function (task, profile) {
 	}
 	var jar = require('request').jar()
 	var request = require('request').defaults({
-		jar: jar
+		jar: jar,
+		timeout: 10000
 	});
 	
 	if(profile['jigProfileName'] == true)
@@ -91,7 +93,16 @@ exports.performTask = function (task, profile) {
 		type: task.type,
 		message: 'Creating account'
 	});
+	console.log(`[${task.taskID}] ` + ' Creating account');
 	var taskPassword = makePassword(15);
+	if(task['proxy'] != '')
+	{
+		var agent = new HttpsProxyAgent(formatProxy(task['proxy']));
+	}
+	else
+	{
+		agent = '';
+	}
 	request({
 		url: 'https://www.oneblockdown.it/index.php',
 		method: 'POST',
@@ -119,7 +130,7 @@ exports.performTask = function (task, profile) {
 			'privacy[2]': '1',
 			'version': '100'
 		},
-		proxy: formatProxy(task['proxy'])
+		agent: agent
 	}, function callback(error, response, body) {
 		if (!error && response.statusCode == 200) {
 			try {
@@ -130,6 +141,8 @@ exports.performTask = function (task, profile) {
 					type: task.type,
 					message: 'Parsing error.'
 				});
+				console.log(`[${task.taskID}] ` + ' Parsing error');
+				console.log(body);
 				return;
 			}
 			if (parsed.success) {
@@ -140,6 +153,7 @@ exports.performTask = function (task, profile) {
 					type: task.type,
 					message: 'Account created. Press start again when email confirmed'
 				});
+				console.log(`[${task.taskID}] ` + ' Account created. Press start when confirmed');
 				mainBot.tasksAwaitingConfirm[task['type']][task.taskID] = 'awaiting';
 				const confirmedEmailHandler = () => {
 					if (mainBot.tasksAwaitingConfirm[task['type']][task['taskID']] != 'confirmed') {
@@ -161,6 +175,8 @@ exports.performTask = function (task, profile) {
 					});
 					return;
 				} else {
+					console.log(`[${task.taskID}] ` + ' Unknown error');
+					console.log(body)
 					mainBot.mainBotWin.send('taskUpdate', {
 						id: task.taskID,
 						type: task.type,
@@ -199,6 +215,14 @@ exports.login = function (request, task, profile) {
 		mainBot.taskStatuses[task['type']][task.taskID] = 'idle';
 		return;
 	}
+	if(task['proxy'] != '')
+	{
+		var agent = new HttpsProxyAgent(formatProxy(task['proxy']));
+	}
+	else
+	{
+		agent = '';
+	}
 	request({
 		url: 'https://www.oneblockdown.it/index.php',
 		method: 'POST',
@@ -222,7 +246,7 @@ exports.login = function (request, task, profile) {
 			'version': '100'
 		},
 		followAllRedirects: true,
-		proxy: formatProxy(task['proxy'])
+		agent: agent
 	}, function callback(error, response, body) {
 		if (!error && response.statusCode == 200) {
 			mainBot.mainBotWin.send('taskUpdate', {
@@ -230,6 +254,7 @@ exports.login = function (request, task, profile) {
 				type: task.type,
 				message: 'Got login endpoint'
 			});
+			console.log(`[${task.taskID}] ` + ' Got login endpoint');
 			try {
 				parsed = JSON.parse(body)
 			} catch (e) {}
@@ -240,6 +265,7 @@ exports.login = function (request, task, profile) {
 						type: task.type,
 						message: 'Unknown login error'
 					});
+					console.log(`[${task.taskID}] ` + ' Unknown login error');
 					return;
 				}
 				var userId = parsed.payload;
@@ -254,7 +280,7 @@ exports.login = function (request, task, profile) {
 						'referer': 'https://www.oneblockdown.it/en/login',
 						'accept-language': 'en-GB,en-US;q=0.9,en;q=0.8'
 					},
-					proxy: formatProxy(task['proxy'])
+					agent: agent
 				}, function callback(error, response, body) {
 					if (!error && response.statusCode == 200) {
 						mainBot.mainBotWin.send('taskUpdate', {
@@ -262,6 +288,7 @@ exports.login = function (request, task, profile) {
 							type: task.type,
 							message: 'Logged in'
 						});
+						console.log(`[${task.taskID}] ` + ' Logged in');
 						exports.getRaffle(request, task, profile, userId)
 					} else {
 						var proxy2 = getRandomProxy();
@@ -281,6 +308,7 @@ exports.login = function (request, task, profile) {
 					type: task.type,
 					message: 'Please confirm your email and press start again'
 				});
+				console.log(`[${task.taskID}] ` + ' Confirm and start again');
 				const confirmedEmailHandler = () => {
 					if (mainBot.tasksAwaitingConfirm[task['taskID']] != 'confirmed') {
 						setTimeout(() => confirmedEmailHandler(), 200);
@@ -323,6 +351,15 @@ exports.getRaffle = function (request, task, profile, userId) {
 		type: task.type,
 		message: 'Obtaining raffle page'
 	});
+	console.log(`[${task.taskID}] ` + ' Obtaining raffle page');
+	if(task['proxy'] != '')
+	{
+		var agent = new HttpsProxyAgent(formatProxy(task['proxy']));
+	}
+	else
+	{
+		agent = '';
+	}
 	request({
 		url: task['variant'],
 		headers: {
@@ -332,7 +369,7 @@ exports.getRaffle = function (request, task, profile, userId) {
 			'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3',
 			'accept-language': 'en-GB,en-US;q=0.9,en;q=0.8'
 		},
-		proxy: formatProxy(task['proxy'])
+		agent: agent
 	}, function callback(error, response, body) {
 		if (!error && response.statusCode == 200) {
 			$ = cheerio.load(body);
@@ -342,6 +379,7 @@ exports.getRaffle = function (request, task, profile, userId) {
 				type: task.type,
 				message: 'Got raffle page'
 			});
+			console.log(`[${task.taskID}] ` + ' Got raffle page');
 			console.log('User ID: ' + userId);
 			exports.submitRaffle(request, task, profile, userId)
 		} else {
@@ -371,19 +409,27 @@ exports.submitRaffle = function (request, task, profile, userId) {
 		mainBot.taskStatuses[task['type']][task.taskID] = 'idle';
 		return;
 	}
-	console.log('Submitting entry');
+	console.log(`[${task.taskID}] ` + 'Submitting entry');
 	mainBot.mainBotWin.send('taskUpdate', {
 		id: task.taskID,
 		type: task.type,
 		message: 'Submitting entry'
 	});
-	console.log(JSON.stringify(task));
-	console.log(JSON.stringify(profile));
+	console.log(`[${task.taskID}] ` + JSON.stringify(task));
+	console.log(`[${task.taskID}] ` + JSON.stringify(profile));
 	if(profile['stateProvince'] == null)
 	{
 		profile['stateProvince'] = '';
 	}
 	// Captcha bypass = fake value in response
+	if(task['proxy'] != '')
+	{
+		var agent = new HttpsProxyAgent(formatProxy(task['proxy']));
+	}
+	else
+	{
+		agent = '';
+	}
 	request({
 		url: 'https://www.oneblockdown.it/index.php',
 		method: 'POST',
@@ -418,7 +464,7 @@ exports.submitRaffle = function (request, task, profile, userId) {
 			'address[statecode]': profile['stateProvince'],
 			'version': '100'
 		},
-		proxy: formatProxy(task['proxy'])
+		agent: agent
 	}, function callback(error, response, body) {
 		console.log(JSON.stringify({
 			'extension': 'raffle',
@@ -442,6 +488,7 @@ exports.submitRaffle = function (request, task, profile, userId) {
 			'version': '100'
 		}));
 		console.log(body)
+		console.log(`[${task.taskID}]` + response.statusCode);
 		if(error)
 		{
 			var proxy2 = getRandomProxy();
@@ -516,6 +563,10 @@ function checkEmail(task) {
 // Saves email in emails.json to show email was entered 
 function registerEmail(task) {
 	if (task['taskTypeOfEmail'] == 'saved') {
+		if(global.emails[task['taskEmail']] == undefined)
+		{
+			return;
+		}
 		var variantName = task['taskSiteSelect'] + '_' + task['filterID'];
 		global.emails[task['taskEmail']][variantName] = true;
 		mainBot.saveEmails(global.emails);
