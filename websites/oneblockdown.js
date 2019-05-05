@@ -551,7 +551,7 @@ function checkEmail(task) {
 	if (task['taskTypeOfEmail'] == 'saved') {
 		if(global.emails[task['taskEmail']] == undefined)
 		{
-			return;
+			return false;
 		}
 		if (global.emails[task['taskEmail']][task['taskSiteSelect'] + '_' + task['filterID']] == true && task['type'] == 'mass') {
 			return true;
