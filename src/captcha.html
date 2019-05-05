@@ -1,7 +1,7 @@
 <html>
 
 <head>
-	<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css'>
+	<link rel='stylesheet' href='https://use.fontawesome.com/releases/v5.8.1/css/all.css'>
 	<link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css'>
     <link rel="stylesheet" href="https://cdn.linearicons.com/free/1.0.0/icon-font.min.css">	
 
@@ -37,7 +37,7 @@
 			position: fixed;
 			top: 50%;
 			left: 50%;
-			height: 300px;
+			height: 340px;
 			width: 600px;
 			border-radius: 5px;
 			transform: translate(-50%, -50%);
@@ -132,6 +132,27 @@
 			opacity: 0.5;
 		}
 		
+		.setterbum {
+			position: absolute;
+			left: 0;
+			right: 0;
+			bottom: 20px;
+			height: 40px;
+			width: 100%;
+		} 
+		
+		.price-it-up {
+			background: #ffa500;
+			height: 40px;
+			width: 70%;
+			display: inline-block;
+			cursor: pointer;
+			text-align: center;
+			line-height: 40px;
+			color: #333;
+			vertical-align: middle;
+		}
+		
 	</style>
 </head>
 
@@ -152,14 +173,18 @@
 			</div>
 
 			<div class="texterx">
-				<div class="texterx-icon"><i class="fa fa-globe" aria-hidden="true"></i></div>
+				<div class="texterx-icon"><i class="fas fa-globe"></i></div>
 				<div class="texterx-sec" id="capSiteName"></div>
 			</div>
 
 			<div class="texterx">
-				<div class="texterx-icon"><i class="fa fa-thumb-tack" aria-hidden="true"></i></div>
+				<div class="texterx-icon"><i class="fas fa-thumbtack"></i></div>
 				<div class="texterx-sec" id="capTaskID"></div>
 			</div>
+
+			<div class="setterbum">
+                  <div class="price-it-up">Sign in with <i class="fab fa-google"></i></div>
+            </div>
 
 		</div>
 	</div>
