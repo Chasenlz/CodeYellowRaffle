@@ -1115,31 +1115,31 @@ email@email.com"></textarea>
       
 	  
 	  
-	  <div style="overflow-y: auto;display: none;" class="lefts">
+	  <div style="overflow-y: auto;" class="lefts">
 		
 		<!-- <div class="proxy-gen-h">Proxy generation</div>
 		<div class="proxy-gen-i">Select your favourite proxy brand to generate safe proxies!</div> -->
 		
-		<div style="width: 96%; margin-left: 2%;margin-top: 20px;" class="setterhat">
-            <div class="settit">Add proxies</div>
-            <div class="setinfo">Input proxies you would like to use for raffles.</div>
+		<div style="width: 100%; margin-left: 0%;background: rgba(0,0,0,0.5);" class="setterhat">
+            <div class="settit">Scrape Proxies</div>
+            <div class="setinfo">Easy proxies for raffles that <b>don't</b> require sensitive information.</div>
         </div>
 		
-		<div class="proxy-brand-con noselect">
-		<div class="proxy-brand-button prox-sel"><img class="proxy-brand-image" src="https://i.imgur.com/dyrbf9Y.png"></div>
-		<div class="proxy-brand-button"><img class="proxy-brand-image" src="https://icedoutproxies.com/wp-content/uploads/2017/08/NEW2DLOGO0001-4-e1501724055905-1.png"></div>
-		<div class="proxy-brand-button"><img class="proxy-brand-image" src="https://cdn.shopify.com/s/files/1/0035/9127/4585/files/proxies-header_720x.png?v=1539972425"></div>
-		<div class="proxy-brand-button"><img class="proxy-brand-image" src="https://i.imgur.com/dyrbf9Y.png"></div>
-		<div class="proxy-brand-button"><img class="proxy-brand-image" src="https://i.imgur.com/dyrbf9Y.png"></div>
-		<div class="proxy-brand-button"><img class="proxy-brand-image" src="https://i.imgur.com/dyrbf9Y.png"></div>
-		<div class="proxy-brand-button"><img class="proxy-brand-image" src="https://i.imgur.com/dyrbf9Y.png"></div>
-		<div class="proxy-brand-button"><img class="proxy-brand-image" src="https://i.imgur.com/dyrbf9Y.png"></div>
+		<div style="margin-top: 2%;" class="proxy-brand-con noselect">
+		<div class="proxy-brand-button prox-sel" id="usap"><input class="proxCover" id="usapb" type="radio" name="proxc" checked><img class="proxy-brand-image" src="css/img/flags/usa.png"></div>
+		<div class="proxy-brand-button" id="ukp"><input class="proxCover" id="ukpb" type="radio" name="proxc"><img class="proxy-brand-image" src="css/img/flags/uk.png"></div>
+		<div class="proxy-brand-button" id="dep"><input class="proxCover" id="depb" type="radio" name="proxc"><img class="proxy-brand-image" src="css/img/flags/de.png"></div>
+		<div class="proxy-brand-button" id="esp"><input class="proxCover" id="espb" type="radio" name="proxc"><img class="proxy-brand-image" src="css/img/flags/es.png"></div>
+		<div class="proxy-brand-button" id="frp"><input class="proxCover" id="frpb" type="radio" name="proxc"><img class="proxy-brand-image" src="css/img/flags/fr.png"></div>
+		<div class="proxy-brand-button" id="rup"><input class="proxCover" id="rupb" type="radio" name="proxc"><img class="proxy-brand-image" src="css/img/flags/ru.png"></div>
+		<div class="proxy-brand-button" id="chinap"><input class="proxCover" id="chinapb" type="radio" name="proxc"><img class="proxy-brand-image" src="css/img/flags/china.png"></div>
+		<div class="proxy-brand-button" id="aup"><input class="proxCover" id="aupb" type="radio" name="proxc"><img class="proxy-brand-image" src="css/img/flags/au.png"></div>
 		</div>
 		
 		
-		<div style="margin-top: 20px;" class="proxy-gen-i">Generate <b id="pamountshow">15</b> Proxies</div>
+		<div style="margin-top: 20px;margin-bottom: 10px;" class="proxy-gen-i">Generate <b id="proxyscrapeShow">15</b> Proxies</div>
 		<div class="slidecontainer">
-            <input id="pamount" type="range" min="0" max="30" value="15" class="slider">
+            <input id="proxyscrape" type="range" min="0" max="30" value="15" class="slider">
         </div>
 		
 
@@ -1150,24 +1150,25 @@ email@email.com"></textarea>
 
       </div>
 	  
-	  <div style="width: 100%;padding: 2%;background: transparent;" class="rights">
-		 <div class="right-prox">
-            <div style="padding: 20px;margin-bottom: 10px;" class="setterhat">
+	  <div style="background: transparent;padding: 0;" class="rights">
+		 <div style="margin-top: 0px;height: 100%;" class="right-prox">
+            <div style="width: 100%; margin-left: 0%;background: rgba(0,0,0,0.5);" class="setterhat">
                <div class="settit">Add proxies</div>
                <div class="setinfo">Input proxies you would like to use for raffles.</div>
             </div>
             <div class="addcon" style="margin-top: 0;">
-               <!--    					<div style="padding: 20px;margin-bottom: 0px;background:rgba(0,0,0,0.6);" class="setterhat">
-                  <div class="settit">Input proxies</div>
-                  <div class="setinfo">Input your proxies here!</div>
-                  </div> -->
-               <textarea class="barea" id="proxiesToAdd" placeholder="ip:port:user:pass"></textarea>
+               <textarea style="height: 410px;margin-top: 2%;" class="barea" id="proxiesToAdd" placeholder="ip:port:user:pass
+ip:port:user:pass
+ip:port
+ip:port"></textarea>
                <div class="setterbummer">
                   <div style="margin-top: 10px;width: 30%;" id="addProxies" class="price-it-up">Add Proxies</div>
                </div>
             </div>
          </div>
       </div>
+
+	
 	
 	</div>	 
   </div> 

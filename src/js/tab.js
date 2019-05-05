@@ -80,7 +80,7 @@ $("#addprox").click(function(){
   if (tabx = 5) {
     $(".tasks").get(0).style.setProperty("left", "-200%");
     $(".tasks").get(0).style.setProperty("top", "-100%");
-	$(".middle-me").get(0).style.setProperty("width", "150px");
+	$(".middle-me").get(0).style.setProperty("width", "120px");
 	$(".under-line").get(0).style.setProperty("height", "0px");
 }  
 });
@@ -155,4 +155,12 @@ output2.innerHTML = slider2.value;
 
 slider2.oninput = function() {
   output2.innerHTML = this.value;
+}
+
+var slider3 = document.getElementById("proxyscrape");
+var output3 = document.getElementById("proxyscrapeShow");
+output3.innerHTML = slider3.value;
+
+slider3.oninput = function() {
+  output3.innerHTML = this.value;
 }

@@ -1816,7 +1816,7 @@ rgba(255, 255, 255, 0.1);
 }
 
 .proxy-brand-image {
-	width:80px;
+	width: 50px;
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
@@ -1950,4 +1950,24 @@ rgba(255, 255, 255, 0.1);
 	margin-top: -10px;
 	color: #aaa;
 	font-size: 12px;
+}
+
+input.proxCover  {
+	background: rgba(0,0,0,0) !important;
+	width: 100px;
+	height: 100px;
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 99;
+	border: none;
+	opacity: 0;
+	cursor: pointer;
+	border-radius: 0px;
+}
+
+
+ 
+input.proxCover:checked  {
+	opacity: 0;
 }
