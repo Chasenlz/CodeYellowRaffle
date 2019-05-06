@@ -1188,7 +1188,7 @@ Performance mode
 
 </div>
 
-      <div id="Settings" style="padding-top: 90px;" class="main tabcontent">
+      <div id="Settings" style="padding-top: 2%;" class="main tabcontent">
          <div class="sethold">
             <!--		<div class="realsetter">
                <div class="setterhat">
@@ -1205,38 +1205,49 @@ Performance mode
                	<div class="price-it-up">Set Value</div>
                </div>
                </div> -->
-            <div class="realsetter">
-               <div class="setterhat">
+            <div style="height: 335px;" class="realsetter">
+               <div style="padding: 20px 20px 33px 20px;" class="setterhat">
                   <div class="settit">Retry delay</div>
                   <div class="setinfo">This value determines the delay the bot will have before retrying after an error.</div>
                </div>
-               <div class="bingbangbong">Editing this will change your retry delay.</div>
-               <div style="margin-top: 0px;padding-left: 3%;" class="c-c r">Retry Delay</div>
-               <input type="number" id="amountr" class="shinput l" style="width: 94%;height: 30px;margin-left: 3%;" placeholder="500ms" oninput="settingsRetryDelay.value=amountr.value">
-               <div class="slidecontainer">
+               <div style="opacity: 1;" class="bingbangbong">Editing this will change your retry delay.</div>
+               <div style="margin-top: 10px;padding-left: 3%;" class="c-c r">Retry Delay</div>
+			   
+			   <div style="width: 94%;float:left;margin-left: 3%;" class="create-row">
+               <div class="inputicon"><i class="fas fa-sync"></i>
+               </div>
+               <input class="createinput" id="amountr" placeholder="500ms" oninput="settingsRetryDelay.value=amountr.value">
+            </div>
+			   
+			<div class="slidecontainer">
                   <input id="settingsRetryDelay" type="range" min="500" max="5000" value="500" class="slider" oninput="amountr.value=settingsRetryDelay.value">
                </div>
                <div class="setterbum">
                   <div class="price-it-up" id="saveRetryDelay">Set Delay</div>
                </div>
             </div>
-            <div class="realsetter">
-               <div class="setterhat">
+            <div style="height: 335px;" class="realsetter">
+               <div style="padding: 20px 20px 33px 20px;" class="setterhat">
                   <div class="settit">Discord webhook</div>
                   <div class="setinfo">Having a discord webhook active will more than likely spam.</div>
                </div>
                <div class="bingbangbong">Setting this will let you receive discord notifications on each successful entry.</div>
-               <div style="margin-top: 0px;padding-left: 3%;" class="c-c r">Discord Webhook</div>
-               <input class="shinput l" id="webhookUrl" style="width: 94%;height: 30px;margin-left: 3%;" placeholder="Discord Webhook">
-               <div class="slidecontainer">
+               <div style="margin-top: 10px;padding-left: 3%;" class="c-c r">Discord Webhook</div>
+      
+			<div style="width: 94%;float:left;margin-left: 3%;" class="create-row">
+               <div class="inputicon"><i class="fab fa-discord"></i>
+               </div>
+               <input class="createinput" id="webhookUrl" placeholder="Discord Webhook">
+            </div>
+			   
+			   <div class="slidecontainer">
                </div>
                <div class="setterbum">
                   <div class="price-it-up" id="saveWebhook">Set Webhook</div>
                </div>
-            </div>
-			
-			<div class="realsetter">
-               <div class="setterhat">
+            </div>			
+			<div style="height: 335px;" class="realsetter">
+               <div style="padding: 20px 20px 33px 20px;" class="setterhat">
                	<div class="settit">Captcha Harvester</div>
                	<div class="setinfo">Open the captcha harvester here, if it doesn't automatically.</div>
                </div>

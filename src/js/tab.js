@@ -60,7 +60,7 @@ $("#settingsTab").click(function(){
     $(".under-line").get(0).style.setProperty("left", "83.5%");
     $(".tasks").get(0).style.setProperty("left", "-300%");
     $(".tasks").get(0).style.setProperty("top", "90px"); 
-	$(".middle-me").get(0).style.setProperty("width", "150px");
+	$(".middle-me").get(0).style.setProperty("width", "120px");
 	$(".under-line").get(0).style.setProperty("height", "6px");
 }  
 });
