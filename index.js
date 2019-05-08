@@ -27,6 +27,7 @@ const proxy = require('./proxy.js');
 
 // WEBSITES SUPPORTED
 const dsmny = require('./websites/dsmny.js');
+const dsml = require('./websites/dsml.js');
 const footpatroluk = require('./websites/footpatroluk.js');
 const footshop = require('./websites/footshop.js');
 const nakedcph = require('./websites/nakedcph.js');
@@ -75,6 +76,11 @@ global.websites = {
 		sitekey: '6LetKEIUAAAAAPk-uUXqq9E82MG3e40OMt_74gjS',
 		url: 'newyork.doverstreetmarket.com',
 		name: 'DSMNY'
+	},
+	'dsml': {
+		sitekey: '6LetKEIUAAAAAPk-uUXqq9E82MG3e40OMt_74gjS',
+		url: 'london.doverstreetmarket.com',
+		name: 'DSML'
 	}
 };
 
@@ -502,6 +508,9 @@ function openBot(onReady) {
 		} else if (task['taskSiteSelect'] == 'dsmny') {
 			//console.log('DSMNY task started');
 			dsmny.performTask(task, profile)
+		} else if (task['taskSiteSelect'] == 'dsml') {
+			//console.log('DSML task started');
+			dsml.performTask(task, profile)
 		} 
 	});
 
@@ -953,7 +962,7 @@ function getUpcomingReleases() {
 				'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36'
 			},
 			json: true,
-			url: 'https://codeyellow.io/api/releases_5.php'
+			url: 'https://codeyellow.io/api/releases_6.php'
 		},
 		function (error, response, body) {
 			global.releases = body;
