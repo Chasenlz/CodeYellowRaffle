@@ -138,7 +138,13 @@ $(".singleenter").click(function() {
   $("#autoenterx").css("display", "block");
 });
 
+$(document).on("click", function() {
+	
+ var proxy_count =  $('.proxbod').find('tr').length - 1;
 
+ $("#proxycount").text("" + proxy_count + "");
+
+});
 
 
 var slider = document.getElementById("gmailLimit");
