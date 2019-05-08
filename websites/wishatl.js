@@ -192,7 +192,7 @@ exports.postRaffleInfo = function (request, task, profile, token) {
 			'MERGE1': profile['firstName'],
 			'MERGE2': profile['lastName'],
 			'MERGE3[addr1]': profile['address'],
-			'MERGE3[addr2]': '',
+			'MERGE3[addr2]': profile['aptSuite'],
 			'MERGE3[city]': profile['city'],
 			'MERGE3[state]': profile['stateProvince'],
 			'MERGE3[zip]': profile['zipCode'],

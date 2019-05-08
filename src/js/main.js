@@ -321,6 +321,11 @@ $("#createTaskButton").click(function () {
 		Materialize.toast("The site you have selected is for UK profile only.", 3500, "rounded");
 		return;
 	}
+	if(profiles[taskProfile]['address'] == '')
+	{
+		Materialize.toast("Profile does not have a saved address. Are you sure you clicked save?", 3500, "rounded");
+		return;
+	}
 	if (taskQuantity > Object.keys(emails).length && taskTypeOfEmail == 'saved') {
 		Materialize.toast("You only have " + Object.keys(emails).length + " emails saved, but want " + taskQuantity + " tasks", 3500, "rounded");
 		return;
@@ -797,6 +802,11 @@ $(".raffle-enter-container").on('click', '.enterRaffle', function () {
 	if(taskSiteSelect == 'footpatroluk' && profiles[taskProfile]['country'] != 'United Kingdom')
 	{
 		Materialize.toast("The site you have selected is for UK profile only.", 3500, "rounded");
+		return;
+	}
+	if(profiles[taskProfile]['address'] == '')
+	{
+		Materialize.toast("Profile does not have a saved address. Are you sure you clicked save?", 3500, "rounded");
 		return;
 	}
 	if (taskProfile != 'Example Profile') {
