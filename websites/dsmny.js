@@ -92,16 +92,12 @@ exports.performTask = function (task, profile) {
 		type: task.type,
 		message: 'Obtaining raffle page'
 	});
-
+	
 	request({
 		url: task['variant'],
 		headers: {
-			'Connection': 'keep-alive',
-			'Cache-Control': 'max-age=0',
-			'Upgrade-Insecure-Requests': '1',
-			'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.131 Safari/537.36',
-			'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3',
-			'Accept-Language': 'en-GB,en-US;q=0.9,en;q=0.8'
+			'Referer': 'https://newyork.doverstreetmarket.com/new-items/raffles',
+			'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.131 Safari/537.36'
 		},
 		agent: agent
 	}, function callback(error, response, body) {
@@ -109,9 +105,40 @@ exports.performTask = function (task, profile) {
 			mainBot.mainBotWin.send('taskUpdate', {
 				id: task.taskID,
 				type: task.type,
-				message: 'Got raffle page'
+				message: 'Got raffle endpoint'
 			});
-			console.log(`[${task.taskID}] ` + ' Got raffle page');
+			console.log(`[${task.taskID}] ` + ' Got raffle endpoint');
+			var split = body.split(';');
+			for(var i = 0; i < split.length; i++)
+			{
+				if(split[i].includes('viewkey'))
+				{
+					var value = split[i].split('value=')[1];
+					var viewkey = value.split('"')[1].replace('\\', '');
+				}
+				if(split[i].includes('unique_key'))
+				{
+					var value = split[i].split('value=')[1];
+					var uniqueKey = value.split('"')[1].replace('\\', '');
+				}
+			}
+			if(!uniqueKey || !viewkey)
+			{
+				mainBot.mainBotWin.send('taskUpdate', {
+					id: task.taskID,
+					type: task.type,
+					message: 'Error getting raffle tokens. Retrying in ' + global.settings.retryDelay / 1000 + 's'
+				});
+				console.log(`[${task.taskID}] ` + ' Error getting raffle tokens. Retrying');
+				return setTimeout(() => exports.performTask(task, profile), global.settings.retryDelay);
+			}
+			
+			mainBot.mainBotWin.send('taskUpdate', {
+				id: task.taskID,
+				type: task.type,
+				message: 'Got raffle information'
+			});
+			console.log(`[${task.taskID}] ` + ' Got raffle information');
 			console.log('Now needs captcha');
 			mainBot.mainBotWin.send('taskUpdate', {
 				id: task.taskID,
@@ -119,7 +146,7 @@ exports.performTask = function (task, profile) {
 				message: 'Awaiting captcha'
 			});
 			console.log(`[${task.taskID}] ` + ' Awaiting captcha');
-			mainBot.requestCaptcha('bdgastore', task, false);
+			mainBot.requestCaptcha('dsmny', task, false);
 			const capHandler = () => {
 				if (mainBot.taskCaptchas[task['type']][task['taskID']] == undefined || mainBot.taskCaptchas[task['type']][task['taskID']] == '') {
 					setTimeout(() => capHandler(), 100);
@@ -129,11 +156,12 @@ exports.performTask = function (task, profile) {
 						type: task.type,
 						message: 'Posting raffle information'
 					});
-					exports.submitRaffle(request, task, profile);
+					exports.submitRaffle(request, task, profile, viewkey, uniqueKey);
 					return;
 				}
 			}
 			capHandler();
+			
 		}
 		else
 		{
@@ -150,7 +178,7 @@ exports.performTask = function (task, profile) {
 	});
 }
 
-exports.submitRaffle = function (request, task, profile) {
+exports.submitRaffle = function (request, task, profile, viewkey, uniqueKey) {
 	if (shouldStop(task) == true) {
         return;
     }
@@ -177,51 +205,77 @@ exports.submitRaffle = function (request, task, profile) {
 	{
 		agent = '';
 	}
-
+	
 	request({
-		url: 'https://app.viralsweep.com/promo/enter',
-		method: 'POST',
-		headers: {
-			'origin': 'https://app.viralsweep.com',
-			'accept-language': 'en-GB,en-US;q=0.9,en;q=0.8',
-			'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.131 Safari/537.36',
-			'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
-			'accept': '*/*',
-			'referer': 'https://app.viralsweep.com/vrlswp/widget/08441d-51456?rndid=51456_194287&framed=1&ref=&source_url=https%3A%2F%2Fbdgastore.com%2Fblogs%2Fupcoming-releases%2F5-11-19-air-jordan-1-x-travis-scott&hash=',
-			'authority': 'app.viralsweep.com',
-			'x-requested-with': 'XMLHttpRequest'
-		},
-		formData: {
-			'id': '08441d-51456',
-			'type': 'widget',
-			'refer_source': '',
-			'entry_source': task['variant'],
-			'first_name': profile['firstName'],
-			'last_name': profile['lastName'],
-			'email': task['taskEmail'],
-			'email_again': '',
-			'37209_1542160709': task['taskSizeSelect'],
-			'agree_to_rules': 'yes',
-			'g-recaptcha-response': mainBot.taskCaptchas[task['type']][task['taskID']]
-		},
-		agent: agent
-	}, function callback(error, response, body) {
-		if (!error && response.statusCode == 200) {
-			console.log(`[${task.taskID}] ` + body);
-			try {
-				parsed = JSON.parse(body)
-			} catch (e) {
-				mainBot.mainBotWin.send('taskUpdate', {
-					id: task.taskID,
-					type: task.type,
-					message: 'Parsing error.'
-				});
-				console.log(`[${task.taskID}] ` + ' Parsing error');
-				console.log(body);
-				mainBot.taskStatuses[task['type']][task.taskID] = 'idle';
-				return;
+			url: 'https://doverstreetmarketinternational.formstack.com/forms/index.php',
+			method: 'POST',
+			headers: {
+				'authority': 'doverstreetmarketinternational.formstack.com',
+				'cache-control': 'max-age=0',
+				'origin': 'https://newyork.doverstreetmarket.com',
+				'upgrade-insecure-requests': '1',
+				'content-type': 'application/x-www-form-urlencoded',
+				'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.131 Safari/537.36',
+				'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3',
+				'referer': 'https://newyork.doverstreetmarket.com/new-items/raffles',
+				'accept-language': 'en-GB,en-US;q=0.9,en;q=0.8'
+			},
+			formData: {
+				'form': '3446301',
+				'viewkey': viewkey,
+				'unique_key': uniqueKey,
+				'password': '',
+				'hidden_fields': '',
+				'incomplete': '',
+				'incomplete_password': '',
+				'referrer': 'https://newyork.doverstreetmarket.com/new-items/raffles',
+				'referrer_type': 'js',
+				'_submit': '1',
+				'style_version': '3',
+				'viewparam': '766219',
+				'field77409919': profile['firstName'] + ' ' + profile['lastName'],
+				'field77409920': task['taskEmail'],
+				'field77409921': profile['phoneNumber'],
+				'field77409922': profile['zipCode'],
+				'field77409923': task['taskSizeSelect'],
+				'g-recaptcha-response': mainBot.taskCaptchas[task['type']][task['taskID']]
+			},
+			followAllRedirects: true,
+			agent: agent
+		}, function callback(error, response, body) {
+			$ = cheerio.load(body)
+			var errorText = $('#error').html();
+			if(response.request.href == 'https://doverstreetmarketinternational.formstack.com/forms/index.php' || errorText)
+			{
+				if(errorText.toLowerCase().includes('unique value'))
+				{
+					mainBot.mainBotWin.send('taskUpdate', {
+						id: task.taskID,
+						type: task.type,
+						message: 'Details already entered'
+					});	
+					console.log(`[${task.taskID}] ` + JSON.stringify(task));
+					console.log(`[${task.taskID}] ` + JSON.stringify(profile));
+					console.log(`[${task.taskID}] ` + body);
+					return;
+				}
+				else
+				{
+					mainBot.mainBotWin.send('taskUpdate', {
+						id: task.taskID,
+						type: task.type,
+						message: 'One of your inputs are invalid (most likely profile)'
+					});	
+					console.log(`[${task.taskID}] ` + JSON.stringify(task));
+					console.log(`[${task.taskID}] ` + JSON.stringify(profile));
+					console.log(`[${task.taskID}] ` + body);
+					mainBot.taskStatuses[task['type']][task.taskID] = 'idle';
+					return;
+				}
+				
 			}
-			if (parsed.success == 1) {
+			if(response.request.href == 'https://newyork.doverstreetmarket.com/new-items/raffles/thank-you' && response.statusCode == 200)
+			{
 				mainBot.mainBotWin.send('taskUpdate', {
 					id: task.taskID,
 					type: task.type,
@@ -229,35 +283,24 @@ exports.submitRaffle = function (request, task, profile) {
 				});
 				console.log(`[${task.taskID}] ` + ' Entry submitted!');
 				registerEmail(task);
-				mainBot.sendWebhook(task['taskSiteSelect'], task['taskEmail'], '', '');
-				mainBot.taskStatuses[task['type']][task.taskID] = 'idle';
-				return;
-			} else {
-				mainBot.mainBotWin.send('taskUpdate', {
-					id: task.taskID,
-					type: task.type,
-					message: 'Unknown Error!'
-				});
-				console.log(`[${task.taskID}] ` + ' Unknown Error!');
+				mainBot.sendWebhook(task['taskSiteSelect'], task['taskEmail'], '', ''); 
 				mainBot.taskStatuses[task['type']][task.taskID] = 'idle';
 				return;
 			}
-		}
-		else
-		{
-			
-			var proxy2 = getRandomProxy();
-			task['proxy'] = proxy2;
-			console.log('New proxy: ' + formatProxy(task['proxy']));
-			mainBot.mainBotWin.send('taskUpdate', {
-				id: task.taskID,
-				type: task.type,
-				message: 'Error. Retrying in ' + global.settings.retryDelay / 1000 + 's'
-			});
-			// Goes back to beginning since only 2 steps and re needs captcha probably
-			return setTimeout(() => exports.performTask(task, profile), global.settings.retryDelay);
-		}
-	});
+			else
+			{
+				mainBot.mainBotWin.send('taskUpdate', {
+					id: task.taskID,
+					type: task.type,
+					message: 'Unknown error. Probably rate limited'
+				});	
+				console.log(`[${task.taskID}] ` + JSON.stringify(task));
+				console.log(`[${task.taskID}] ` + JSON.stringify(profile));
+				console.log(`[${task.taskID}] ` + body);
+				mainBot.taskStatuses[task['type']][task.taskID] = 'idle';
+				return;
+			}
+		});
 }
 
 

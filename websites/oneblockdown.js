@@ -529,6 +529,16 @@ exports.submitRaffle = function (request, task, profile, userId) {
 				});
 				return;
 			}
+			else
+			{
+				console.log(body);
+				mainBot.mainBotWin.send('taskUpdate', {
+					id: task.taskID,
+					type: task.type,
+					message: 'Unknown error.'
+				});
+				return;
+			}
 		}
 	});
 }

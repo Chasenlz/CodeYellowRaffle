@@ -26,6 +26,7 @@ const appDataDir = require('os').homedir() + "\\AppData\\Local\\CodeYellow_Raffl
 const proxy = require('./proxy.js');
 
 // WEBSITES SUPPORTED
+const dsmny = require('./websites/dsmny.js');
 const footpatroluk = require('./websites/footpatroluk.js');
 const footshop = require('./websites/footshop.js');
 const nakedcph = require('./websites/nakedcph.js');
@@ -69,6 +70,11 @@ global.websites = {
 		sitekey: '6LdhYxYUAAAAAAcorjMQeKmZb6W48bqb0ZEDRPCl',
 		url: 'app.viralsweep.com',
 		name: 'BDGAStore'
+	},
+	'dsmny': {
+		sitekey: '6LetKEIUAAAAAPk-uUXqq9E82MG3e40OMt_74gjS',
+		url: 'newyork.doverstreetmarket.com',
+		name: 'DSMNY'
 	}
 };
 
@@ -351,7 +357,7 @@ function initCapWin() {
 		module.exports.capWin.webContents.session.setProxy({
 			proxyRules: 'http://127.0.0.1:' + globalPort
 		}, function (r) {
-			module.exports.capWin.loadURL('http://www.raffle.vooberlin.com/'); // Domain
+			module.exports.capWin.loadURL('http://www.newyork.doverstreetmarket.com/'); // Domain
 		});
 	});
 
@@ -493,6 +499,9 @@ function openBot(onReady) {
 		} else if (task['taskSiteSelect'] == 'footpatroluk') {
 			//console.log('Footpatroluk task started');
 			footpatroluk.performTask(task, profile)
+		} else if (task['taskSiteSelect'] == 'dsmny') {
+			//console.log('DSMNY task started');
+			dsmny.performTask(task, profile)
 		} 
 	});
 
