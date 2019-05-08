@@ -232,6 +232,12 @@ $("body").on("click", ".deleteProxy", function () {
 	}
 });
 
+$("#deleteAllProxies").click(function () {
+	$.each($(".deleteProxy"), function () {
+		$(this).click()
+	});
+});
+
 $("#removeFailed").click(function () {
 	$.each($(".proxyInput"), function () {
 		var uid = $(this).data('uid');
