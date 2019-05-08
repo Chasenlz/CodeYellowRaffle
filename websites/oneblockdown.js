@@ -647,6 +647,9 @@ function countryFormatter(profileCountry) {
 		case 'Japan':
 			return '114';
 			break;
+		case 'Sweden':
+			return '197';
+			break;
 	}
 }
 

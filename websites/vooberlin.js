@@ -396,6 +396,9 @@ function countryFormatter(profileCountry)
 		case 'Japan':
 			return 'Japan';
 			break;
+		case 'Sweden':
+			return 'Sweden';
+			break;
 	}
 }
 

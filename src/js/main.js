@@ -1133,7 +1133,14 @@ $('#country').on('change', function () {
 		$.each($(".CNProfileState"), function () {
 			$(this).css('display', 'block')
 		});
-	} else {
+	} else if (country == 'Sweden') {
+		$.each($(".stateSelectOption"), function () {
+			$(this).css('display', 'none')
+		});
+		$.each($(".SWEProfileState"), function () {
+			$(this).css('display', 'block')
+		});
+	}  else {
 		$.each($(".stateSelectOption"), function () {
 			$(this).css('display', 'none')
 		});
