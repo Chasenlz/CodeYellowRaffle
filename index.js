@@ -15,7 +15,7 @@
 	along with this program (license.md).  If not, see <http://www.gnu.org/licenses/>.
 */
 
-var currentVersion = '0.0.4';
+var currentVersion = '0.0.5';
 // LATER REMOVE EMAIL FROM if (fileExists('profiles.json')) {
 const open = require("open");
 const electron = require('electron');
@@ -26,11 +26,13 @@ const appDataDir = require('os').homedir() + "\\AppData\\Local\\CodeYellow_Raffl
 const proxy = require('./proxy.js');
 
 // WEBSITES SUPPORTED
+const footpatroluk = require('./websites/footpatroluk.js');
 const footshop = require('./websites/footshop.js');
 const nakedcph = require('./websites/nakedcph.js');
 const vooberlin = require('./websites/vooberlin.js');
 const ymeuniverse = require('./websites/ymeuniverse.js');
 const oneblockdown = require('./websites/oneblockdown.js');
+const wishatl = require('./websites/wishatl.js');
 
 initialfolderExistsOrMkDir();
 
@@ -56,6 +58,11 @@ global.websites = {
 		sitekey: '6LeNqBUUAAAAAFbhC-CS22rwzkZjr_g4vMmqD_qo',
 		url: 'nakedcph.com',
 		name: 'NakedCPH'
+	},
+	'wishatl': {
+		sitekey: '6LcN9xoUAAAAAHqSkoJixPbUldBoHojA_GCp6Ims',
+		url: 'wishatl.us12.list-manage.com',
+		name: 'WishATL'
 	}
 };
 
@@ -471,7 +478,13 @@ function openBot(onReady) {
 					message: 'Attempting login'
 				});
 			}
-		}
+		} else if (task['taskSiteSelect'] == 'wishatl') {
+			//console.log('YMEuniverse task started');
+			wishatl.performTask(task, profile)
+		} else if (task['taskSiteSelect'] == 'footpatroluk') {
+			//console.log('Footpatroluk task started');
+			footpatroluk.performTask(task, profile)
+		} 
 	});
 
 	// Delete Task
@@ -523,6 +536,14 @@ function openBot(onReady) {
 			});
 		});
 	});
+	
+	ipcMain.on('scrapeProxies', function (e, data) {
+		proxy.scrapeProxies(data.amount, data.country, function (response) {
+			module.exports.mainBotWin.send('proxiesScraped', response);
+			return;
+		});
+	});
+
 
 
 	// Save profiles
@@ -655,7 +676,7 @@ exports.saveEmails = function (emails) {
 	});
 }
 // Sending webhook function
-exports.sendWebhook = function (website, email, tdsecure, password) {
+exports.sendWebhook = function (website, email, additional, password) {
 	var webhook = global.settings.discordWebhook;
 	if (website != 'test') {
 		request({
@@ -665,7 +686,7 @@ exports.sendWebhook = function (website, email, tdsecure, password) {
 				'email': email,
 				'website': website,
 				'token': global.settings.token,
-				'additional': tdsecure,
+				'additional': additional,
 				'password': password
 			},
 		}, function (err, response, body) {
@@ -711,7 +732,7 @@ exports.sendWebhook = function (website, email, tdsecure, password) {
 			} catch (e) {
 				return;
 			}
-		} else if (tdsecure) {
+		} else if (additional) {
 			try {
 				request({
 						url: webhook,
@@ -730,8 +751,8 @@ exports.sendWebhook = function (website, email, tdsecure, password) {
 										"value": email
 									},
 									{
-										"name": "3D Secure link:",
-										"value": tdsecure
+										"name": "Additional:",
+										"value": additional
 									}
 								],
 								"footer": {
@@ -914,7 +935,7 @@ function getUpcomingReleases() {
 				'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36'
 			},
 			json: true,
-			url: 'https://codeyellow.io/api/releases_3.php'
+			url: 'https://codeyellow.io/api/releases_4.php'
 		},
 		function (error, response, body) {
 			global.releases = body;

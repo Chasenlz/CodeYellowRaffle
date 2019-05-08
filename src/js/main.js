@@ -247,6 +247,19 @@ $("#removeFailed").click(function () {
 	});
 });
 
+$("#scrapeProxies").click(function () {
+	var country = $('.prox-sel').data('country');
+	ipcRenderer.send('scrapeProxies', {
+		country: country,
+		amount: $('#proxyQuantity').val()
+	})
+});
+
+ipcRenderer.on('proxiesScraped', function (event, proxies) {
+	$('#proxiesToAdd').val(proxies)
+});
+
+
 function loadProxies(proxiesToAdd, addToArray) {
 	for (var i = 0; i < proxiesToAdd.length; i++) {
 		proxyFormat = '';
@@ -297,6 +310,11 @@ $("#createTaskButton").click(function () {
 	var taskQuantity = parseInt($('#taskQuantity').val());
 	var taskEmail = $('#taskEmail').val();
 	var taskTypeOfEmail = $('#taskTypeOfEmail').val();
+	if(taskSiteSelect == 'footpatroluk' && profiles[taskProfile]['country'] != 'United Kingdom')
+	{
+		Materialize.toast("The site you have selected is for UK profile only.", 3500, "rounded");
+		return;
+	}
 	if (taskQuantity > Object.keys(emails).length && taskTypeOfEmail == 'saved') {
 		Materialize.toast("You only have " + Object.keys(emails).length + " emails saved, but want " + taskQuantity + " tasks", 3500, "rounded");
 		return;
@@ -770,6 +788,11 @@ $(".raffle-enter-container").on('click', '.enterRaffle', function () {
 	var taskProfile = $('#oneClicktaskProfile').val();
 	var taskSpecificProxy = $('#oneClicktaskSpecificProxy').val();
 	var taskEmail = $('#oneClicktaskEmail').val();
+	if(taskSiteSelect == 'footpatroluk' && profiles[taskProfile]['country'] != 'United Kingdom')
+	{
+		Materialize.toast("The site you have selected is for UK profile only.", 3500, "rounded");
+		return;
+	}
 	if (taskProfile != 'Example Profile') {
 		if (taskSiteSelect != 'default') {
 			if (taskSizeSelect != 'default') {

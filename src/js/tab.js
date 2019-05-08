@@ -157,7 +157,7 @@ slider2.oninput = function() {
   output2.innerHTML = this.value;
 }
 
-var slider3 = document.getElementById("proxyscrape");
+var slider3 = document.getElementById("proxyQuantity");
 var output3 = document.getElementById("proxyscrapeShow");
 output3.innerHTML = slider3.value;
 

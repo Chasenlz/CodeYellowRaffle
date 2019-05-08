@@ -22,7 +22,9 @@ Opens a command prompt window which performs 'npm install'
 ### /run.bat
 Opens a command prompt window which performs 'npm start'
 ### /create exe.bat
-Creates an executable file in the folder release-builds which is performed by the command 'npm run package-win'
+Creates an executable file in the folder /release-builds which is performed by the command 'npm run package-win'
+### /create installer.bat
+Creates an executable installer file in the folder/ builds which is performed by the command 'node createInstaller.js'
 
 # Usage
 

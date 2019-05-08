@@ -1,6 +1,6 @@
 {
   "name": "CodeYellowRaffle",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Open source raffle bot made to help increase the chance of winning limited sneaker raffles by automating entries",
   "main": "index.js",
   "scripts": {
@@ -27,6 +27,7 @@
     "http-proxy-agent": "^2.1.0",
     "https-proxy-agent": "^2.2.1",
     "open": "0.0.5",
+    "proxy-lists": "^1.16.0",
     "request": "^2.88.0"
   }
 }

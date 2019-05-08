@@ -15,6 +15,7 @@
 	along with this program (license.md).  If not, see <http://www.gnu.org/licenses/>.
 */
 var HttpsProxyAgent = require('https-proxy-agent');
+var ProxyLists = require('proxy-lists');
 const request = require('request').defaults({
 	timeout: 10000
 });
@@ -42,6 +43,45 @@ exports.testProxy = function(proxy, callback) {
 				callback({ message: 'FAILED'});
 			}
 		});
+}
+
+exports.scrapeProxies = function(limit, countries, callback)
+{
+	var currentProxies = 0;
+	var options = {
+		countries: countries
+	};
+	var proxyList = '';
+
+	// `gettingProxies` is an event emitter object.
+	var gettingProxies = ProxyLists.getProxies(options);
+
+	gettingProxies.on('data', function(proxies) {
+		for(var i = 0; i < proxies.length; i++)
+		{
+			if(currentProxies < limit)
+			{
+				proxyList += `${proxies[i].ipAddress}:${proxies[i].port}\n`;
+				currentProxies += 1;
+				if(currentProxies == limit)
+				{
+					callback(proxyList);
+					ProxyLists = require('proxy-lists');
+					gettingProxies = null;
+				}
+			}
+			else
+			{
+				return;
+			}
+		}
+	});
+
+	gettingProxies.on('error', function(error) {
+		// Some error has occurred.
+		return;
+	});
+
 }
 
 
