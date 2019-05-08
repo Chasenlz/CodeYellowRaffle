@@ -139,7 +139,7 @@ exports.performTask = function (task, profile) {
 				mainBot.taskStatuses[task['type']][task.taskID] = 'idle';
 				return;
 			}
-			console.log('Got rafle token: ' + raffleToken);
+			console.log('Got raffle token: ' + raffleToken);
 			console.log('Got page ID: ' + pageID);
 			console.log('Now needs captcha');
 			mainBot.mainBotWin.send('taskUpdate', {

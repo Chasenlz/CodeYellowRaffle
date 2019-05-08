@@ -33,6 +33,7 @@ const vooberlin = require('./websites/vooberlin.js');
 const ymeuniverse = require('./websites/ymeuniverse.js');
 const oneblockdown = require('./websites/oneblockdown.js');
 const wishatl = require('./websites/wishatl.js');
+const bdgastore = require('./websites/bdgastore.js');
 
 initialfolderExistsOrMkDir();
 
@@ -63,6 +64,11 @@ global.websites = {
 		sitekey: '6LcN9xoUAAAAAHqSkoJixPbUldBoHojA_GCp6Ims',
 		url: 'wishatl.us12.list-manage.com',
 		name: 'WishATL'
+	},
+	'bdgastore': {
+		sitekey: '6LdhYxYUAAAAAAcorjMQeKmZb6W48bqb0ZEDRPCl',
+		url: 'app.viralsweep.com',
+		name: 'BDGAStore'
 	}
 };
 
@@ -479,8 +485,11 @@ function openBot(onReady) {
 				});
 			}
 		} else if (task['taskSiteSelect'] == 'wishatl') {
-			//console.log('YMEuniverse task started');
+			//console.log('WishATL task started');
 			wishatl.performTask(task, profile)
+		} else if (task['taskSiteSelect'] == 'bdgastore') {
+			//console.log('BDGAStore task started');
+			bdgastore.performTask(task, profile)
 		} else if (task['taskSiteSelect'] == 'footpatroluk') {
 			//console.log('Footpatroluk task started');
 			footpatroluk.performTask(task, profile)
@@ -935,7 +944,7 @@ function getUpcomingReleases() {
 				'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36'
 			},
 			json: true,
-			url: 'https://codeyellow.io/api/releases_4.php'
+			url: 'https://codeyellow.io/api/releases_5.php'
 		},
 		function (error, response, body) {
 			global.releases = body;
