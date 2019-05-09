@@ -36,6 +36,7 @@ const ymeuniverse = require('./websites/ymeuniverse.js');
 const oneblockdown = require('./websites/oneblockdown.js');
 const wishatl = require('./websites/wishatl.js');
 const bdgastore = require('./websites/bdgastore.js');
+const supplystore = require('./websites/supplystore.js');
 
 initialfolderExistsOrMkDir();
 
@@ -81,6 +82,11 @@ global.websites = {
 		sitekey: '6LetKEIUAAAAAPk-uUXqq9E82MG3e40OMt_74gjS',
 		url: 'london.doverstreetmarket.com',
 		name: 'DSML'
+	},
+	'supplystore': {
+		sitekey: '6LfknFoUAAAAAGfMFlRb2qHvlH34AS6HWXGd9RwI',
+		url: 'createsend.com',
+		name: 'Supply Store'
 	}
 };
 
@@ -511,6 +517,9 @@ function openBot(onReady) {
 		} else if (task['taskSiteSelect'] == 'dsml') {
 			//console.log('DSML task started');
 			dsml.performTask(task, profile)
+		} else if (task['taskSiteSelect'] == 'supplystore') {
+			//console.log('SupplyStore task started');
+			supplystore.performTask(task, profile)
 		} 
 	});
 
@@ -962,7 +971,7 @@ function getUpcomingReleases() {
 				'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36'
 			},
 			json: true,
-			url: 'https://codeyellow.io/api/releases_7.php'
+			url: 'https://codeyellow.io/api/releases_8.php'
 		},
 		function (error, response, body) {
 			global.releases = body;

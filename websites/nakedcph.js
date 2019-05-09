@@ -243,7 +243,15 @@ exports.submitRaffle = function (request, task, profile, raffleToken, landedAt) 
 			console.log(body);
 			try {
 				parsed = JSON.parse(body);
-			} catch (e) {}
+			} catch (e) {
+				mainBot.mainBotWin.send('taskUpdate', {
+					id: task.taskID,
+					type: task.type,
+					message: 'Unknown error. Please contact the developers'
+				});
+				console.log(body);
+				return;
+			}
 			var error = parsed['error_code'];
 			if (!error) {
 				mainBot.mainBotWin.send('taskUpdate', {

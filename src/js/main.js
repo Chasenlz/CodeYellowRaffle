@@ -321,6 +321,11 @@ $("#createTaskButton").click(function () {
 		Materialize.toast("The site you have selected is for UK profile only.", 3500, "rounded");
 		return;
 	}
+	if(taskSiteSelect == 'supplystore' && profiles[taskProfile]['country'] != 'Australia')
+	{
+		Materialize.toast("The site you have selected is for an Australian profiles only.", 3500, "rounded");
+		return;
+	}
 	if(profiles[taskProfile]['address'] == '')
 	{
 		Materialize.toast("Profile does not have a saved address. Are you sure you clicked save?", 3500, "rounded");
@@ -474,7 +479,21 @@ function createTask(taskSiteSelect, taskSizeSelect, taskProfile, taskSpecificPro
 			variant: selectedQuickTaskRelease['sites_supported'][taskSiteSelect],
 			oneblockdown: selectedQuickTaskRelease['oneblockdown']
 		});
-	} else {
+	} else if (taskSiteSelect == 'supplystore') {
+		tasks.push({
+			taskID: taskID,
+			type: 'mass',
+			filterID: selectedQuickTaskRelease['filterID'],
+			taskTypeOfEmail: taskTypeOfEmail,
+			proxy: proxy,
+			taskSiteSelect: taskSiteSelect,
+			taskSizeSelect: taskSizeSelect,
+			taskProfile: taskProfile,
+			taskEmail: taskEmail,
+			variant: selectedQuickTaskRelease['sites_supported'][taskSiteSelect],
+			supplystore: selectedQuickTaskRelease['supplystore']
+		});
+	}  else {
 		tasks.push({
 			taskID: taskID,
 			type: 'mass',
@@ -722,6 +741,7 @@ function loadReleases() {
 					ymeuniverse: release['ymeuniverse'],
 					footshop: release['footshop'],
 					oneblockdown: release['oneblockdown'],
+					supplystore: release['supplystore'],
 					filterID: filterID
 				});
 				var sizesHTML = '';
@@ -804,6 +824,11 @@ $(".raffle-enter-container").on('click', '.enterRaffle', function () {
 		Materialize.toast("The site you have selected is for UK profile only.", 3500, "rounded");
 		return;
 	}
+	if(taskSiteSelect == 'supplystore' && profiles[taskProfile]['country'] != 'Australia')
+	{
+		Materialize.toast("The site you have selected is for an Australian profiles only.", 3500, "rounded");
+		return;
+	}
 	if(profiles[taskProfile]['address'] == '')
 	{
 		Materialize.toast("Profile does not have a saved address. Are you sure you clicked save?", 3500, "rounded");
@@ -865,6 +890,19 @@ $(".raffle-enter-container").on('click', '.enterRaffle', function () {
 							taskEmail: taskEmail,
 							variant: oneClicktask['variant'],
 							oneblockdown: oneClicktask['oneblockdown']
+						}, profiles[taskProfile]);
+					} else if (taskSiteSelect == 'supplystore') {
+						ipcRenderer.send('startTask', {
+							taskID: taskID,
+							type: 'oneclick',
+							filterID: oneClicktask['filterID'],
+							proxy: proxy,
+							taskSiteSelect: taskSiteSelect,
+							taskSizeSelect: taskSizeSelect,
+							taskProfile: taskProfile,
+							taskEmail: taskEmail,
+							variant: oneClicktask['variant'],
+							supplystore: oneClicktask['supplystore']
 						}, profiles[taskProfile]);
 					} else {
 						ipcRenderer.send('startTask', {
