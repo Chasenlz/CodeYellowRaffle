@@ -89,9 +89,9 @@ exports.performTask = function (task, profile) {
 
 
 	request({
-		url: `https://redeye.footpatrol.com/cgi-bin/rr/blank.gif?nourl=UK_AM_90_MARS&firstName=${profile['firstName']} ${profile['lastName']}&email=${task['taskEmail']}&telephone=${profile['phoneNumber']}&UK_MARS_shoetype=Mars Yard&UK_MARS_shoesize=${sizeFormatter(task['taskSizeSelect'])}&UK_MARS_cityofres=${profile['city']}&yzemail=UK_AM_90_MARS&UK_MARS_countryofres=United Kingdom&emailpermit=1&sms_optout=0&site=FP&currency=GBP`,
+		url: `https://redeye.footpatrol.com/cgi-bin/rr/blank.gif?nourl=UK_TRAVIS_AJ1&firstName=${profile['firstName']} ${profile['lastName']}&email=${task['taskEmail']}&telephone=${profile['phoneNumber']}&UK_TS_AJ1_shoetype=White/Brown&UK_TS_AJ1_shoesize=${sizeFormatter(task['taskSizeSelect'])}&UK_TS_AJ1_cityofres=${profile['city']}&yzemail=UK_TRAVIS_AJ1&UK_TS_AJ1_countryofres=United Kingdom&emailpermit=1&sms_optout=0&site=FP&currency=GBP`,
 		headers: {
-			'Referer': 'https://footpatrol.s3.amazonaws.com/content/site/2017/FootPatrolRafflePage-nike-mars-store-UK.html?fullTag=UK_AM_90_MARS?shortTag=UK_MARS?prodcutName=Nike-x-Tom-Sachs-Mars-Yard?imgUrl=https://i8.amplience.net/i/jpl/mars-1000-e6e02aa4302adfb1013ae6ac7d66efab',
+			'Referer': 'https://footpatrol.s3.amazonaws.com/content/site/2017/FootPatrolRafflePage-nike-travis-aj1-UK.html?fullTag=UK_TRAVIS_AJ1?shortTag=UK_TS_AJ1?prodcutName=Travis-Scott-x-Nike-Air-Jordan-1?imgUrl=https://i8.amplience.net/i/jpl/ts-square-538a9f8a4fdb39ff9c83fc6f82966f2c',
 			'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.131 Safari/537.36'
 		},
 		agent: agent,
