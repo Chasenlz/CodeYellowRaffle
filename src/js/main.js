@@ -903,7 +903,11 @@ $(".releases-container").on('click', '.selectQuick', function () {
 	var release = releases[id];
 	var sitesAvailable = Object.keys(releases[id]['sites_supported']);
 	for (var i = 0; i < sitesAvailable.length; i++) {
-		$('.taskSiteOption[value="' + sitesAvailable[i] + '"').prop('disabled', false);
+		var variant = releases[id]['sites_supported'][sitesAvailable[i]];
+		if(variant != 'closed')
+		{
+			$('.taskSiteOption[value="' + sitesAvailable[i] + '"').prop('disabled', false);
+		}
 	}
 
 	$(this).html('SELECTED')

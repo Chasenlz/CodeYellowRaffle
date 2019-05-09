@@ -94,7 +94,7 @@ exports.performTask = function (task, profile) {
 		message: 'Creating account'
 	});
 	console.log(`[${task.taskID}] ` + ' Creating account');
-	var taskPassword = makePassword(15);
+	task['taskPassword'] = makePassword(15);
 	if(task['proxy'] != '')
 	{
 		var agent = new HttpsProxyAgent(formatProxy(task['proxy']));
@@ -121,7 +121,7 @@ exports.performTask = function (task, profile) {
 			'action': 'register',
 			'extension': 'obd',
 			'email': task['taskEmail'],
-			'password': taskPassword,
+			'password': task['taskPassword'],
 			'firstName': profile['firstName'],
 			'lastName': profile['lastName'],
 			'birthDate': `${getRandomInt(1982, 2000)}-${getRandomInt(1, 9)}-${getRandomInt(1, 9)}`,
@@ -146,7 +146,6 @@ exports.performTask = function (task, profile) {
 				return;
 			}
 			if (parsed.success) {
-				task['taskPassword'] = taskPassword;
 				console.log(parsed);
 				mainBot.mainBotWin.send('taskUpdate', {
 					id: task.taskID,
@@ -171,9 +170,46 @@ exports.performTask = function (task, profile) {
 					mainBot.mainBotWin.send('taskUpdate', {
 						id: task.taskID,
 						type: task.type,
-						message: 'Account already exists'
+						message: 'Account already exists. Checking DB'
 					});
-					return;
+					request({
+						url: 'https://codeyellow.io/api/getAccount.php',
+						method: 'post',
+						formData: {
+							'email': task['taskEmail'],
+							'token': global.settings.token
+						},
+					}, function (err, response, body) {
+						console.log(body)
+						try {
+							var parsedAPI = JSON.parse(body);
+							// IF CREDENTIALS ARE VALID
+							if (parsedAPI.valid == true) {
+								console.log("Saved credentials exist.")
+								task['taskPassword'] = parsedAPI.password;
+								exports.login(request, task, profile);
+								return;
+							}
+							// IF CREDENTIALS ARE NOT VALID
+							else {
+								console.log("Account already exists.")
+								mainBot.mainBotWin.send('taskUpdate', {
+									id: task.taskID,
+									type: task.type,
+									message: 'Account already exists.'
+								});
+								return;
+							}
+						} catch (error) {
+							console.log('Account already exists.');
+							mainBot.mainBotWin.send('taskUpdate', {
+								id: task.taskID,
+								type: task.type,
+								message: 'Account already exists.'
+							});
+							return;
+						}
+					});
 				} else {
 					console.log(`[${task.taskID}] ` + ' Unknown error');
 					console.log(body)
@@ -529,6 +565,16 @@ exports.submitRaffle = function (request, task, profile, userId) {
 				});
 				return;
 			}
+			else if(parsed.error.message == "You are already subscribed to this raffle")
+			{
+				mainBot.mainBotWin.send('taskUpdate', {
+					id: task.taskID,
+					type: task.type,
+					message: 'Already entered!'
+				});
+				mainBot.taskStatuses[task['type']][task.taskID] = 'idle';
+				return;
+			}
 			else
 			{
 				console.log(body);
@@ -670,47 +716,29 @@ function sizeFormatter(taskSize) {
 				break;`);
 	}*/
 	switch (taskSize) {
-		case '5.5':
-			return '69121';
-			break;
-		case '6':
-			return '69122';
-			break;
-		case '6.5':
-			return '69123';
-			break;
 		case '7':
-			return '69124';
+			return '69278';
 			break;
 		case '7.5':
-			return '69125';
+			return '69627';
 			break;
 		case '8':
-			return '69126';
+			return '69628';
 			break;
 		case '8.5':
-			return '69127';
+			return '69629';
 			break;
 		case '9':
-			return '69128';
+			return '69630';
 			break;
 		case '9.5':
-			return '69129';
-			break;
-		case '10':
-			return '69130';
-			break;
-		case '10.5':
-			return '69131';
+			return '69631';
 			break;
 		case '11':
-			return '69132';
-			break;
-		case '11.5':
-			return '69133';
+			return '69632';
 			break;
 		case '12':
-			return '69134';
+			return '69633';
 			break;
 	}
 }
