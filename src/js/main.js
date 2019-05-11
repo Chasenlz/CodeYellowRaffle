@@ -316,6 +316,13 @@ $("#createTaskButton").click(function () {
 	var taskQuantity = parseInt($('#taskQuantity').val());
 	var taskEmail = $('#taskEmail').val();
 	var taskTypeOfEmail = $('#taskTypeOfEmail').val();
+	var taskTypeOfProxy = $('#taskTypeOfProxy').val();
+	var taskSizeVariant = selectedQuickTaskRelease['sizes_supported_' + taskSiteSelect][taskSizeSelect];
+	if(taskSizeVariant == undefined)
+	{
+		Materialize.toast("Task size variant does not exist.", 3500, "rounded");
+		return;
+	}
 	if(taskSiteSelect == 'footpatroluk' && profiles[taskProfile]['country'] != 'United Kingdom')
 	{
 		Materialize.toast("The site you have selected is for UK profile only.", 3500, "rounded");
@@ -347,7 +354,7 @@ $("#createTaskButton").click(function () {
 				if (taskQuantity >= 1) {
 					if (validateEmail(taskEmail) != false || taskTypeOfEmail != 'newEmail') {
 						for (var i = 0; i < taskQuantity; i++) {
-							if (createTask(taskSiteSelect, taskSizeSelect, taskProfile, taskSpecificProxy, taskQuantity, taskEmail, taskTypeOfEmail, proxyUsed) == true) {
+							if (createTask(taskSiteSelect, taskSizeSelect, taskProfile, taskSpecificProxy, taskQuantity, taskEmail, taskTypeOfEmail, proxyUsed, taskTypeOfProxy, taskSizeVariant) == true) {
 								return;
 							}
 						}
@@ -356,7 +363,6 @@ $("#createTaskButton").click(function () {
 						$('#defaultOpen').attr('class', 'nav-item active')
 						selectedQuickTaskRelease = undefined;
 						$('.selectQuick').html('SELECT')
-						$('#taskQuantity').val('1')
 						$('#taskSiteSelect').val('default')
 						$('#taskSizeSelect').val('default')
 						$('.taskSiteOption').prop('disabled', true);
@@ -385,7 +391,7 @@ $("#createTaskButton").click(function () {
 
 
 
-function createTask(taskSiteSelect, taskSizeSelect, taskProfile, taskSpecificProxy, taskQuantity, taskEmail, taskTypeOfEmail, proxyUsed) {
+function createTask(taskSiteSelect, taskSizeSelect, taskProfile, taskSpecificProxy, taskQuantity, taskEmail, taskTypeOfEmail, proxyUsed, taskTypeOfProxy, taskSizeVariant) {
 	if (taskTypeOfEmail == 'saved') {
 		var emailKeys = Object.keys(emails);
 		taskEmail = emailKeys[Math.floor(Math.random() * emailKeys.length)];
@@ -401,14 +407,26 @@ function createTask(taskSiteSelect, taskSizeSelect, taskProfile, taskSpecificPro
 	}
 	var taskID = tasks.length + 1;
 	var proxy = '';
-	if (taskSpecificProxy == '') {
-		proxy = proxies[Math.floor(Math.random() * proxies.length)]
-		/* Here we need to generate a saved proxy but for now its just this*/
-		if (proxy == undefined) {
-			proxy = '';
+	if(taskTypeOfProxy != 'noProxy' && taskTypeOfProxy != 'default')
+	{
+		if (taskSpecificProxy == '') {
+			if(taskTypeOfProxy == 'savedProxies')
+			{
+				proxy = proxies[Math.floor(Math.random() * proxies.length)];
+				if (proxy == undefined) {
+					proxy = '';
+				}
+			}
+		} else {
+			if(taskTypeOfProxy == 'specificProxy')
+			{
+				proxy = taskSpecificProxy;
+			}
+			else
+			{
+				proxy = '';
+			}
 		}
-	} else {
-		proxy = taskSpecificProxy;
 	}
 	if (proxy != '') {
 		proxyUsed = '<td><i class="fas fa-bolt isprox"></i></td>'
@@ -417,7 +435,7 @@ function createTask(taskSiteSelect, taskSizeSelect, taskProfile, taskSpecificPro
 	if (emailsForTasks[taskEmail] != undefined) {
 		if (emailsForTasks[taskEmail][variantName] == true) {
 			//console.log("Email already used");
-			createTask(taskSiteSelect, taskSizeSelect, taskProfile, taskSpecificProxy, taskQuantity, taskEmail, taskTypeOfEmail, proxyUsed)
+			createTask(taskSiteSelect, taskSizeSelect, taskProfile, taskSpecificProxy, taskQuantity, taskEmail, taskTypeOfEmail, proxyUsed, taskTypeOfProxy, taskSizeVariant)
 			return;
 		}
 	}
@@ -432,6 +450,7 @@ function createTask(taskSiteSelect, taskSizeSelect, taskProfile, taskSpecificPro
 			proxy: proxy,
 			taskSiteSelect: taskSiteSelect,
 			taskSizeSelect: taskSizeSelect,
+			taskSizeVariant: taskSizeVariant,
 			taskProfile: taskProfile,
 			taskEmail: taskEmail,
 			variant: selectedQuickTaskRelease['sites_supported'][taskSiteSelect],
@@ -446,6 +465,7 @@ function createTask(taskSiteSelect, taskSizeSelect, taskProfile, taskSpecificPro
 			proxy: proxy,
 			taskSiteSelect: taskSiteSelect,
 			taskSizeSelect: taskSizeSelect,
+			taskSizeVariant: taskSizeVariant,
 			taskProfile: taskProfile,
 			taskEmail: taskEmail,
 			variant: selectedQuickTaskRelease['sites_supported'][taskSiteSelect],
@@ -460,6 +480,7 @@ function createTask(taskSiteSelect, taskSizeSelect, taskProfile, taskSpecificPro
 			proxy: proxy,
 			taskSiteSelect: taskSiteSelect,
 			taskSizeSelect: taskSizeSelect,
+			taskSizeVariant: taskSizeVariant,
 			taskProfile: taskProfile,
 			taskEmail: taskEmail,
 			variant: selectedQuickTaskRelease['sites_supported'][taskSiteSelect],
@@ -474,6 +495,7 @@ function createTask(taskSiteSelect, taskSizeSelect, taskProfile, taskSpecificPro
 			proxy: proxy,
 			taskSiteSelect: taskSiteSelect,
 			taskSizeSelect: taskSizeSelect,
+			taskSizeVariant: taskSizeVariant,
 			taskProfile: taskProfile,
 			taskEmail: taskEmail,
 			variant: selectedQuickTaskRelease['sites_supported'][taskSiteSelect],
@@ -488,6 +510,7 @@ function createTask(taskSiteSelect, taskSizeSelect, taskProfile, taskSpecificPro
 			proxy: proxy,
 			taskSiteSelect: taskSiteSelect,
 			taskSizeSelect: taskSizeSelect,
+			taskSizeVariant: taskSizeVariant,
 			taskProfile: taskProfile,
 			taskEmail: taskEmail,
 			variant: selectedQuickTaskRelease['sites_supported'][taskSiteSelect],
@@ -502,6 +525,7 @@ function createTask(taskSiteSelect, taskSizeSelect, taskProfile, taskSpecificPro
 			proxy: proxy,
 			taskSiteSelect: taskSiteSelect,
 			taskSizeSelect: taskSizeSelect,
+			taskSizeVariant: taskSizeVariant,
 			taskProfile: taskProfile,
 			taskEmail: taskEmail,
 			variant: selectedQuickTaskRelease['sites_supported'][taskSiteSelect]
@@ -714,17 +738,13 @@ function loadReleases() {
 		var sitesSupportedKeys = Object.keys(sitesSupported);
 		var filterID = release['filterID'];
 		var selectButton = release['closed'] == undefined ? `<div class="price-it-up selectQuick" id="${i}">SELECT</div>` : `<div class="price-it-up" style="font-weight: 600;">RELEASED</div>`;
-		$(".releases-container").append(
-			`<div style="height: 230px;" class="realsetter">
-						<div class="setterhat">
-							<div class="settit">${release['name']}</div>
-							<div class="setinfo">${release['date']}</div>
-						</div>
-						<img class="retimg" src="${release['image']}" style="margin-top:-17px;">
-						<div class="setterbum">
-							${selectButton}
-						</div>
-					</div>`
+		$(".shoe-container.releases").append(
+			`<div style="height: 340px;width: 210px;margin-top: 20px;" class="raffle-enter-container">
+			<div style="width: 210px;" class="raffle-im"><img class="raffle-item" src="${release['image']}"></div>
+			<div style="font-size: 19px;" class="raff-t">${release['name']}</div>
+			<div class="feature"><div class="fcon"><i class="fas fa-clock"></i></div>${release['date']}</div>
+			<a target="_blank">${selectButton}</a>	
+		</div>`
 		);
 		$('#oneClickFilter').append($('<option>', {
 			value: filterID,
@@ -745,7 +765,7 @@ function loadReleases() {
 					filterID: filterID
 				});
 				var sizesHTML = '';
-				var sizes = release['sizes_supported_' + siteName];
+				var sizes = Object.keys(release['sizes_supported_' + siteName]).sort(function(a, b){return a-b});
 				for (var z = 0; z < sizes.length; z++) {
 					if (sizes[z] == 'selectOnWin') {
 						sizesHTML = sizesHTML + '<option class="taskSizeOption" value="' + sizes[z] + '">Selected on Win</option>\n';
@@ -792,6 +812,15 @@ $('#taskTypeOfEmail').on('change', function () {
 		$('#taskEmail').prop('disabled', true)
 	}
 });
+
+$('#taskTypeOfProxy').on('change', function () {
+	var selectedVal = $('#taskTypeOfProxy').val();
+	if (selectedVal == 'specificProxy') {
+		$('#taskSpecificProxy').prop('disabled', false)
+	} else {
+		$('#taskSpecificProxy').prop('disabled', true)
+	}
+});
 $('#oneClickFilter').on('change', function () {
 	var selectedVal = $('#oneClickFilter').val();
 	if (selectedVal != 'default') {
@@ -814,11 +843,11 @@ $(".raffle-enter-container").on('click', '.enterRaffle', function () {
 	var taskID = $(this).attr('id');
 	var oneClicktask = oneClickTasks[taskID];
 	var taskSiteSelect = oneClicktask['taskSiteSelect'];
-	var taskSizeSelect = $('#oneClicktaskSizeSelect').val();
 	var taskSizeSelect = $('#oneClicktaskSize' + taskID).val();
 	var taskProfile = $('#oneClicktaskProfile').val();
 	var taskSpecificProxy = $('#oneClicktaskSpecificProxy').val();
 	var taskEmail = $('#oneClicktaskEmail').val();
+	var taskSizeVariant = oneClicktask['sizes_supported_' + taskSiteSelect][taskSizeSelect];
 	if(taskSiteSelect == 'footpatroluk' && profiles[taskProfile]['country'] != 'United Kingdom')
 	{
 		Materialize.toast("The site you have selected is for UK profile only.", 3500, "rounded");
@@ -847,6 +876,7 @@ $(".raffle-enter-container").on('click', '.enterRaffle', function () {
 							proxy: proxy,
 							taskSiteSelect: taskSiteSelect,
 							taskSizeSelect: taskSizeSelect,
+							taskSizeVariant: taskSizeVariant,
 							taskProfile: taskProfile,
 							taskEmail: taskEmail,
 							variant: oneClicktask['variant'],
@@ -860,6 +890,7 @@ $(".raffle-enter-container").on('click', '.enterRaffle', function () {
 							proxy: proxy,
 							taskSiteSelect: taskSiteSelect,
 							taskSizeSelect: taskSizeSelect,
+							taskSizeVariant: taskSizeVariant,
 							taskProfile: taskProfile,
 							taskEmail: taskEmail,
 							variant: oneClicktask['variant'],
@@ -873,6 +904,7 @@ $(".raffle-enter-container").on('click', '.enterRaffle', function () {
 							proxy: proxy,
 							taskSiteSelect: taskSiteSelect,
 							taskSizeSelect: taskSizeSelect,
+							taskSizeVariant: taskSizeVariant,
 							taskProfile: taskProfile,
 							taskEmail: taskEmail,
 							variant: oneClicktask['variant'],
@@ -886,6 +918,7 @@ $(".raffle-enter-container").on('click', '.enterRaffle', function () {
 							proxy: proxy,
 							taskSiteSelect: taskSiteSelect,
 							taskSizeSelect: taskSizeSelect,
+							taskSizeVariant: taskSizeVariant,
 							taskProfile: taskProfile,
 							taskEmail: taskEmail,
 							variant: oneClicktask['variant'],
@@ -899,6 +932,7 @@ $(".raffle-enter-container").on('click', '.enterRaffle', function () {
 							proxy: proxy,
 							taskSiteSelect: taskSiteSelect,
 							taskSizeSelect: taskSizeSelect,
+							taskSizeVariant: taskSizeVariant,
 							taskProfile: taskProfile,
 							taskEmail: taskEmail,
 							variant: oneClicktask['variant'],
@@ -912,6 +946,7 @@ $(".raffle-enter-container").on('click', '.enterRaffle', function () {
 							proxy: proxy,
 							taskSiteSelect: taskSiteSelect,
 							taskSizeSelect: taskSizeSelect,
+							taskSizeVariant: taskSizeVariant,
 							taskProfile: taskProfile,
 							taskEmail: taskEmail,
 							variant: oneClicktask['variant']
@@ -931,7 +966,7 @@ $(".raffle-enter-container").on('click', '.enterRaffle', function () {
 	}
 });
 
-$(".releases-container").on('click', '.selectQuick', function () {
+$(".shoe-container.releases").on('click', '.selectQuick', function () {
 	$('.selectQuick').html('SELECT')
 	$('#taskSiteSelect').val('default')
 	$('#taskSizeSelect').val('default')
@@ -955,7 +990,7 @@ $(".releases-container").on('click', '.selectQuick', function () {
 $('#taskSiteSelect').on('change', function () {
 	$('#taskSizeSelect').val('default')
 	$('.taskSizeOptionMass').prop('disabled', true);
-	var sizesAvailable = selectedQuickTaskRelease['sizes_supported_' + this.value];
+	var sizesAvailable = Object.keys(selectedQuickTaskRelease['sizes_supported_' + this.value]).sort(function(a, b){return a-b});
 	for (var i = 0; i < sizesAvailable.length; i++) {
 		$('.taskSizeOptionMass[value="' + sizesAvailable[i] + '"').prop('disabled', false);
 	}

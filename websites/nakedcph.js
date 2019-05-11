@@ -339,6 +339,9 @@ function countryFormatter(profileCountry) {
 		case 'North Ireland':
 			return 'Ireland';
 			break;
+		case 'Ireland':
+			return 'Ireland';
+			break;
 		case 'Germany':
 			return 'Germany';
 			break;
@@ -359,6 +362,42 @@ function countryFormatter(profileCountry) {
 			break;
 		case 'Czech Republic':
 			return 'Czech Republic';
+			break;
+		case 'Australia':
+			return 'Australia';
+			break;
+		case 'Belgium':
+			return 'Belgium';
+			break;
+		case 'Slovenia':
+			return 'Slovenia';
+			break;
+		case 'Singapore':
+			return 'Singapore';
+			break;
+		case 'Malaysia':
+			return 'Malaysia';
+			break;
+		case 'Hong Kong':
+			return 'Hong Kong';
+			break;
+		case 'China':
+			return 'China';
+			break;
+		case 'Japan':
+			return 'Japan';
+			break;
+		case 'Sweden':
+			return 'Sweden';
+			break;
+		case 'Denmark':
+			return 'Denmark';
+			break;
+		case 'Finland':
+			return 'Finland';
+			break;
+		case 'Romania':
+			return 'Romania';
 			break;
 	}
 }

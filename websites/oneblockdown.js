@@ -20,16 +20,13 @@ var mainBot = require('../index.js')
 var cheerio = require('cheerio');
 const faker = require('faker');
 
-function formatProxy(proxy) 
-{
+function formatProxy(proxy) {
 	if (proxy == '') {
 		return '';
 	}
-	try 
-	{
+	try {
 		var sProxy = proxy.split(':');
-	} catch (e)
-	{
+	} catch (e) {
 		return '';
 	}
 	var proxyHost = sProxy[0] + ":" + sProxy[1];
@@ -71,20 +68,20 @@ exports.performTask = function (task, profile) {
 		jar: jar,
 		timeout: 10000
 	});
-	
-	if(profile['jigProfileName'] == true)
-	{
+
+	if (profile['jigProfileName'] == true) {
 		profile['firstName'] = faker.fake("{{name.firstName}}");
 		profile['lastName'] = faker.fake("{{name.lastName}}");
 	}
 
-	if(profile['jigProfileAddress'] == true)
-	{
+	if (profile['jigProfileAddress'] == true) {
 		profile['aptSuite'] = faker.fake("{{address.secondaryAddress}}");
+		// ********************************************* Add this only to sites with no address line 2 *********************************************
+		profile['address'] = profile['address'] + ' ' + faker.fake("{{address.secondaryAddress}}");
+		// ********************************************* Add this only to sites with no address line 2 *********************************************
 	}
 
-	if(profile['jigProfilePhoneNumber'] == true)
-	{
+	if (profile['jigProfilePhoneNumber'] == true) {
 		profile['phoneNumber'] = faker.fake("{{phone.phoneNumberFormat}}");
 	}
 
@@ -95,12 +92,9 @@ exports.performTask = function (task, profile) {
 	});
 	console.log(`[${task.taskID}] ` + ' Creating account');
 	task['taskPassword'] = makePassword(15);
-	if(task['proxy'] != '')
-	{
+	if (task['proxy'] != '') {
 		var agent = new HttpsProxyAgent(formatProxy(task['proxy']));
-	}
-	else
-	{
+	} else {
 		agent = '';
 	}
 	request({
@@ -251,12 +245,9 @@ exports.login = function (request, task, profile) {
 		mainBot.taskStatuses[task['type']][task.taskID] = 'idle';
 		return;
 	}
-	if(task['proxy'] != '')
-	{
+	if (task['proxy'] != '') {
 		var agent = new HttpsProxyAgent(formatProxy(task['proxy']));
-	}
-	else
-	{
+	} else {
 		agent = '';
 	}
 	request({
@@ -346,7 +337,7 @@ exports.login = function (request, task, profile) {
 				});
 				console.log(`[${task.taskID}] ` + ' Confirm and start again');
 				const confirmedEmailHandler = () => {
-					if (mainBot.tasksAwaitingConfirm[task['taskID']] != 'confirmed') {
+					if (mainBot.tasksAwaitingConfirm[task['type']][task['taskID']] != 'confirmed') {
 						setTimeout(() => confirmedEmailHandler(), 200);
 					} else {
 						exports.login(request, task, profile);
@@ -388,12 +379,9 @@ exports.getRaffle = function (request, task, profile, userId) {
 		message: 'Obtaining raffle page'
 	});
 	console.log(`[${task.taskID}] ` + ' Obtaining raffle page');
-	if(task['proxy'] != '')
-	{
+	if (task['proxy'] != '') {
 		var agent = new HttpsProxyAgent(formatProxy(task['proxy']));
-	}
-	else
-	{
+	} else {
 		agent = '';
 	}
 	request({
@@ -453,17 +441,13 @@ exports.submitRaffle = function (request, task, profile, userId) {
 	});
 	console.log(`[${task.taskID}] ` + JSON.stringify(task));
 	console.log(`[${task.taskID}] ` + JSON.stringify(profile));
-	if(profile['stateProvince'] == null)
-	{
+	if (profile['stateProvince'] == null) {
 		profile['stateProvince'] = '';
 	}
 	// Captcha bypass = fake value in response
-	if(task['proxy'] != '')
-	{
+	if (task['proxy'] != '') {
 		var agent = new HttpsProxyAgent(formatProxy(task['proxy']));
-	}
-	else
-	{
+	} else {
 		agent = '';
 	}
 	request({
@@ -485,7 +469,7 @@ exports.submitRaffle = function (request, task, profile, userId) {
 			'action': 'subscribe',
 			'response': '03AOLTBLTA6oaXtl3pUpnzYqYDPv8yguApR3yjXbjepgtQGvQPEoU3X_7y-_UY4hzrALZZGVD7zAXHLDmH3eQtyI-_B1wpk3OXTmA8QejJ5QpeUsiodh0XkSh2XZ6jErkSOfZIOrF2oykLmGMCRUQZPoeiBQV0Isv6Xp_yVeTqJDu6dSF0YZtf3VmKmT_uHF-PzGwOT4Sqwo44dsWcnHQ-SQdl6vrC3Wk2CiZelQCnuRg-xnHAKt3Zn9Vvq9IRyqlSgmjD-hL08eV3VCRC8rr-w28BjINB3u5oKWCXa6YOk-ki2o8uuNEuJxWFKDKbWQH-xBDgpQKTt89w',
 			'userId': userId,
-			'stockItemId': sizeFormatter(task['taskSizeSelect']),
+			'stockItemId': task['taskSizeVariant'],
 			'itemId': task['oneblockdown']['itemId'],
 			'raffleId': task['oneblockdown']['raffleId'],
 			'inStore': '',
@@ -508,7 +492,7 @@ exports.submitRaffle = function (request, task, profile, userId) {
 			'action': 'subscribe',
 			'response': '03AOLTBLTA6oaXtl3pUpnzYqYDPv8yguApR3yjXbjepgtQGvQPEoU3X_7y-_UY4hzrALZZGVD7zAXHLDmH3eQtyI-_B1wpk3OXTmA8QejJ5QpeUsiodh0XkSh2XZ6jErkSOfZIOrF2oykLmGMCRUQZPoeiBQV0Isv6Xp_yVeTqJDu6dSF0YZtf3VmKmT_uHF-PzGwOT4Sqwo44dsWcnHQ-SQdl6vrC3Wk2CiZelQCnuRg-xnHAKt3Zn9Vvq9IRyqlSgmjD-hL08eV3VCRC8rr-w28BjINB3u5oKWCXa6YOk-ki2o8uuNEuJxWFKDKbWQH-xBDgpQKTt89w',
 			'userId': userId,
-			'stockItemId': sizeFormatter(task['taskSizeSelect']),
+			'stockItemId': task['taskSizeVariant'],
 			'itemId': task['oneblockdown']['itemId'],
 			'raffleId': task['oneblockdown']['raffleId'],
 			'inStore': '',
@@ -525,8 +509,7 @@ exports.submitRaffle = function (request, task, profile, userId) {
 		}));
 		console.log(body)
 		console.log(`[${task.taskID}]` + response.statusCode);
-		if(error)
-		{
+		if (error) {
 			var proxy2 = getRandomProxy();
 			task['proxy'] = proxy2;
 			mainBot.mainBotWin.send('taskUpdate', {
@@ -564,9 +547,7 @@ exports.submitRaffle = function (request, task, profile, userId) {
 					message: 'Invalid address.'
 				});
 				return;
-			}
-			else if(parsed.error.message == "You are already subscribed to this raffle")
-			{
+			} else if (parsed.error.message == "You are already subscribed to this raffle") {
 				mainBot.mainBotWin.send('taskUpdate', {
 					id: task.taskID,
 					type: task.type,
@@ -574,9 +555,7 @@ exports.submitRaffle = function (request, task, profile, userId) {
 				});
 				mainBot.taskStatuses[task['type']][task.taskID] = 'idle';
 				return;
-			}
-			else
-			{
+			} else {
 				console.log(body);
 				mainBot.mainBotWin.send('taskUpdate', {
 					id: task.taskID,
@@ -605,8 +584,7 @@ function shouldStop(task) {
 // Checks if this email was already entered into a raffle
 function checkEmail(task) {
 	if (task['taskTypeOfEmail'] == 'saved') {
-		if(global.emails[task['taskEmail']] == undefined)
-		{
+		if (global.emails[task['taskEmail']] == undefined) {
 			return false;
 		}
 		if (global.emails[task['taskEmail']][task['taskSiteSelect'] + '_' + task['filterID']] == true && task['type'] == 'mass') {
@@ -619,8 +597,7 @@ function checkEmail(task) {
 // Saves email in emails.json to show email was entered 
 function registerEmail(task) {
 	if (task['taskTypeOfEmail'] == 'saved') {
-		if(global.emails[task['taskEmail']] == undefined)
-		{
+		if (global.emails[task['taskEmail']] == undefined) {
 			return;
 		}
 		var variantName = task['taskSiteSelect'] + '_' + task['filterID'];
@@ -668,13 +645,13 @@ function countryFormatter(profileCountry) {
 			break;
 		case 'Czech Republic':
 			return '56';
-			break;			
+			break;
 		case 'Australia':
 			return '13';
-			break;		
+			break;
 		case 'Belgium':
 			return '20';
-			break;	
+			break;
 		case 'Slovenia':
 			return '200';
 			break;
@@ -696,52 +673,32 @@ function countryFormatter(profileCountry) {
 		case 'Sweden':
 			return '197';
 			break;
-	}
-}
-
-
-
-
-
-function sizeFormatter(taskSize) {
-	//stockItemId = size
-	/* code to extract sizes from https://www.oneblockdown.it/en/footwear-sneakers/nike/men-unisex/nike-mars-yard-overshoe/12339
-	for(var i = 0; i < preloadedStock.length; i++)
-	{
-		var size = preloadedStock[i]['variant'];
-		size = parseFloat(size.match(/[\d\.]+/));
-		var stockItemId = preloadedStock[i]['stockItemId'];
-		console.log(`case '${size}':
-				return '${stockItemId}';
-				break;`);
-	}*/
-	switch (taskSize) {
-		case '7':
-			return '69278';
+		case 'Denmark':
+			return '59';
 			break;
-		case '7.5':
-			return '69627';
+		case 'Finland':
+			return '70';
 			break;
-		case '8':
-			return '69628';
-			break;
-		case '8.5':
-			return '69629';
-			break;
-		case '9':
-			return '69630';
-			break;
-		case '9.5':
-			return '69631';
-			break;
-		case '11':
-			return '69632';
-			break;
-		case '12':
-			return '69633';
+		case 'Romania':
+			return '189';
 			break;
 	}
 }
+
+
+
+
+
+//stockItemId = size
+/* code to extract sizes from https://www.oneblockdown.it/en/footwear-sneakers/nike/men-unisex/nike-mars-yard-overshoe/12339
+var sizeList = '';
+for(var i = 0; i < preloadedStock.length; i++)
+{
+	var size = preloadedStock[i]['variant'];
+	size = parseFloat(size.match(/[\d\.]+/));
+	var stockItemId = preloadedStock[i]['stockItemId'];
+	sizeList = sizeList + `'${size}' => '${stockItemId}',`;
+}*/
 
 
 // Random birthday

@@ -76,6 +76,10 @@ exports.performTask = function (task, profile) {
 
 	if (profile['jigProfileAddress'] == true) {
 		profile['aptSuite'] = faker.fake("{{address.secondaryAddress}}");
+		
+		// ********************************************* Add this only to sites with no address line 2 *********************************************
+		profile['address'] = profile['address'] + ' ' + faker.fake("{{address.secondaryAddress}}");
+		// ********************************************* Add this only to sites with no address line 2 *********************************************
 	}
 
 	if (profile['jigProfilePhoneNumber'] == true) {

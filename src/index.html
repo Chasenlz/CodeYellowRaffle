@@ -387,6 +387,9 @@ email@email.com"></textarea>
                   <option value="United States">United States</option>
                   <option value="Australia">Australia</option>
                   <option value="Canada">Canada</option>
+                  <option value="Denmark">Denmark</option>
+                  <option value="Finland">Finland</option>
+                  <option value="Romania">Romania</option>
                   <option value="Germany">Germany</option>
                   <option value="Belgium">Belgium</option>
                   <option value="Slovenia">Slovenia</option>
@@ -567,6 +570,7 @@ email@email.com"></textarea>
 					<option value="SR" class="ITProfileState stateSelectOption" style="display:none;">Siracusa</option>
 					<option value="SO" class="ITProfileState stateSelectOption" style="display:none;">Sondrio</option>
 					<option value="TA" class="ITProfileState stateSelectOption" style="display:none;">Taranto</option>
+					<option value="TOR" class="ITProfileState stateSelectOption" style="display:none;">Torino</option>
 					<option value="TE" class="ITProfileState stateSelectOption" style="display:none;">Teramo</option>
 					<option value="TR" class="ITProfileState stateSelectOption" style="display:none;">Terni</option>
 					<option value="TP" class="ITProfileState stateSelectOption" style="display:none;">Trapani</option>
@@ -1406,33 +1410,8 @@ Performance mode
 		<div class="midtitle">Pick a sneaker!</div>
 		<div class="midtitleinfo">Select the shoe that you want to mass enter a raffle for</div>
 		
-		<div class="shoe-container">
+		<div class="shoe-container releases">
 
-		<div style="height: 340px;width: 210px;margin-top: 20px;" class="raffle-enter-container">
-			<div style="width: 210px;" class="raffle-im"><img class="raffle-item" src="https://codeyellow.io/img/sacai-nike-waffle-green.png"></div>
-			<div style="font-size: 19px;" class="raff-t">SACAI NIKE GREEN</div>
-			<div class="feature"><div class="fcon"><i class="fas fa-clock"></i></div>13th May</div>
-			<a target="_blank"><div class="feature enter-r enterRaffle">SELECT</div></a>	
-		</div>
-		
-		<div style="height: 340px;width: 210px;margin-top: 20px;" class="raffle-enter-container">
-			<div style="width: 210px;" class="raffle-im"><img class="raffle-item" src="https://codeyellow.io/img/sacai-nike-waffle-blue.png"></div>
-			<div style="font-size: 19px;" class="raff-t">SACAI NIKE GREEN</div>
-			<div class="feature"><div class="fcon"><i class="fas fa-clock"></i></div>13th May</div>
-			<a target="_blank"><div class="feature enter-r enterRaffle">SELECT</div></a>	
-		</div>
-		
-		<div style="height: 340px;width: 210px;margin-top: 20px;" class="raffle-enter-container">
-			<div style="width: 210px;" class="raffle-im"><img class="raffle-item" src="https://codeyellow.io/img/sacai-nike-waffle-green.png"></div>
-			<div style="font-size: 19px;" class="raff-t">SACAI NIKE GREEN</div>
-			<div class="feature"><div class="fcon"><i class="fas fa-clock"></i></div>13th May</div>
-			<a target="_blank"><div class="feature enter-r enterRaffle">SELECT</div></a>	
-		</div>
-		
-		<div class="caro">
-            <div class="releases-container caro">
-            </div>
-         </div>
 		
 
 		</div>
@@ -1550,20 +1529,22 @@ Performance mode
                      <option value="newEmail">New email</option>
                   </select>
                </div>
-			   
-               <div class="create-row">
-                  <div data-toggle="tooltip" data-placement="top" title="Proxy options" class="inputicon"><i class="fas fa-globe"></i>
-                  </div>
-                  <select class="createinput" id="taskTypeOfEmail">
-                     <option value="defaultp">Proxy list</option>
-                     <option value="specificp">Specific proxy</option>
-                  </select>
-               </div>
 
                <div class="create-row">
                   <div data-toggle="tooltip" data-placement="top" title="Task email!" class="inputicon"><i class="fa fa-envelope" aria-hidden="true"></i>
                   </div>
                   <input class="createinput" id="taskEmail" placeholder="Email Address" disabled>
+               </div>
+			   
+               <div class="create-row">
+                  <div data-toggle="tooltip" data-placement="top" title="Proxy options" class="inputicon"><i class="fas fa-globe"></i>
+                  </div>
+                  <select class="createinput" id="taskTypeOfProxy">
+                     <option value="default">Proxies</option>
+                     <option value="noProxy">No Proxy</option>
+                     <option value="savedProxies">Saved proxies</option>
+                     <option value="specificProxy">Specific proxy</option>
+                  </select>
                </div>
 
                <div class="create-row">
@@ -1597,13 +1578,13 @@ Performance mode
 		<div style="margin-top: 20px;margin-bottom: 10px;" class="proxy-gen-i">Use the <b>slider</b> to choose the number of tasks.</div>
 		<form>
 		<div style="margin-top: 25px;margin-bottom: 30px;" class="slidecontainer">
-            <input id="taskQuantity" name="amountRange" type="range" min="0" max="300" value="150" class="slider" oninput="this.form.amountInput.value=this.value">
+            <input id="taskQuantity" name="amountRange" type="range" min="0" max="300" value="1" class="slider" oninput="this.form.amountInput.value=this.value">
         </div>
 
                <div class="create-row">
                   <div data-toggle="tooltip" data-placement="top" title="Task quantity!" class="inputicon"><i class="fas fa-sort-numeric-down"></i>
                   </div>
-                  <input class="createinput" name="amountInput" id="taskQ" placeholder="Quantity" type="number" min="1" max="300" value="150" oninput="this.form.amountRange.value=this.value">
+                  <input class="createinput" name="amountInput" id="taskQ" placeholder="Quantity" type="number" min="1" max="300" value="1" oninput="this.form.amountRange.value=this.value">
                </div>
 		</form>	   
 
