@@ -24,14 +24,14 @@
 	  
       <div class="nav-me noselect">
          <div class="left-me">
-            <div id="defaultOpen" class="nav-item">Tasks</div>
-            <div id="profilesTab" class="nav-item">Profiles</div>
+            <div id="defaultOpen" class="nav-item refro">Tasks</div>
+            <div id="profilesTab" class="nav-item refro">Profiles</div>
          </div>
 		 <a href="#"><div data-toggle="tooltip" title="Update available!" class="update-dot updateav"><i class="fas fa-download"></i></div></a>
 		 <img class="middle-me" src="css/img/logo.png"> 
          <div class="right-me">
-            <div id="proxiesTab" class="nav-item">Proxies</div>
-            <div id="settingsTab" class="nav-item">Settings</div>
+            <div id="proxiesTab" class="nav-item refro">Proxies</div>
+            <div id="settingsTab" class="nav-item refro">Settings</div>
          </div>
       </div>
 	<div class="tasks">
@@ -1305,7 +1305,7 @@ Performance mode
 	<div class="ctask">  
 	
       <div id="Addtask" style="overflow: hidden;padding-top: 20px;" class="main tabcontent">
-         <div class="caro">
+       <!--  <div class="caro">
             <div class="releases-container caro">
             </div>
          </div>
@@ -1316,7 +1316,7 @@ Performance mode
                <div class="setinfo">Configer your task settings</div>
                
                </div> -->
-            <div class="crat l">
+         <!--   <div class="crat l">
                <div class="create-row">
                   <div data-toggle="tooltip" data-placement="top" title="Select site!" class="inputicon"><i class="fa fa-shopping-bag" aria-hidden="true"></i>
                   </div>
@@ -1397,8 +1397,233 @@ Performance mode
             </div>
             <div class="setterbummer">
                <div style="margin-top: -5px;width: 30%;" id="createTaskButton" class="price-it-up">Create Task(s)</div>
+            </div> -->
+      
+	  
+	  
+	  
+	  <div style="display: block;" class="sneaksel">
+		<div class="midtitle">Pick a sneaker!</div>
+		<div class="midtitleinfo">Select the shoe that you want to mass enter a raffle for</div>
+		
+		<div class="shoe-container">
+
+		<div style="height: 340px;width: 210px;margin-top: 20px;" class="raffle-enter-container">
+			<div style="width: 210px;" class="raffle-im"><img class="raffle-item" src="https://codeyellow.io/img/sacai-nike-waffle-green.png"></div>
+			<div style="font-size: 19px;" class="raff-t">SACAI NIKE GREEN</div>
+			<div class="feature"><div class="fcon"><i class="fas fa-clock"></i></div>13th May</div>
+			<a target="_blank"><div class="feature enter-r enterRaffle">SELECT</div></a>	
+		</div>
+		
+		<div style="height: 340px;width: 210px;margin-top: 20px;" class="raffle-enter-container">
+			<div style="width: 210px;" class="raffle-im"><img class="raffle-item" src="https://codeyellow.io/img/sacai-nike-waffle-blue.png"></div>
+			<div style="font-size: 19px;" class="raff-t">SACAI NIKE GREEN</div>
+			<div class="feature"><div class="fcon"><i class="fas fa-clock"></i></div>13th May</div>
+			<a target="_blank"><div class="feature enter-r enterRaffle">SELECT</div></a>	
+		</div>
+		
+		<div style="height: 340px;width: 210px;margin-top: 20px;" class="raffle-enter-container">
+			<div style="width: 210px;" class="raffle-im"><img class="raffle-item" src="https://codeyellow.io/img/sacai-nike-waffle-green.png"></div>
+			<div style="font-size: 19px;" class="raff-t">SACAI NIKE GREEN</div>
+			<div class="feature"><div class="fcon"><i class="fas fa-clock"></i></div>13th May</div>
+			<a target="_blank"><div class="feature enter-r enterRaffle">SELECT</div></a>	
+		</div>
+		
+		<div class="caro">
+            <div class="releases-container caro">
             </div>
          </div>
+		
+
+		</div>
+
+		<div class="buttonbar">
+		<div class="createbumbutton plus1">NEXT</div>
+		<div class="canclerow"><span class="ccreate">cancel</span></div>
+		</div>
+
+	  </div>
+
+
+      <div style="display: none;" class="details1">
+		<div class="midtitle">Select the details</div>
+		<div class="midtitleinfo">raffle entry details</div>
+		
+		<div class="shoe-container">
+
+		<div class="new-meta">
+
+
+               <div class="create-row">
+                  <div data-toggle="tooltip" data-placement="top" title="Task profile!" class="inputicon"><i class="fa fa-user" aria-hidden="true"></i>
+                  </div>
+                  <select class="createinput" id="taskProfile">
+                  </select>
+               </div>
+
+
+               <div class="create-row">
+                  <div data-toggle="tooltip" data-placement="top" title="Select site!" class="inputicon"><i class="fa fa-shopping-bag" aria-hidden="true"></i>
+                  </div>
+                  <select class="createinput" id="taskSiteSelect">
+                     <option value="default">Sites</option>
+                     <option class="taskSiteOption" value="dsmny" disabled>DSMNY</option>
+                     <option class="taskSiteOption" value="dsml" disabled>DSML</option>
+                     <option class="taskSiteOption" value="footpatroluk" disabled>FootPatrol (UK Only)</option>
+                     <option class="taskSiteOption" value="nakedcph" disabled>Naked</option>
+                     <option class="taskSiteOption" value="ymeuniverse" disabled>YMEuniverse</option>
+                     <option class="taskSiteOption" value="vooberlin" disabled>VooBerlin</option>
+                     <option class="taskSiteOption" value="footshop" disabled>FootShop</option>
+                     <option class="taskSiteOption" value="oneblockdown" disabled>OneBlockDown</option>
+                     <option class="taskSiteOption" value="wishatl" disabled>WishATL</option>
+                     <option class="taskSiteOption" value="supplystore" disabled>SupplyStore (AU)</option>
+                     <option class="taskSiteOption" value="bdgastore" disabled>BDGAStore</option>
+                  </select>
+               </div>
+			   
+               <div class="create-row">
+                  <div data-toggle="tooltip" data-placement="top" title="Item size!" class="inputicon"><i class="fas fa-sort-amount-up"></i>
+                  </div>
+                  <select class="createinput" id="taskSizeSelect">
+                     <option value="default">Sizes</option>
+                     <option class="taskSizeOptionMass" value="selectOnWin" disabled>Selected on Win</option>
+                     <option class="taskSizeOptionMass" value="4" disabled>4</option>
+                     <option class="taskSizeOptionMass" value="4.5" disabled>4.5</option>
+                     <option class="taskSizeOptionMass" value="5" disabled>5</option>
+                     <option class="taskSizeOptionMass" value="5.5" disabled>5.5</option>
+                     <option class="taskSizeOptionMass" value="6" disabled>6</option>
+                     <option class="taskSizeOptionMass" value="6.5" disabled>6.5</option>
+                     <option class="taskSizeOptionMass" value="7" disabled>7</option>
+                     <option class="taskSizeOptionMass" value="7.5" disabled>7.5</option>
+                     <option class="taskSizeOptionMass" value="8" disabled>8</option>
+                     <option class="taskSizeOptionMass" value="8.5" disabled>8.5</option>
+                     <option class="taskSizeOptionMass" value="9" disabled>9</option>
+                     <option class="taskSizeOptionMass" value="9.5" disabled>9.5</option>
+                     <option class="taskSizeOptionMass" value="10" disabled>10</option>
+                     <option class="taskSizeOptionMass" value="10.5" disabled>10.5</option>
+                     <option class="taskSizeOptionMass" value="11" disabled>11</option>
+                     <option class="taskSizeOptionMass" value="11.5" disabled>11.5</option>
+                     <option class="taskSizeOptionMass" value="12" disabled>12</option>
+                  </select>
+               </div>
+
+               <div class="create-row">
+                  <div data-toggle="tooltip" data-placement="top" title="Captcha mode" class="inputicon"><i class="fas fa-robot"></i>
+                  </div>
+                  <select class="createinput" id="captchamode">
+					<option>Manual captcha</option>
+					<option disabled>2captcha</option>
+					<option disabled>Anti captcha</option>
+                  </select>
+               </div>
+
+
+		</div>
+
+		</div>
+
+		<div class="buttonbar">
+		<div class="createbumbutton min1">BACK</div>
+		<div class="createbumbutton plus1">NEXT</div>
+		<div class="canclerow"><span class="ccreate">cancel</span></div>
+		</div>
+
+	  </div>
+
+
+
+      <div style="display: none;" class="details2">
+		<div class="midtitle">Email & Proxies</div>
+		<div class="midtitleinfo">Choose email modes and proxy</div>
+		
+		<div class="shoe-container">
+
+		<div class="new-meta">
+
+
+               <div class="create-row">
+                  <div data-toggle="tooltip" data-placement="top" title="Email type!" class="inputicon"><i class="far fa-envelope"></i>
+                  </div>
+                  <select class="createinput" id="taskTypeOfEmail">
+                     <option value="default">Email Type</option>
+                     <option value="saved">Saved Emails</option>
+                     <option value="newEmail">New email</option>
+                  </select>
+               </div>
+			   
+               <div class="create-row">
+                  <div data-toggle="tooltip" data-placement="top" title="Proxy options" class="inputicon"><i class="fas fa-globe"></i>
+                  </div>
+                  <select class="createinput" id="taskTypeOfEmail">
+                     <option value="defaultp">Proxy list</option>
+                     <option value="specificp">Specific proxy</option>
+                  </select>
+               </div>
+
+               <div class="create-row">
+                  <div data-toggle="tooltip" data-placement="top" title="Task email!" class="inputicon"><i class="fa fa-envelope" aria-hidden="true"></i>
+                  </div>
+                  <input class="createinput" id="taskEmail" placeholder="Email Address" disabled>
+               </div>
+
+               <div class="create-row">
+                  <div data-toggle="tooltip" data-placement="top" title="Task specific proxy!" class="inputicon"><i class="fa fa-globe" aria-hidden="true"></i>
+                  </div>
+                  <input class="createinput" id="taskSpecificProxy" placeholder="Specific Proxy" disabled>
+               </div>
+
+
+		</div>
+
+		</div>
+
+		<div class="buttonbar">
+		<div class="createbumbutton min1">BACK</div>
+		<div class="createbumbutton plus1">NEXT</div>
+		<div class="canclerow"><span class="ccreate">cancel</span></div>
+		</div>
+
+	  </div>
+
+
+      <div style="display: none;" class="details3">
+		<div class="midtitle">Task quantity</div>
+		<div class="midtitleinfo">The amount of tasks you want to create.</div>
+		
+		<div class="shoe-container">
+
+		<div class="new-meta">
+
+		<div style="margin-top: 20px;margin-bottom: 10px;" class="proxy-gen-i">Use the <b>slider</b> to choose the number of tasks.</div>
+		<form>
+		<div style="margin-top: 25px;margin-bottom: 30px;" class="slidecontainer">
+            <input id="taskQuantity" name="amountRange" type="range" min="0" max="300" value="150" class="slider" oninput="this.form.amountInput.value=this.value">
+        </div>
+
+               <div class="create-row">
+                  <div data-toggle="tooltip" data-placement="top" title="Task quantity!" class="inputicon"><i class="fas fa-sort-numeric-down"></i>
+                  </div>
+                  <input class="createinput" name="amountInput" id="taskQ" placeholder="Quantity" type="number" min="1" max="300" value="150" oninput="this.form.amountRange.value=this.value">
+               </div>
+		</form>	   
+
+		</div>
+
+		</div>
+
+		<div class="buttonbar">
+		<div class="createbumbutton min1">BACK</div>
+		<div class="createbumbutton craterv2" id="createTaskButton">CREATE</div>
+		<div class="canclerow"><span class="ccreate">cancel</span></div>
+		</div>
+
+	  </div>
+
+
+
+
+	  
+	  </div>
       </div>
  
 	</div>

@@ -23,6 +23,7 @@ var tabx = 1;
 
 $("#defaultOpen").click(function(){
   tabx = 1;
+  createtabx = 1;
   if (tabx = 1) {   
     $(".under-line").get(0).style.setProperty("left", "4%");
     $(".tasks").get(0).style.setProperty("left", "0");
@@ -34,6 +35,7 @@ $("#defaultOpen").click(function(){
 
 $("#profilesTab").click(function(){
   tabx = 2;
+  createtabx = 1;
   if (tabx = 2) {
     $(".under-line").get(0).style.setProperty("left", "24.5%");
     $(".tasks").get(0).style.setProperty("left", "-100%");
@@ -45,6 +47,7 @@ $("#profilesTab").click(function(){
 
 $("#proxiesTab").click(function(){
   tabx = 3;
+  createtabx = 1;
   if (tabx = 3) {
     $(".under-line").get(0).style.setProperty("left", "63.5%");
     $(".tasks").get(0).style.setProperty("left", "-200%"); 
@@ -56,6 +59,7 @@ $("#proxiesTab").click(function(){
 
 $("#settingsTab").click(function(){
   tabx = 4;
+  createtabx = 1;
   if (tabx = 4) {
     $(".under-line").get(0).style.setProperty("left", "83.5%");
     $(".tasks").get(0).style.setProperty("left", "-300%");
@@ -67,6 +71,7 @@ $("#settingsTab").click(function(){
 
 $("#creattask").click(function(){
   tabx = 5;
+  createtabx = 1;
   if (tabx = 5) {
     $(".tasks").get(0).style.setProperty("left", "100%");
     $(".tasks").get(0).style.setProperty("top", "80px"); 
@@ -128,6 +133,80 @@ $('.customCheckbx').change(function(){
  });
 
 
+
+
+
+var createtabx = 1;
+
+
+$(".plus1").click(function(){
+  createtabx++;
+  console.log(createtabx);
+});
+
+$(".min1").click(function(){
+  createtabx -= 1;
+  console.log(createtabx);
+});
+
+$(".craterv2").click(function(){
+  createtabx = 1;
+});
+
+
+$(".min1, .plus1, .refro").click(function(){
+  if (createtabx == 1) {   
+	$(".sneaksel").get(0).style.setProperty("display", "block");
+    $(".details1").get(0).style.setProperty("display", "none");
+	$(".details2").get(0).style.setProperty("display", "none");
+	$(".details3").get(0).style.setProperty("display", "none");
+ } else if (createtabx == 2) {
+	$(".sneaksel").get(0).style.setProperty("display", "none"); 
+	$(".details1").get(0).style.setProperty("display", "block");
+	$(".details2").get(0).style.setProperty("display", "none");
+	$(".details3").get(0).style.setProperty("display", "none");
+ } else if (createtabx == 3) {
+	$(".sneaksel").get(0).style.setProperty("display", "none"); 
+	$(".details1").get(0).style.setProperty("display", "none");
+	$(".details2").get(0).style.setProperty("display", "block");
+	$(".details3").get(0).style.setProperty("display", "none");
+ } else if (createtabx == 4) {
+	$(".sneaksel").get(0).style.setProperty("display", "none"); 
+	$(".details1").get(0).style.setProperty("display", "none");
+	$(".details2").get(0).style.setProperty("display", "none");
+	$(".details3").get(0).style.setProperty("display", "block");
+ }
+});
+
+
+
+
+
+
+
+
+$(".ccreate").click(function(){
+  tabx = 1;
+  createtabx = 1;
+    console.log(createtabx);
+	
+  if (createtabx == 1) {   
+    $(".details1").get(0).style.setProperty("display", "none");
+	$(".sneaksel").get(0).style.setProperty("display", "block");
+ } else if (createtabx == 2) {
+	$(".details1").get(0).style.setProperty("display", "block");
+	$(".sneaksel").get(0).style.setProperty("display", "none"); 
+ }	
+	
+  if (tabx = 1) {   
+    $(".under-line").get(0).style.setProperty("left", "4%");
+    $(".tasks").get(0).style.setProperty("left", "0");
+    $(".tasks").get(0).style.setProperty("top", "90px");
+	$(".middle-me").get(0).style.setProperty("width", "150px");	
+	$(".under-line").get(0).style.setProperty("height", "6px");
+ }
+});
+
 $(".massenter").click(function() {
   $("#massenter").css("display", "block");
   $("#autoenterx").css("display", "none");
@@ -169,4 +248,12 @@ output3.innerHTML = slider3.value;
 
 slider3.oninput = function() {
   output3.innerHTML = this.value;
+}
+
+var slider4 = document.getElementById("taskQuantity");
+var output4 = document.getElementById("taskQuantityShow");
+output4.innerHTML = slider4.value;
+
+slider4.oninput = function() {
+  output4.innerHTML = this.value;
 }
