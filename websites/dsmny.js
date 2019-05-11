@@ -221,7 +221,7 @@ exports.submitRaffle = function (request, task, profile, viewkey, uniqueKey) {
 				'accept-language': 'en-GB,en-US;q=0.9,en;q=0.8'
 			},
 			formData: {
-				'form': '3446301',
+				'form': '3451409',
 				'viewkey': viewkey,
 				'unique_key': uniqueKey,
 				'password': '',
@@ -233,11 +233,11 @@ exports.submitRaffle = function (request, task, profile, viewkey, uniqueKey) {
 				'_submit': '1',
 				'style_version': '3',
 				'viewparam': '766219',
-				'field77409919': profile['firstName'] + ' ' + profile['lastName'],
-				'field77409920': task['taskEmail'],
-				'field77409921': profile['phoneNumber'],
-				'field77409922': profile['zipCode'],
-				'field77409923': task['taskSizeSelect'],
+				'field77559718': profile['firstName'] + ' ' + profile['lastName'],
+				'field77559719': task['taskEmail'],
+				'field77559720': profile['phoneNumber'],
+				'field77559721': profile['zipCode'],
+				'field77559722': task['taskSizeSelect'],
 				'g-recaptcha-response': mainBot.taskCaptchas[task['type']][task['taskID']]
 			},
 			followAllRedirects: true,
@@ -274,7 +274,7 @@ exports.submitRaffle = function (request, task, profile, viewkey, uniqueKey) {
 				}
 				
 			}
-			if(response.request.href == 'https://newyork.doverstreetmarket.com/new-items/raffles/thank-you' && response.statusCode == 200)
+			if(response.request.href == 'https://newyork.doverstreetmarket.com/new-items/raffle/thank-you' && response.statusCode == 200)
 			{
 				mainBot.mainBotWin.send('taskUpdate', {
 					id: task.taskID,

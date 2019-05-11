@@ -762,7 +762,8 @@ function loadReleases() {
 					footshop: release['footshop'],
 					oneblockdown: release['oneblockdown'],
 					supplystore: release['supplystore'],
-					filterID: filterID
+					filterID: filterID,
+					fullRelease: release
 				});
 				var sizesHTML = '';
 				var sizes = Object.keys(release['sizes_supported_' + siteName]).sort(function(a, b){return a-b});
@@ -847,7 +848,7 @@ $(".raffle-enter-container").on('click', '.enterRaffle', function () {
 	var taskProfile = $('#oneClicktaskProfile').val();
 	var taskSpecificProxy = $('#oneClicktaskSpecificProxy').val();
 	var taskEmail = $('#oneClicktaskEmail').val();
-	var taskSizeVariant = oneClicktask['sizes_supported_' + taskSiteSelect][taskSizeSelect];
+	var taskSizeVariant = oneClicktask['fullRelease']['sizes_supported_' + taskSiteSelect][taskSizeSelect];
 	if(taskSiteSelect == 'footpatroluk' && profiles[taskProfile]['country'] != 'United Kingdom')
 	{
 		Materialize.toast("The site you have selected is for UK profile only.", 3500, "rounded");
