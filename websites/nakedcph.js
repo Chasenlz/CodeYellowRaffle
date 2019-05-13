@@ -15,6 +15,7 @@
 	along with this program (license.md).  If not, see <http://www.gnu.org/licenses/>.
 */
 
+var HttpsProxyAgent = require('https-proxy-agent');
 var mainBot = require('../index.js')
 const faker = require('faker');
 
@@ -85,6 +86,11 @@ exports.performTask = function (task, profile) {
 		profile['phoneNumber'] = faker.fake("{{phone.phoneNumberFormat}}");
 	}
 
+	if (task['proxy'] != '') {
+		var agent = new HttpsProxyAgent(formatProxy(task['proxy']));
+	} else {
+		agent = '';
+	}
 	request({
 		url: task['variant'],
 		headers: {
@@ -95,7 +101,7 @@ exports.performTask = function (task, profile) {
 			'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3',
 			'Accept-Language': 'en-GB,en-US;q=0.9,en;q=0.8'
 		},
-		proxy: formatProxy(task['proxy']),
+		agent: agent
 	}, function (error, response, body) {
 		if (!error && response.statusCode == 200) {
 			mainBot.mainBotWin.send('taskUpdate', {
@@ -139,6 +145,12 @@ exports.getRaffleToken = function (request, task, profile) {
 		type: task.type,
 		message: 'Obtaining raffle token'
 	});
+	
+	if (task['proxy'] != '') {
+		var agent = new HttpsProxyAgent(formatProxy(task['proxy']));
+	} else {
+		agent = '';
+	}
 	request({
 		url: task['nakedcph']['raffleToken'],
 		method: 'POST',
@@ -149,7 +161,7 @@ exports.getRaffleToken = function (request, task, profile) {
 			'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36',
 			'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
 		},
-		proxy: formatProxy(task['proxy']),
+		agent: agent
 	}, function callback(error, response, body) {
 		if (!error && response.statusCode == 200) {
 			var parsed = JSON.parse(body);
@@ -210,6 +222,12 @@ exports.submitRaffle = function (request, task, profile, raffleToken, landedAt) 
 		return;
 	}
 	var form = JSON.parse(`{"${task['nakedcph']['firstName']}": "${profile['firstName']}","${task['nakedcph']['lastName']}": "${profile['lastName']}","${task['nakedcph']['email']}": "${task['taskEmail']}","${task['nakedcph']['country']}": "${countryFormatter(profile['country'])}","form[token]": "${raffleToken}","form[landed_at]": "${landedAt}","form[language]": "en"}`);
+	
+	if (task['proxy'] != '') {
+		var agent = new HttpsProxyAgent(formatProxy(task['proxy']));
+	} else {
+		agent = '';
+	}
 	request({
 		url: task['nakedcph']['submitRaffle'],
 		method: 'POST',
@@ -221,7 +239,7 @@ exports.submitRaffle = function (request, task, profile, raffleToken, landedAt) 
 			'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
 		},
 		formData: form,
-		proxy: formatProxy(task['proxy']),
+		agent: agent
 	}, function callback(error, response, body) {
 		if (!error && response.statusCode == 200) {
 			try {

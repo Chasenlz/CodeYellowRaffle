@@ -16,9 +16,7 @@
 */
 var HttpsProxyAgent = require('https-proxy-agent');
 var ProxyLists = require('proxy-lists');
-const request = require('request').defaults({
-	timeout: 10000
-});
+const request = require('request');
 exports.testProxy = function(proxy, callback) {
 	if(proxy != '')
 	{

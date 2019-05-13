@@ -65,8 +65,7 @@ exports.performTask = function (task, profile) {
 	}
 	var jar = require('request').jar()
 	var request = require('request').defaults({
-		jar: jar,
-		timeout: 10000
+		jar: jar
 	});
 
 	if (profile['jigProfileName'] == true) {

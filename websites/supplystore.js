@@ -235,6 +235,7 @@ exports.submitRaffle = function (request, task, profile, urlToPost) {
 		followAllRedirects: true
 	}, function callback(error, response, body) {
 		console.log(JSON.stringify(form));
+		console.log(`[${task.taskID}] ` + response.request.href);
 		if (response.request.href == urlToPost) {
 			$ = cheerio.load(body);
 			var guid = $('input[name="guid"]').attr('value');
@@ -308,6 +309,18 @@ exports.submitRaffle = function (request, task, profile, urlToPost) {
 				}
 			}
 			capHandler();
+		} else if(response.request.href == 'https://www.supplystore.com.au/raffles-confirm-your-email-address.aspx')
+		{
+			mainBot.mainBotWin.send('taskUpdate', {
+				id: task.taskID,
+				type: task.type,
+				message: 'Check Email!'
+			});
+			console.log(`[${task.taskID}] ` + ' Entry submitted!');
+			registerEmail(task);
+			mainBot.sendWebhook(task['taskSiteSelect'], task['taskEmail'], '', '');
+			mainBot.taskStatuses[task['type']][task.taskID] = 'idle';
+			return;
 		}
 	});
 
