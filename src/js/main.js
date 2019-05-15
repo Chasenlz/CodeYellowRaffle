@@ -486,7 +486,37 @@ function createTask(taskSiteSelect, taskSizeSelect, taskProfile, taskSpecificPro
 			variant: selectedQuickTaskRelease['sites_supported'][taskSiteSelect],
 			ymeuniverse: selectedQuickTaskRelease['ymeuniverse']
 		});
-	} else if (taskSiteSelect == 'oneblockdown') {
+	} else if (taskSiteSelect == 'dsml') {
+		tasks.push({
+			taskID: taskID,
+			type: 'mass',
+			filterID: selectedQuickTaskRelease['filterID'],
+			taskTypeOfEmail: taskTypeOfEmail,
+			proxy: proxy,
+			taskSiteSelect: taskSiteSelect,
+			taskSizeSelect: taskSizeSelect,
+			taskSizeVariant: taskSizeVariant,
+			taskProfile: taskProfile,
+			taskEmail: taskEmail,
+			variant: selectedQuickTaskRelease['sites_supported'][taskSiteSelect],
+			dsml: selectedQuickTaskRelease['dsml']
+		});
+	} else if (taskSiteSelect == 'dsmny') {
+		tasks.push({
+			taskID: taskID,
+			type: 'mass',
+			filterID: selectedQuickTaskRelease['filterID'],
+			taskTypeOfEmail: taskTypeOfEmail,
+			proxy: proxy,
+			taskSiteSelect: taskSiteSelect,
+			taskSizeSelect: taskSizeSelect,
+			taskSizeVariant: taskSizeVariant,
+			taskProfile: taskProfile,
+			taskEmail: taskEmail,
+			variant: selectedQuickTaskRelease['sites_supported'][taskSiteSelect],
+			dsmny: selectedQuickTaskRelease['dsmny']
+		});
+	}  else if (taskSiteSelect == 'oneblockdown') {
 		tasks.push({
 			taskID: taskID,
 			type: 'mass',
@@ -759,6 +789,8 @@ function loadReleases() {
 					variant: variant,
 					nakedcph: release['nakedcph'],
 					ymeuniverse: release['ymeuniverse'],
+					dsml: release['dsml'],
+					dsmny: release['dsmny'],
 					footshop: release['footshop'],
 					oneblockdown: release['oneblockdown'],
 					supplystore: release['supplystore'],
@@ -910,6 +942,34 @@ $(".raffle-enter-container").on('click', '.enterRaffle', function () {
 							taskEmail: taskEmail,
 							variant: oneClicktask['variant'],
 							ymeuniverse: oneClicktask['ymeuniverse']
+						}, profiles[taskProfile]);
+					} else if (taskSiteSelect == 'dsml') {
+						ipcRenderer.send('startTask', {
+							taskID: taskID,
+							type: 'oneclick',
+							filterID: oneClicktask['filterID'],
+							proxy: proxy,
+							taskSiteSelect: taskSiteSelect,
+							taskSizeSelect: taskSizeSelect,
+							taskSizeVariant: taskSizeVariant,
+							taskProfile: taskProfile,
+							taskEmail: taskEmail,
+							variant: oneClicktask['variant'],
+							dsml: oneClicktask['dsml']
+						}, profiles[taskProfile]);
+					} else if (taskSiteSelect == 'dsmny') {
+						ipcRenderer.send('startTask', {
+							taskID: taskID,
+							type: 'oneclick',
+							filterID: oneClicktask['filterID'],
+							proxy: proxy,
+							taskSiteSelect: taskSiteSelect,
+							taskSizeSelect: taskSizeSelect,
+							taskSizeVariant: taskSizeVariant,
+							taskProfile: taskProfile,
+							taskEmail: taskEmail,
+							variant: oneClicktask['variant'],
+							dsmny: oneClicktask['dsmny']
 						}, profiles[taskProfile]);
 					} else if (taskSiteSelect == 'oneblockdown') {
 						ipcRenderer.send('startTask', {

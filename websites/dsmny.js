@@ -96,7 +96,7 @@ exports.performTask = function (task, profile) {
 	request({
 		url: task['variant'],
 		headers: {
-			'Referer': 'https://newyork.doverstreetmarket.com/new-items/raffles',
+			'Referer': task['dsmny']['mainLink'],
 			'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.131 Safari/537.36'
 		},
 		agent: agent
@@ -205,7 +205,58 @@ exports.submitRaffle = function (request, task, profile, viewkey, uniqueKey) {
 	{
 		agent = '';
 	}
-	
+
+	if (task['dsmny']['colorRequired'] == false) {
+		var form = JSON.parse(
+			` { 
+					"form": "${task['dsmny']['form']}",
+					"viewkey": "${viewkey}",
+					"unique_key": "${uniqueKey}",
+					"password": "",
+					"hidden_fields": "",
+					"incomplete": "",
+					"incomplete_password": "",
+					"referrer": "${task['dsmny']['mainLink']}",
+					"referrer_type": "js",
+					"_submit": "1",
+					"viewparam": "${task['dsmny']['viewParam']}",
+					"style_version": "3",
+					"${task['dsmny']['firstName']}": "${profile['firstName']} ${profile['lastName']}",
+					"${task['dsmny']['email']}": "${task['taskEmail']}",
+					"${task['dsmny']['phoneNumber']}": "${profile['phoneNumber']}",
+					"${task['dsmny']['zipCode']}": "${profile['zipCode']}",
+					"${task['dsmny']['size']}": "${task['taskSizeSelect']}",
+					"g-recaptcha-response": "${mainBot.taskCaptchas[task['type']][task['taskID']]}"
+			  }`);
+	}
+	else
+	{
+		var form = JSON.parse(
+			` { 
+					"form": "${task['dsmny']['form']}",
+					"viewkey": "${viewkey}",
+					"unique_key": "${uniqueKey}",
+					"password": "",
+					"hidden_fields": "",
+					"incomplete": "",
+					"incomplete_password": "",
+					"referrer": "${task['dsmny']['mainLink']}",
+					"referrer_type": "js",
+					"_submit": "1",
+					"viewparam": "${task['dsmny']['viewParam']}",
+					"style_version": "3",
+					"${task['dsmny']['firstName']}": "${profile['firstName']} ${profile['lastName']}",
+					"${task['dsmny']['email']}": "${task['taskEmail']}",
+					"${task['dsmny']['phoneNumber']}": "${profile['phoneNumber']}",
+					"${task['dsmny']['zipCode']}": "${profile['zipCode']}",
+					"${task['dsmny']['color']}": "${task['dsmny']['colorInput']}",
+					"${task['dsmny']['size']}": "${task['taskSizeSelect']}",
+					"g-recaptcha-response": "${mainBot.taskCaptchas[task['type']][task['taskID']]}"
+			  }`);
+	}
+
+	console.log(JSON.stringify(form));
+
 	request({
 			url: 'https://doverstreetmarketinternational.formstack.com/forms/index.php',
 			method: 'POST',
@@ -217,29 +268,10 @@ exports.submitRaffle = function (request, task, profile, viewkey, uniqueKey) {
 				'content-type': 'application/x-www-form-urlencoded',
 				'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.131 Safari/537.36',
 				'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3',
-				'referer': 'https://newyork.doverstreetmarket.com/new-items/raffles',
+				'referer': task['dsmny']['mainLink'],
 				'accept-language': 'en-GB,en-US;q=0.9,en;q=0.8'
 			},
-			formData: {
-				'form': '3451409',
-				'viewkey': viewkey,
-				'unique_key': uniqueKey,
-				'password': '',
-				'hidden_fields': '',
-				'incomplete': '',
-				'incomplete_password': '',
-				'referrer': 'https://newyork.doverstreetmarket.com/new-items/raffles',
-				'referrer_type': 'js',
-				'_submit': '1',
-				'style_version': '3',
-				'viewparam': '766219',
-				'field77559718': profile['firstName'] + ' ' + profile['lastName'],
-				'field77559719': task['taskEmail'],
-				'field77559720': profile['phoneNumber'],
-				'field77559721': profile['zipCode'],
-				'field77559722': task['taskSizeSelect'],
-				'g-recaptcha-response': mainBot.taskCaptchas[task['type']][task['taskID']]
-			},
+			formData: form,
 			followAllRedirects: true,
 			agent: agent
 		}, function callback(error, response, body) {
@@ -274,7 +306,7 @@ exports.submitRaffle = function (request, task, profile, viewkey, uniqueKey) {
 				}
 				
 			}
-			if(response.request.href == 'https://newyork.doverstreetmarket.com/new-items/raffle/thank-you' && response.statusCode == 200)
+			if(response.request.href == task['dsmny']['thankYouLink'] && response.statusCode == 200)
 			{
 				mainBot.mainBotWin.send('taskUpdate', {
 					id: task.taskID,

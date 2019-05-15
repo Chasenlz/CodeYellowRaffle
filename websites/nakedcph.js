@@ -384,6 +384,12 @@ function countryFormatter(profileCountry) {
 		case 'Australia':
 			return 'Australia';
 			break;
+		case 'Austria':
+			return 'Austria';
+			break;
+		case 'Slovakia':
+			return 'Slovakia';
+			break;
 		case 'Belgium':
 			return 'Belgium';
 			break;

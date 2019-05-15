@@ -92,11 +92,11 @@ exports.performTask = function (task, profile) {
 		type: task.type,
 		message: 'Obtaining raffle page'
 	});
-	
+
 	request({
 		url: task['variant'],
 		headers: {
-			'Referer': 'https://london.doverstreetmarket.com/new-items/nikelab',
+			'Referer': task['dsml']['mainLink'],
 			'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.131 Safari/537.36'
 		},
 		agent: agent
@@ -109,21 +109,17 @@ exports.performTask = function (task, profile) {
 			});
 			console.log(`[${task.taskID}] ` + ' Got raffle endpoint');
 			var split = body.split(';');
-			for(var i = 0; i < split.length; i++)
-			{
-				if(split[i].includes('viewkey'))
-				{
+			for (var i = 0; i < split.length; i++) {
+				if (split[i].includes('viewkey')) {
 					var value = split[i].split('value=')[1];
 					var viewkey = value.split('"')[1].replace('\\', '');
 				}
-				if(split[i].includes('unique_key'))
-				{
+				if (split[i].includes('unique_key')) {
 					var value = split[i].split('value=')[1];
 					var uniqueKey = value.split('"')[1].replace('\\', '');
 				}
 			}
-			if(!uniqueKey || !viewkey)
-			{
+			if (!uniqueKey || !viewkey) {
 				mainBot.mainBotWin.send('taskUpdate', {
 					id: task.taskID,
 					type: task.type,
@@ -132,7 +128,7 @@ exports.performTask = function (task, profile) {
 				console.log(`[${task.taskID}] ` + ' Error getting raffle tokens. Retrying');
 				return setTimeout(() => exports.performTask(task, profile), global.settings.retryDelay);
 			}
-			
+
 			mainBot.mainBotWin.send('taskUpdate', {
 				id: task.taskID,
 				type: task.type,
@@ -161,10 +157,8 @@ exports.performTask = function (task, profile) {
 				}
 			}
 			capHandler();
-			
-		}
-		else
-		{
+
+		} else {
 			var proxy2 = getRandomProxy();
 			task['proxy'] = proxy2;
 			console.log('New proxy: ' + formatProxy(task['proxy']));
@@ -180,10 +174,9 @@ exports.performTask = function (task, profile) {
 
 exports.submitRaffle = function (request, task, profile, viewkey, uniqueKey) {
 	if (shouldStop(task) == true) {
-        return;
-    }
-	if(checkEmail(task))
-	{
+		return;
+	}
+	if (checkEmail(task)) {
 		mainBot.mainBotWin.send('taskUpdate', {
 			id: task.taskID,
 			type: task.type,
@@ -196,111 +189,131 @@ exports.submitRaffle = function (request, task, profile, viewkey, uniqueKey) {
 		// NEEDS CAPTCHA AGAIN
 		return setTimeout(() => exports.performTask(task, profile), global.settings.retryDelay); // REPLACE 3000 WITH RETRY DELAY
 	}
-	
-	if(task['proxy'] != '')
-	{
+
+	if (task['proxy'] != '') {
 		var agent = new HttpsProxyAgent(formatProxy(task['proxy']));
+	} else {
+		agent = '';
+	}
+	if (task['dsml']['colorRequired'] == false) {
+		var form = JSON.parse(
+			` { 
+					"form": "${task['dsml']['form']}",
+					"viewkey": "${viewkey}",
+					"unique_key": "${uniqueKey}",
+					"password": "",
+					"hidden_fields": "",
+					"incomplete": "",
+					"incomplete_password": "",
+					"referrer": "${task['dsml']['mainLink']}",
+					"referrer_type": "js",
+					"_submit": "1",
+					"viewparam": "${task['dsml']['viewParam']}",
+					"style_version": "3",
+					"${task['dsml']['firstName']}": "${profile['firstName']} ${profile['lastName']}",
+					"${task['dsml']['email']}": "${task['taskEmail']}",
+					"${task['dsml']['phoneNumber']}": "${profile['phoneNumber']}",
+					"${task['dsml']['zipCode']}": "${profile['zipCode']}",
+					"${task['dsml']['size']}": "${task['taskSizeSelect']}",
+					"g-recaptcha-response": "${mainBot.taskCaptchas[task['type']][task['taskID']]}"
+			  }`);
 	}
 	else
 	{
-		agent = '';
+		var form = JSON.parse(
+			` { 
+					"form": "${task['dsml']['form']}",
+					"viewkey": "${viewkey}",
+					"unique_key": "${uniqueKey}",
+					"password": "",
+					"hidden_fields": "",
+					"incomplete": "",
+					"incomplete_password": "",
+					"referrer": "${task['dsml']['mainLink']}",
+					"referrer_type": "js",
+					"_submit": "1",
+					"viewparam": "${task['dsml']['viewParam']}",
+					"style_version": "3",
+					"${task['dsml']['firstName']}": "${profile['firstName']} ${profile['lastName']}",
+					"${task['dsml']['email']}": "${task['taskEmail']}",
+					"${task['dsml']['phoneNumber']}": "${profile['phoneNumber']}",
+					"${task['dsml']['zipCode']}": "${profile['zipCode']}",
+					"${task['dsml']['color']}": "${task['dsml']['colorInput']}",
+					"${task['dsml']['size']}": "${task['taskSizeSelect']}",
+					"g-recaptcha-response": "${mainBot.taskCaptchas[task['type']][task['taskID']]}"
+			  }`);
 	}
-	
+
+	console.log(JSON.stringify(form));
 	request({
-			url: 'https://doverstreetmarketinternational.formstack.com/forms/index.php',
-			method: 'POST',
-			headers: {
-				'authority': 'doverstreetmarketinternational.formstack.com',
-				'cache-control': 'max-age=0',
-				'origin': 'https://london.doverstreetmarket.com',
-				'upgrade-insecure-requests': '1',
-				'content-type': 'application/x-www-form-urlencoded',
-				'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.131 Safari/537.36',
-				'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3',
-				'referer': 'https://london.doverstreetmarket.com/new-items/nikelab',
-				'accept-language': 'en-GB,en-US;q=0.9,en;q=0.8'
-			},
-			formData: {
-				'form': '3447783',
-				'viewkey': viewkey,
-				'unique_key': uniqueKey,
-				'password': '',
-				'hidden_fields': '',
-				'incomplete': '',
-				'incomplete_password': '',
-				'referrer': 'https://london.doverstreetmarket.com/new-items/nikelab',
-				'referrer_type': 'js',
-				'_submit': '1',
-				'style_version': '3',
-				'viewparam': '766219',
-				'field77454904': profile['firstName'] + ' ' + profile['lastName'],
-				'field77454905': task['taskEmail'],
-				'field77454906': profile['phoneNumber'],
-				'field77454907': profile['zipCode'],
-				'field77454909': task['taskSizeSelect'],
-				'g-recaptcha-response': mainBot.taskCaptchas[task['type']][task['taskID']]
-			},
-			followAllRedirects: true,
-			agent: agent
-		}, function callback(error, response, body) {
-			$ = cheerio.load(body)
-			var errorText = $('#error').html();
-			if(response.request.href == 'https://doverstreetmarketinternational.formstack.com/forms/index.php' || errorText)
-			{
-				if(errorText.toLowerCase().includes('unique value'))
-				{
-					mainBot.mainBotWin.send('taskUpdate', {
-						id: task.taskID,
-						type: task.type,
-						message: 'Details already entered'
-					});	
-					console.log(`[${task.taskID}] ` + JSON.stringify(task));
-					console.log(`[${task.taskID}] ` + JSON.stringify(profile));
-					console.log(`[${task.taskID}] ` + body);
-					return;
-				}
-				else
-				{
-					mainBot.mainBotWin.send('taskUpdate', {
-						id: task.taskID,
-						type: task.type,
-						message: 'One of your inputs are invalid (most likely profile)'
-					});	
-					console.log(`[${task.taskID}] ` + JSON.stringify(task));
-					console.log(`[${task.taskID}] ` + JSON.stringify(profile));
-					console.log(`[${task.taskID}] ` + body);
-					mainBot.taskStatuses[task['type']][task.taskID] = 'idle';
-					return;
-				}
-				
-			}
-			if(response.request.href == 'https://london.doverstreetmarket.com/new-items/nikelab/thankyou' && response.statusCode == 200)
-			{
+		url: 'https://doverstreetmarketinternational.formstack.com/forms/index.php',
+		method: 'POST',
+		headers: {
+			'authority': 'doverstreetmarketinternational.formstack.com',
+			'cache-control': 'max-age=0',
+			'origin': 'https://london.doverstreetmarket.com',
+			'upgrade-insecure-requests': '1',
+			'content-type': 'application/x-www-form-urlencoded',
+			'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.131 Safari/537.36',
+			'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3',
+			'referer': task['dsml']['mainLink'],
+			'accept-language': 'en-GB,en-US;q=0.9,en;q=0.8'
+		},
+		formData: form,
+		followAllRedirects: true,
+		agent: agent
+	}, function callback(error, response, body) {
+		$ = cheerio.load(body)
+		var errorText = $('#error').html();
+		if (response.request.href == 'https://doverstreetmarketinternational.formstack.com/forms/index.php' || errorText) {
+			if (errorText.toLowerCase().includes('unique value')) {
 				mainBot.mainBotWin.send('taskUpdate', {
 					id: task.taskID,
 					type: task.type,
-					message: 'Entry submitted!'
+					message: 'Details already entered'
 				});
-				console.log(`[${task.taskID}] ` + ' Entry submitted!');
-				registerEmail(task);
-				mainBot.sendWebhook(task['taskSiteSelect'], task['taskEmail'], '', ''); 
-				mainBot.taskStatuses[task['type']][task.taskID] = 'idle';
+				console.log(`[${task.taskID}] ` + JSON.stringify(task));
+				console.log(`[${task.taskID}] ` + JSON.stringify(profile));
+				console.log(`[${task.taskID}] ` + body);
 				return;
-			}
-			else
-			{
+			} else {
 				mainBot.mainBotWin.send('taskUpdate', {
 					id: task.taskID,
 					type: task.type,
-					message: 'Unknown error. Probably rate limited'
-				});	
+					message: 'One of your inputs are invalid (most likely profile)'
+				});
 				console.log(`[${task.taskID}] ` + JSON.stringify(task));
 				console.log(`[${task.taskID}] ` + JSON.stringify(profile));
 				console.log(`[${task.taskID}] ` + body);
 				mainBot.taskStatuses[task['type']][task.taskID] = 'idle';
 				return;
 			}
-		});
+
+		}
+		if (response.request.href == task['dsml']['thankYouLink'] && response.statusCode == 200) {
+			mainBot.mainBotWin.send('taskUpdate', {
+				id: task.taskID,
+				type: task.type,
+				message: 'Entry submitted!'
+			});
+			console.log(`[${task.taskID}] ` + ' Entry submitted!');
+			registerEmail(task);
+			mainBot.sendWebhook(task['taskSiteSelect'], task['taskEmail'], '', '');
+			mainBot.taskStatuses[task['type']][task.taskID] = 'idle';
+			return;
+		} else {
+			mainBot.mainBotWin.send('taskUpdate', {
+				id: task.taskID,
+				type: task.type,
+				message: 'Unknown error. Probably rate limited'
+			});
+			console.log(`[${task.taskID}] ` + JSON.stringify(task));
+			console.log(`[${task.taskID}] ` + JSON.stringify(profile));
+			console.log(`[${task.taskID}] ` + body);
+			mainBot.taskStatuses[task['type']][task.taskID] = 'idle';
+			return;
+		}
+	});
 }
 
 

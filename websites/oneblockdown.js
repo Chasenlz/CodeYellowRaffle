@@ -648,6 +648,12 @@ function countryFormatter(profileCountry) {
 		case 'Australia':
 			return '13';
 			break;
+		case 'Austria':
+			return '12';
+			break;
+		case 'Slovakia':
+			return '202';
+			break;
 		case 'Belgium':
 			return '20';
 			break;
