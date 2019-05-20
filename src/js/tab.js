@@ -176,11 +176,28 @@ $(".plus1").click(function () {
   } else if (createtabx == 3) {
     var taskTypeOfEmail = $('#taskTypeOfEmail').val();
     var taskTypeOfProxy = $('#taskTypeOfProxy').val();
-
+	var taskEmail = $('#taskEmail').val();
+	
     if (taskTypeOfEmail == 'default') {
       Materialize.toast("Please select an email type.", 3500, "rounded");
       return;
     }
+	
+	if(taskTypeOfEmail == 'newEmail')
+	{
+		if (validateEmail(taskEmail) == false) {
+			Materialize.toast("Please input a valid Email", 2000, "rounded");
+			return;
+		}
+	}
+	
+	if(taskTypeOfEmail == 'catchall')
+	{
+		if (validateEmail('test@' + taskEmail) == false) {
+			Materialize.toast("Please input a valid catchall like example.com", 2000, "rounded");
+			return;
+		}
+	}
 
     if (taskTypeOfProxy == 'default') {
       Materialize.toast("Please select proxies type.", 3500, "rounded");

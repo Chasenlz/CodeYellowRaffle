@@ -158,7 +158,10 @@ $("body").on("click", ".deleteTask", function () {
 	var task = tasks[$(this).attr('id') - 1];
 	tasks[$(this).attr('id') - 1] = {};
 	ipcRenderer.send('deleteTask', task);
-	emailsForTasks[task['taskEmail']][task['taskSiteSelect'] + '_' + task['filterID']] = false;
+	if(task['taskTypeOfEmail'] != 'catchall')
+	{
+		emailsForTasks[task['taskEmail']][task['taskSiteSelect'] + '_' + task['filterID']] = false;
+	}
 	$(this).parent().parent().remove();
 });
 
@@ -167,7 +170,10 @@ $("#deleteAllTasks").click(function () {
 		var task = tasks[$(this).attr('id') - 1];
 		tasks[$(this).attr('id') - 1] = {};
 		ipcRenderer.send('deleteTask', task);
-		emailsForTasks[task['taskEmail']][task['taskSiteSelect'] + '_' + task['filterID']] = false;
+		if(task['taskTypeOfEmail'] != 'catchall')
+		{
+			emailsForTasks[task['taskEmail']][task['taskSiteSelect'] + '_' + task['filterID']] = false;
+			}
 		$(this).parent().parent().remove();
 	});
 });
@@ -317,12 +323,7 @@ $("#createTaskButton").click(function () {
 	var taskEmail = $('#taskEmail').val();
 	var taskTypeOfEmail = $('#taskTypeOfEmail').val();
 	var taskTypeOfProxy = $('#taskTypeOfProxy').val();
-	var taskSizeVariant = selectedQuickTaskRelease['sizes_supported_' + taskSiteSelect][taskSizeSelect];
-	if(taskSizeVariant == undefined)
-	{
-		Materialize.toast("Task size variant does not exist.", 3500, "rounded");
-		return;
-	}
+
 	if(taskSiteSelect == 'footpatroluk' && profiles[taskProfile]['country'] != 'United Kingdom')
 	{
 		Materialize.toast("The site you have selected is for UK profile only.", 3500, "rounded");
@@ -354,9 +355,32 @@ $("#createTaskButton").click(function () {
 				if (taskQuantity >= 1) {
 					if (validateEmail(taskEmail) != false || taskTypeOfEmail != 'newEmail') {
 						for (var i = 0; i < taskQuantity; i++) {
-							if (createTask(taskSiteSelect, taskSizeSelect, taskProfile, taskSpecificProxy, taskQuantity, taskEmail, taskTypeOfEmail, proxyUsed, taskTypeOfProxy, taskSizeVariant) == true) {
-								return;
+							if(taskSizeSelect == 'random')
+							{
+								tempTaskSize = Object.keys(selectedQuickTaskRelease['sizes_supported_' + taskSiteSelect])[Math.floor(Math.random() * Object.keys(selectedQuickTaskRelease['sizes_supported_' + taskSiteSelect]).length)];
+								var taskSizeVariant = selectedQuickTaskRelease['sizes_supported_' + taskSiteSelect][tempTaskSize];
+								if(taskSizeVariant == undefined)
+								{
+									Materialize.toast("Task size variant does not exist.", 3500, "rounded");
+									return;
+								}
+								if (createTask(taskSiteSelect, tempTaskSize, taskProfile, taskSpecificProxy, taskQuantity, taskEmail, taskTypeOfEmail, proxyUsed, taskTypeOfProxy, taskSizeVariant) == true) {
+									return;
+								}
 							}
+							else
+							{
+								var taskSizeVariant = selectedQuickTaskRelease['sizes_supported_' + taskSiteSelect][taskSizeSelect];
+								if(taskSizeVariant == undefined)
+								{
+									Materialize.toast("Task size variant does not exist.", 3500, "rounded");
+									return;
+								}
+								if (createTask(taskSiteSelect, taskSizeSelect, taskProfile, taskSpecificProxy, taskQuantity, taskEmail, taskTypeOfEmail, proxyUsed, taskTypeOfProxy, taskSizeVariant) == true) {
+									return;
+								}
+							}
+								
 						}
 
 						$('#defaultOpen').click()
@@ -401,6 +425,15 @@ function createTask(taskSiteSelect, taskSizeSelect, taskProfile, taskSpecificPro
 		}
 	} else if (taskTypeOfEmail == 'newEmail') {
 		taskEmail = taskEmail;
+	} else if (taskTypeOfEmail == 'catchall') {
+		if (validateEmail('test@' + taskEmail) != false) {
+			taskEmail = taskEmail;
+		}
+		else
+		{	
+			Materialize.toast("Please input a valid catchall like example.com", 2000, "rounded");
+			return true;
+		}
 	} else {
 		Materialize.toast("Please select an email type", 2000, "rounded");
 		return true;
@@ -431,16 +464,19 @@ function createTask(taskSiteSelect, taskSizeSelect, taskProfile, taskSpecificPro
 	if (proxy != '') {
 		proxyUsed = '<td><i class="fas fa-bolt isprox"></i></td>'
 	}
-	var variantName = taskSiteSelect + '_' + selectedQuickTaskRelease['filterID'];
-	if (emailsForTasks[taskEmail] != undefined) {
-		if (emailsForTasks[taskEmail][variantName] == true) {
-			//console.log("Email already used");
-			createTask(taskSiteSelect, taskSizeSelect, taskProfile, taskSpecificProxy, taskQuantity, taskEmail, taskTypeOfEmail, proxyUsed, taskTypeOfProxy, taskSizeVariant)
-			return;
+	if(taskTypeOfEmail != 'catchall')
+	{
+		var variantName = taskSiteSelect + '_' + selectedQuickTaskRelease['filterID'];
+		if (emailsForTasks[taskEmail] != undefined) {
+			if (emailsForTasks[taskEmail][variantName] == true) {
+				//console.log("Email already used");
+				createTask(taskSiteSelect, taskSizeSelect, taskProfile, taskSpecificProxy, taskQuantity, taskEmail, taskTypeOfEmail, proxyUsed, taskTypeOfProxy, taskSizeVariant)
+				return;
+			}
 		}
+		emailsForTasks[taskEmail] = {};
+		emailsForTasks[taskEmail][variantName] = true;
 	}
-	emailsForTasks[taskEmail] = {};
-	emailsForTasks[taskEmail][variantName] = true;
 	if (taskSiteSelect == 'nakedcph') {
 		tasks.push({
 			taskID: taskID,
@@ -841,7 +877,7 @@ function loadReleases() {
 
 $('#taskTypeOfEmail').on('change', function () {
 	var selectedVal = $('#taskTypeOfEmail').val();
-	if (selectedVal == 'newEmail') {
+	if (selectedVal == 'newEmail' || selectedVal == 'catchall') {
 		$('#taskEmail').prop('disabled', false)
 	} else {
 		$('#taskEmail').prop('disabled', true)

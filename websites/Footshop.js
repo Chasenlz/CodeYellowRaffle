@@ -16,7 +16,7 @@
 */
 
 var mainBot = require('../index.js')
-const faker = require('faker');
+var faker = require('faker');
 
 function formatProxy(proxy) {
 	if (proxy == '') {
@@ -73,6 +73,51 @@ exports.performTask = function (task, profile) {
 	{
 		profile['firstName'] = faker.fake("{{name.firstName}}");
 		profile['lastName'] = faker.fake("{{name.lastName}}");
+	}
+	
+	if (task['taskTypeOfEmail'] == 'catchall') {
+		var pickEmail = Math.floor(Math.random() * 7) + 1;
+		if(pickEmail == 1)
+		{
+			var rand = Math.floor(Math.random() * 90000) + 10000; // For Email
+			var email = profile['firstName'].toLowerCase() + rand + "@" + task['taskEmail'];
+			task['taskEmail'] = email;
+		}
+		else if(pickEmail == 2)
+		{
+			var rand = Math.floor(Math.random() * 9000) + 1000; // For Email
+			var email = profile['firstName'].toLowerCase() + profile['lastName'].toLowerCase() + rand + "@" + task['taskEmail'];
+			task['taskEmail'] = email;
+		}
+		else if(pickEmail == 3)
+		{
+			var rand = Math.floor(Math.random() * (2000 - 1982)) + 1982; 
+			var email = profile['firstName'].toLowerCase() + profile['lastName'].toLowerCase() + rand + "@" + task['taskEmail'];
+			task['taskEmail'] = email;
+		}
+		else if(pickEmail == 4)
+		{
+			var rand = Math.floor(Math.random() * (2000 - 1982)) + 1982; 
+			var email = profile['firstName'].toLowerCase() + rand + "@" + task['taskEmail'];
+			task['taskEmail'] = email;
+		}
+		else if(pickEmail == 5)
+		{
+			var rand = Math.floor(Math.random() * (2000 - 1982)) + 1982; 
+			var email = profile['lastName'].toLowerCase() + profile['firstName'].toLowerCase() + rand + "@" + task['taskEmail'];
+			task['taskEmail'] = email;
+		}
+		else if(pickEmail == 6)
+		{
+			var rand = Math.floor(Math.random() * 90000) + 10000; // For Email
+			var email = profile['lastName'].toLowerCase() + profile['firstName'].toLowerCase() + rand + "@" + task['taskEmail'];
+			task['taskEmail'] = email;
+		}
+		else
+		{
+			var email = profile['firstName'].toLowerCase() + profile['lastName'].toLowerCase() + "@" + task['taskEmail'];
+			task['taskEmail'] = email;
+		}
 	}
 
 	if(profile['jigProfileAddress'] == true)

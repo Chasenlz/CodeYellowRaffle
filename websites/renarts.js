@@ -15,9 +15,9 @@
 	along with this program (license.md).  If not, see <http://www.gnu.org/licenses/>.
 */
 
+var HttpsProxyAgent = require('https-proxy-agent');
 var mainBot = require('../index.js')
-const faker = require('faker');
-var cheerio = require('cheerio');
+var faker = require('faker');
 
 function formatProxy(proxy) {
 	if (proxy == '') {
@@ -71,6 +71,51 @@ exports.performTask = function (task, profile) {
 		profile['firstName'] = faker.fake("{{name.firstName}}");
 		profile['lastName'] = faker.fake("{{name.lastName}}");
 	}
+	
+	if (task['taskTypeOfEmail'] == 'catchall') {
+		var pickEmail = Math.floor(Math.random() * 7) + 1;
+		if(pickEmail == 1)
+		{
+			var rand = Math.floor(Math.random() * 90000) + 10000; // For Email
+			var email = profile['firstName'].toLowerCase() + rand + "@" + task['taskEmail'];
+			task['taskEmail'] = email;
+		}
+		else if(pickEmail == 2)
+		{
+			var rand = Math.floor(Math.random() * 9000) + 1000; // For Email
+			var email = profile['firstName'].toLowerCase() + profile['lastName'].toLowerCase() + rand + "@" + task['taskEmail'];
+			task['taskEmail'] = email;
+		}
+		else if(pickEmail == 3)
+		{
+			var rand = Math.floor(Math.random() * (2000 - 1982)) + 1982; 
+			var email = profile['firstName'].toLowerCase() + profile['lastName'].toLowerCase() + rand + "@" + task['taskEmail'];
+			task['taskEmail'] = email;
+		}
+		else if(pickEmail == 4)
+		{
+			var rand = Math.floor(Math.random() * (2000 - 1982)) + 1982; 
+			var email = profile['firstName'].toLowerCase() + rand + "@" + task['taskEmail'];
+			task['taskEmail'] = email;
+		}
+		else if(pickEmail == 5)
+		{
+			var rand = Math.floor(Math.random() * (2000 - 1982)) + 1982; 
+			var email = profile['lastName'].toLowerCase() + profile['firstName'].toLowerCase() + rand + "@" + task['taskEmail'];
+			task['taskEmail'] = email;
+		}
+		else if(pickEmail == 6)
+		{
+			var rand = Math.floor(Math.random() * 90000) + 10000; // For Email
+			var email = profile['lastName'].toLowerCase() + profile['firstName'].toLowerCase() + rand + "@" + task['taskEmail'];
+			task['taskEmail'] = email;
+		}
+		else
+		{
+			var email = profile['firstName'].toLowerCase() + profile['lastName'].toLowerCase() + "@" + task['taskEmail'];
+			task['taskEmail'] = email;
+		}
+	}
 
 	if (profile['country'] != 'United States') {
 		profile["stateProvince"] = 'none';
@@ -88,6 +133,12 @@ exports.performTask = function (task, profile) {
 		profile['phoneNumber'] = faker.fake("{{phone.phoneNumberFormat}}");
 	}
 
+	if (task['proxy'] != '') {
+		var agent = new HttpsProxyAgent(formatProxy(task['proxy']));
+	} else {
+		agent = '';
+	}
+
 	mainBot.mainBotWin.send('taskUpdate', {
 		id: task.taskID,
 		type: task.type,
@@ -102,7 +153,8 @@ exports.performTask = function (task, profile) {
 			'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.131 Safari/537.36',
 			'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3',
 			'Accept-Language': 'en-GB,en-US;q=0.9,en;q=0.8',
-		}
+		},
+		agent: agent
 	}, function callback(error, response, body) {
 		if (!error && response.statusCode == 200) {
 			mainBot.mainBotWin.send('taskUpdate', {
@@ -129,7 +181,8 @@ exports.performTask = function (task, profile) {
 					formData: {
 						'email': task['taskEmail'],
 						'product_id': '3544647401544'
-					}
+					},
+					agent: agent
 				},
 				function callback(error, response, body) {
 					if (!error) {
@@ -155,7 +208,8 @@ exports.performTask = function (task, profile) {
 									'first_name': profile['firstName'],
 									'last_name': profile['lastName'],
 									'email': task['taskEmail']
-								}
+								},
+								agent: agent
 							}, function callback(error, response, body) {
 								if (!error && response.statusCode == 200) {
 									var parsed = JSON.parse(body);
@@ -255,11 +309,19 @@ exports.submitRaffle = function (request, task, profile, customerID) {
 		mainBot.taskStatuses[task['type']][task.taskID] = 'idle';
 		return;
 	}
+
+	if (task['proxy'] != '') {
+		var agent = new HttpsProxyAgent(formatProxy(task['proxy']));
+	} else {
+		agent = '';
+	}
+
 	mainBot.mainBotWin.send('taskUpdate', {
 		id: task.taskID,
 		type: task.type,
 		message: 'Creating entry'
 	});
+	
 	request({
 		url: 'https://renarts-draw.herokuapp.com/draws/entries/new',
 		method: 'POST',
@@ -282,7 +344,8 @@ exports.submitRaffle = function (request, task, profile, customerID) {
 			'phone': profile['phoneNumber'],
 			'country': countryFormatter(profile['country']),
 			'delivery_method': 'online',
-		}
+		},
+		agent: agent
 	}, function callback(error, response, body) {
 		if (!error && response.statusCode == 200) {
 			console.log(body);
@@ -296,7 +359,13 @@ exports.submitRaffle = function (request, task, profile, customerID) {
 				});
 				exports.tokenizeCard(request, task, profile, customerID, entryID);
 			} else {
+				mainBot.mainBotWin.send('taskUpdate', {
+					id: task.taskID,
+					type: task.type,
+					message: 'Unknown error. DM Log'
+				});
 				console.log(body);
+				return;
 			}
 		}
 	});
@@ -315,6 +384,14 @@ exports.tokenizeCard = function (request, task, profile, customerID, entryID) {
 		mainBot.taskStatuses[task['type']][task.taskID] = 'idle';
 		return;
 	}
+
+	
+	if (task['proxy'] != '') {
+		var agent = new HttpsProxyAgent(formatProxy(task['proxy']));
+	} else {
+		agent = '';
+	}
+
 	mainBot.mainBotWin.send('taskUpdate', {
 		id: task.taskID,
 		type: task.type,
@@ -339,7 +416,8 @@ exports.tokenizeCard = function (request, task, profile, customerID, entryID) {
 			'card[exp_year]': profile['expiryYear'].substr(profile['expiryYear'].length - 2),
 			payment_user_agent: 'stripe.js/fb99827c; stripe-js-v3/fb99827c',
 			referrer: task['variant']
-		}
+		},
+		agent: agent
 	}, function callback(error, response, body) {
 		if (!error) {
 			console.log(body);
@@ -380,7 +458,8 @@ exports.tokenizeCard = function (request, task, profile, customerID, entryID) {
 				formData: {
 					'checkout_token': cardToken,
 					'entry_id': entryID
-				}
+				},
+				agent: agent
 			}, function callback(error, response, body) {
 				if (!error) {
 					if(body == "Your card was declined.")
@@ -425,9 +504,20 @@ exports.tokenizeCard = function (request, task, profile, customerID, entryID) {
 							message: 'Unknown error. DM Log'
 						});
 						console.log(body);
+						return;
 					}
 				}
 			});
+		}
+		else
+		{
+			mainBot.mainBotWin.send('taskUpdate', {
+				id: task.taskID,
+				type: task.type,
+				message: 'Unknown error. DM Log'
+			});
+			console.log(body);
+			return;
 		}
 	});
 
