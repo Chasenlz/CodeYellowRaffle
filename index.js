@@ -26,6 +26,7 @@ const appDataDir = require('os').homedir() + "\\AppData\\Local\\CodeYellow_Raffl
 const proxy = require('./proxy.js');
 
 // WEBSITES SUPPORTED
+const kodaiaio = require('./websites/kodaiaio.js');
 const dsmny = require('./websites/dsmny.js');
 const dsml = require('./websites/dsml.js');
 const footpatroluk = require('./websites/footpatroluk.js');
@@ -37,6 +38,7 @@ const oneblockdown = require('./websites/oneblockdown.js');
 const wishatl = require('./websites/wishatl.js');
 const bdgastore = require('./websites/bdgastore.js');
 const supplystore = require('./websites/supplystore.js');
+const renarts = require('./websites/renarts.js');
 
 initialfolderExistsOrMkDir();
 
@@ -87,6 +89,11 @@ global.websites = {
 		sitekey: '6LfknFoUAAAAAGfMFlRb2qHvlH34AS6HWXGd9RwI',
 		url: 'createsend.com',
 		name: 'Supply Store'
+	},
+	'kodaiaio': {
+		sitekey: '6LceuKAUAAAAANlszS-ySauzunmtpFRKPFPsReaB',
+		url: 'raffles.kodai.io',
+		name: 'KodaiAIO'
 	}
 };
 
@@ -520,6 +527,12 @@ function openBot(onReady) {
 		} else if (task['taskSiteSelect'] == 'supplystore') {
 			//console.log('SupplyStore task started');
 			supplystore.performTask(task, profile)
+		} else if (task['taskSiteSelect'] == 'kodaiaio') {
+			//console.log('KodaiAIO task started');
+			kodaiaio.performTask(task, profile)
+		} else if (task['taskSiteSelect'] == 'renarts') {
+			//console.log('Renarts task started');
+			renarts.performTask(task, profile)
 		} 
 	});
 
@@ -971,7 +984,7 @@ function getUpcomingReleases() {
 				'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36'
 			},
 			json: true,
-			url: 'https://codeyellow.io/api/releases_12.php'
+			url: 'https://codeyellow.io/api/releases_13.php'
 		},
 		function (error, response, body) {
 			global.releases = body;

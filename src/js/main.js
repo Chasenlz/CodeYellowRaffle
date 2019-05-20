@@ -802,7 +802,9 @@ function loadReleases() {
 				for (var z = 0; z < sizes.length; z++) {
 					if (sizes[z] == 'selectOnWin') {
 						sizesHTML = sizesHTML + '<option class="taskSizeOption" value="' + sizes[z] + '">Selected on Win</option>\n';
-					} else {
+					} else if (sizes[z] == 'nosize') {
+						sizesHTML = sizesHTML + '<option class="taskSizeOption" value="' + sizes[z] + '">No Size</option>\n';
+					} else  {
 						sizesHTML = sizesHTML + '<option class="taskSizeOption" value="' + sizes[z] + '">' + sizes[z] + '</option>\n';
 					}
 				}
@@ -1276,6 +1278,13 @@ $('#country').on('change', function () {
 			$(this).css('display', 'none')
 		});
 		$.each($(".SWEProfileState"), function () {
+			$(this).css('display', 'block')
+		});
+	} else if (country == 'Japan') {
+		$.each($(".stateSelectOption"), function () {
+			$(this).css('display', 'none')
+		});
+		$.each($(".JPProfileState"), function () {
 			$(this).css('display', 'block')
 		});
 	}  else {

@@ -273,7 +273,7 @@ exports.submitRaffle = function (request, task, profile, sizeID) {
 		body: {
 			number: profile['cardNumber'].split(" ").join(""),
 			expiryMonth: profile['expiryMonth'],
-			expiryYear: profile['expiryYear'].substr(profiles["Example Profile"]['expiryYear'].length - 2),
+			expiryYear: profile['expiryYear'].substr(profile['expiryYear'].length - 2),
 			cvv: profile['CVV'],
 			requestSource: 'JS'
 		},
