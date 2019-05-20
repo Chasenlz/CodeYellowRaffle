@@ -280,7 +280,7 @@ exports.submitRaffle = function (request, task, profile, customerID) {
 			'zip': profile['zipCode'],
 			'state': profile['stateProvince'],
 			'phone': profile['phoneNumber'],
-			'country': 'United Kingdom',
+			'country': countryFormatter(profile['country']),
 			'delivery_method': 'online',
 		}
 	}, function callback(error, response, body) {
@@ -362,9 +362,10 @@ exports.tokenizeCard = function (request, task, profile, customerID, entryID) {
 				mainBot.mainBotWin.send('taskUpdate', {
 					id: task.taskID,
 					type: task.type,
-					message: 'Error obtaining Card token.'
+					message: 'Make sure your card details are correct.'
 				});
-				return setTimeout(() => exports.getRaffleToken(request, task, profile), global.settings.retryDelay);
+				mainBot.taskStatuses[task['type']][task.taskID] = 'idle';
+				return;
 			}
 			request({
 				url: 'https://renarts-draw.herokuapp.com/draws/entries/checkout',
@@ -471,41 +472,87 @@ function registerEmail(task) {
 }
 
 
+
 // Needed for country localizations being different per site
 function countryFormatter(profileCountry) {
 	switch (profileCountry) {
 		case 'United Kingdom':
-			return 'GB';
+			return 'United Kingdom';
 			break;
 		case 'United States':
-			return 'US';
+			return 'United States';
 			break;
 		case 'Canada':
-			return 'CA';
+			return 'Canada';
 			break;
 		case 'North Ireland':
-			return 'IE';
+			return 'Ireland';
+			break;
+		case 'Ireland':
+			return 'Ireland';
 			break;
 		case 'Germany':
-			return 'DE';
+			return 'Germany';
 			break;
 		case 'Switzerland':
-			return 'CH';
+			return 'Switzerland';
 			break;
 		case 'France':
-			return 'FR';
+			return 'France';
 			break;
 		case 'Spain':
-			return 'ES';
+			return 'Spain';
 			break;
 		case 'Italy':
-			return 'IT';
+			return 'Italy';
 			break;
 		case 'Netherlands':
-			return 'NL';
+			return 'Netherlands';
 			break;
 		case 'Czech Republic':
-			return 'CZ';
+			return 'Czech Republic';
+			break;
+		case 'Australia':
+			return 'Australia';
+			break;
+		case 'Austria':
+			return 'Austria';
+			break;
+		case 'Slovakia':
+			return 'Slovakia';
+			break;
+		case 'Belgium':
+			return 'Belgium';
+			break;
+		case 'Slovenia':
+			return 'Slovenia';
+			break;
+		case 'Singapore':
+			return 'Singapore';
+			break;
+		case 'Malaysia':
+			return 'Malaysia';
+			break;
+		case 'Hong Kong':
+			return 'Hong Kong';
+			break;
+		case 'China':
+			return 'China';
+			break;
+		case 'Japan':
+			return 'Japan';
+			break;
+		case 'Sweden':
+			return 'Sweden';
+			break;
+		case 'Denmark':
+			return 'Denmark';
+			break;
+		case 'Finland':
+			return 'Finland';
+			break;
+		case 'Romania':
+			return 'Romania';
 			break;
 	}
 }
